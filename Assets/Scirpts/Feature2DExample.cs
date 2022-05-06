@@ -22,13 +22,17 @@ namespace OpenCVForUnityExample
         Text myMessageBox;
         Dictionary<string,Texture2D> symbolTextures;
         static WebCamTexture backCam;
-        AbortableBackgroundWorker bgWoker1 ;
+        BackgroundWorker bgWoker1,bgWoker2,bgWoker3,bgWoker4,bgWoker5;
         bool checkImages = true;
         [SerializeField]
         RawImage panelBg;
         Texture2D test1;
         public Quaternion baseRotation;
         Texture2D test2;
+        double bestDistanceAvarage;
+        string compareFinhisString;
+
+        public bool isComparingFinished = false;
         void Start ()
         {
             test1 = Resources.Load("Test/New1") as Texture2D;
@@ -46,14 +50,15 @@ namespace OpenCVForUnityExample
               //  myMessageBox.text += "Cameras detected," + devices.Length;
                 for (int i = 0; i < devices.Length; i++)
                 {
-                    if (!devices[i].isFrontFacing)
-                    {
-                        backCam = new WebCamTexture(devices[i].name, 500, 885);
-                    }
-                     else
-                     {
-                        backCam = new WebCamTexture(devices[i].name, 500, 885);
-                     }
+                    //if (!devices[i].isFrontFacing)
+                    //{
+                    //    backCam = new WebCamTexture(devices[i].name, 500, 885);
+                    //}
+                    // else
+                    // {
+                    //    backCam = new WebCamTexture(devices[i].name, 500, 885);
+                    // }
+                    backCam = new WebCamTexture(devices[0].name, 500, 885);
 
                 }
 
@@ -70,7 +75,11 @@ namespace OpenCVForUnityExample
 
             }
           
-            bgWoker1 = new AbortableBackgroundWorker();
+            bgWoker1 = new BackgroundWorker();
+            bgWoker2 = new BackgroundWorker();
+            bgWoker3 = new BackgroundWorker();
+            bgWoker4 = new BackgroundWorker();
+            bgWoker5 = new BackgroundWorker();
            // symbolTextures = MainController.Instance.GetSymbolTextures();
 
             panelBg.GetComponent<RawImage>().texture = backCam;
@@ -78,37 +87,43 @@ namespace OpenCVForUnityExample
         }
 
 
-        void Update ()
+        void Update()
         {
             //converts webcam texture to Texture2D, that can later be converted into 
             Texture2D cameraTexture = GetTexture2DFromWebcamTexture(backCam);
-            if (!bgWoker1.IsBusy && checkImages)
-            {
+
                 CompareAllImages(cameraTexture);
-            }
-         
+           
+         if(isComparingFinished){
+              myMessageBox.text = compareFinhisString;
+             Debug.Log("compare finish");
+         }else{
+            myMessageBox.text =  bestDistanceAvarage.ToString();
+         }
 
         }
 
         void CompareAllImages(Texture2D cameraTexture)
         {
-            bgWoker1.DoWork += (o, a) => CompareImages(test1, "1", cameraTexture);
-            // CompareImages(test1, "1", cameraTexture);
-            //   CompareImages(test2, "2", cameraTexture);
-            //  CompareImages(test1, "3", cameraTexture);
-            //  CompareImages(test2, "4", cameraTexture);
-            bgWoker1.RunWorkerAsync();
+
+            
+            CompareImages(bgWoker1,test1, "1", cameraTexture);
+            CompareImages(bgWoker2,test2, "2", cameraTexture);
+            CompareImages(bgWoker3,test1, "3", cameraTexture);
+            CompareImages(bgWoker4,test2, "4", cameraTexture);
+            CompareImages(bgWoker5,test2, "5", cameraTexture);
 
         }
-       
-        void CompareImages(Texture2D img1, string img1Name, Texture2D img2)
+
+
+        void CompareImages(BackgroundWorker bgWoker,Texture2D img1, string img1Name, Texture2D img2)
         {
+            
             Mat img1Mat = new Mat(img1.height, img1.width, CvType.CV_8UC3);
             Utils.texture2DToMat(img1, img1Mat);
 
             Mat img2Mat = new Mat(img2.height, img2.width, CvType.CV_8UC3);
             Utils.texture2DToMat(img2, img2Mat);
-
             ORB detector = ORB.create();
             ORB extractor = ORB.create();
 
@@ -117,10 +132,22 @@ namespace OpenCVForUnityExample
 
             detector.detect(img1Mat, keypoints1);
             extractor.compute(img1Mat, keypoints1, descriptors1);
-
+          
             MatOfKeyPoint keypoints2 = new MatOfKeyPoint();
             Mat descriptors2 = new Mat();
 
+            if( !bgWoker.IsBusy ){
+                
+           
+           bgWoker.DoWork += (o, a) => DetectAndCalculate(detector,img2Mat,keypoints2,extractor,descriptors1,descriptors2,img1Name);
+            //DetectAndCalculate(detector,img2Mat,keypoints2,extractor,descriptors1,descriptors2,img1Name);
+            bgWoker.RunWorkerAsync();
+             }
+
+        }
+
+        void DetectAndCalculate(ORB detector, Mat img2Mat,MatOfKeyPoint keypoints2,ORB extractor,Mat descriptors1,Mat descriptors2,string img1Name){
+            
             detector.detect(img2Mat, keypoints2);
             extractor.compute(img2Mat, keypoints2, descriptors2);
 
@@ -132,32 +159,35 @@ namespace OpenCVForUnityExample
            
             DMatch[] arrayDmatch = matches.toArray();
             List<double> distances = new List<double>();
+            
             if (arrayDmatch.Length > 0)
             {
-                for (int i = arrayDmatch.Length - 1; i >= 0; i--)
-                {
-                    distances.Add(arrayDmatch[i].distance);
-                }
-
-                distances.Sort();
-                var bestDistances = distances.Take(20);
-                var bestDistancesAverage = bestDistances.Average();
-                myMessageBox.text = img1Name+ ": "+ bestDistancesAverage.ToString();
-                
-
-                print(img1Name+" best distance: " +bestDistancesAverage);
-                if (bestDistancesAverage < 29)
-                {
-
-                    checkImages = false;
-                    StartCoroutine(setResult(img1Name));
-                    
-                }
+               for (int i = arrayDmatch.Length - 1; i >= 0; i--)
+               {
+                   distances.Add(arrayDmatch[i].distance);
+               }
+             
+               distances.Sort();
+               var bestDistances = distances.Take(20);
+               bestDistanceAvarage = bestDistances.Average();
+            //    myMessageBox.text = img1Name+ ": "+ bestDistancesAverage.ToString();
+            if(!isComparingFinished){
+  print(img1Name+" best distance: " +bestDistanceAvarage);
             }
-
-
-
+              
+               if (bestDistanceAvarage < 39 && !isComparingFinished)
+               {
+     compareFinhisString = img1Name + "image name";
+                   checkImages = false;
+       
+                    isComparingFinished = true;
+                   StartCoroutine(setResult(img1Name));
+                    
+               }
+          
+            }
         }
+
 
         public IEnumerator setResult(string result)
         {
