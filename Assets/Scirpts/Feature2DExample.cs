@@ -22,13 +22,16 @@ namespace OpenCVForUnityExample
         Text myMessageBox;
         Dictionary<string,Texture2D> symbolTextures;
         static WebCamTexture backCam;
-        BackgroundWorker bgWoker1,bgWoker2,bgWoker3,bgWoker4,bgWoker5;
+        // BackgroundWorker bgWoker1,bgWoker2,bgWoker3,bgWoker4,bgWoker5;
+        List<BackgroundWorker> backgroundWorkers = new List<BackgroundWorker>();
         bool checkImages = true;
         [SerializeField]
         RawImage panelBg;
         Texture2D test1;
         public Quaternion baseRotation;
         Texture2D test2;
+
+        List<Texture2D> imagesList = new List<Texture2D>();
         double bestDistanceAvarage;
         string compareFinhisString;
 
@@ -38,6 +41,29 @@ namespace OpenCVForUnityExample
             test1 = Resources.Load("Test/New1") as Texture2D;
             test2 = Resources.Load("Test/New2") as Texture2D;
 
+            ///get comparable images
+            GetImages();
+            StartWebcamDevice();
+            /// set the workers for the separated threads
+            SetBackgroundWorkers();
+           // symbolTextures = MainController.Instance.GetSymbolTextures();
+
+            panelBg.GetComponent<RawImage>().texture = backCam;
+
+        }
+
+        #region InitialSetups
+        void GetImages()
+        {
+            imagesList.Add(test1);
+            imagesList.Add(test2);
+            imagesList.Add(test1);
+            imagesList.Add(test2);
+            imagesList.Add(test1);
+
+        }
+        void StartWebcamDevice()
+        {
             //Start webcam device
             WebCamDevice[] devices = WebCamTexture.devices;
             if (devices.Length == 0)
@@ -47,7 +73,7 @@ namespace OpenCVForUnityExample
             }
             else
             {
-              //  myMessageBox.text += "Cameras detected," + devices.Length;
+                //  myMessageBox.text += "Cameras detected," + devices.Length;
                 for (int i = 0; i < devices.Length; i++)
                 {
                     //if (!devices[i].isFrontFacing)
@@ -68,50 +94,57 @@ namespace OpenCVForUnityExample
                     return;
                 }
 
-      
-              
-                 backCam.Play();
-         
+
+
+                backCam.Play();
+
 
             }
-          
-            bgWoker1 = new BackgroundWorker();
-            bgWoker2 = new BackgroundWorker();
-            bgWoker3 = new BackgroundWorker();
-            bgWoker4 = new BackgroundWorker();
-            bgWoker5 = new BackgroundWorker();
-           // symbolTextures = MainController.Instance.GetSymbolTextures();
-
-            panelBg.GetComponent<RawImage>().texture = backCam;
-
         }
 
+        void SetBackgroundWorkers()
+        {
+            for (int i = 0; i < imagesList.Count; i++)
+            {
+                var bgWorker = new BackgroundWorker();
+                backgroundWorkers.Add(bgWorker);
+            }
+        }
+        #endregion
 
         void Update()
         {
             //converts webcam texture to Texture2D, that can later be converted into 
             Texture2D cameraTexture = GetTexture2DFromWebcamTexture(backCam);
+            CompareAllImages(cameraTexture);
 
-                CompareAllImages(cameraTexture);
-           
-         if(isComparingFinished){
-              myMessageBox.text = compareFinhisString;
-             Debug.Log("compare finish");
-         }else{
-            myMessageBox.text =  bestDistanceAvarage.ToString();
-         }
+        }
 
+        private void FixedUpdate()
+        {
+            if (isComparingFinished)
+            {
+                myMessageBox.text = compareFinhisString;
+                Debug.Log("compare finish");
+            }
+            else
+            {
+                myMessageBox.text = bestDistanceAvarage.ToString();
+            }
         }
 
         void CompareAllImages(Texture2D cameraTexture)
         {
 
+            for (int i = 0; i < imagesList.Count; i++)
+            {
+                CompareImages(backgroundWorkers[i],imagesList[i], i.ToString(), cameraTexture);
+            }
             
-            CompareImages(bgWoker1,test1, "1", cameraTexture);
-            CompareImages(bgWoker2,test2, "2", cameraTexture);
-            CompareImages(bgWoker3,test1, "3", cameraTexture);
-            CompareImages(bgWoker4,test2, "4", cameraTexture);
-            CompareImages(bgWoker5,test2, "5", cameraTexture);
+            // CompareImages(bgWoker2,test2, "2", cameraTexture);
+            // CompareImages(bgWoker3,test1, "3", cameraTexture);
+            // CompareImages(bgWoker4,test2, "4", cameraTexture);
+            // CompareImages(bgWoker5,test2, "5", cameraTexture);
 
         }
 
@@ -120,33 +153,32 @@ namespace OpenCVForUnityExample
         {
             
             Mat img1Mat = new Mat(img1.height, img1.width, CvType.CV_8UC3);
-            Utils.texture2DToMat(img1, img1Mat);
-
             Mat img2Mat = new Mat(img2.height, img2.width, CvType.CV_8UC3);
+
+            Utils.texture2DToMat(img1, img1Mat);
             Utils.texture2DToMat(img2, img2Mat);
+            
+            if( !bgWoker.IsBusy ){
+                bgWoker.DoWork += (o, a) => DetectAndCalculate(img1Mat,img2Mat,img1Name);
+                //DetectAndCalculate(detector,img2Mat,keypoints2,extractor,descriptors1,descriptors2,img1Name);
+                bgWoker.RunWorkerAsync();
+            }
+
+        }
+
+        void DetectAndCalculate(Mat img1Mat, Mat img2Mat,string img1Name){
+            
             ORB detector = ORB.create();
             ORB extractor = ORB.create();
 
-            MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
+             MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
             Mat descriptors1 = new Mat();
 
             detector.detect(img1Mat, keypoints1);
             extractor.compute(img1Mat, keypoints1, descriptors1);
-          
+
             MatOfKeyPoint keypoints2 = new MatOfKeyPoint();
             Mat descriptors2 = new Mat();
-
-            if( !bgWoker.IsBusy ){
-                
-           
-           bgWoker.DoWork += (o, a) => DetectAndCalculate(detector,img2Mat,keypoints2,extractor,descriptors1,descriptors2,img1Name);
-            //DetectAndCalculate(detector,img2Mat,keypoints2,extractor,descriptors1,descriptors2,img1Name);
-            bgWoker.RunWorkerAsync();
-             }
-
-        }
-
-        void DetectAndCalculate(ORB detector, Mat img2Mat,MatOfKeyPoint keypoints2,ORB extractor,Mat descriptors1,Mat descriptors2,string img1Name){
             
             detector.detect(img2Mat, keypoints2);
             extractor.compute(img2Mat, keypoints2, descriptors2);
@@ -175,7 +207,7 @@ namespace OpenCVForUnityExample
   print(img1Name+" best distance: " +bestDistanceAvarage);
             }
               
-               if (bestDistanceAvarage < 39 && !isComparingFinished)
+               if (bestDistanceAvarage < 29 && !isComparingFinished)
                {
      compareFinhisString = img1Name + "image name";
                    checkImages = false;
@@ -208,27 +240,30 @@ namespace OpenCVForUnityExample
             tx2d.Apply();
             return tx2d;
         }
-        public void SearchForImage()
-        {
-            checkImages = true;
-            if (bgWoker1 != null)
-            {
-              //  bgWoker1.Abort();
-                bgWoker1.Dispose();
-                bgWoker1 = new AbortableBackgroundWorker();
-            }
-         
-        }
 
-        public void CancellBgWorkers()
-        {
-            checkImages = false;
-           // bgWoker1.Abort();
-            bgWoker1.Dispose();
+        // public void SearchForImage()
+        // {
+        //     checkImages = true;
+        //     if (bgWoker1 != null)
+        //     {
+        //       //  bgWoker1.Abort();
+        //         bgWoker1.Dispose();
+        //         bgWoker1 = new AbortableBackgroundWorker();
+        //     }
          
-        }
+        // }
+
+        // public void CancellBgWorkers()
+        // {
+        //     checkImages = false;
+        //    // bgWoker1.Abort();
+        //     bgWoker1.Dispose();
+         
+        // }
       
     }
+
+    #region AbortableBackground
 
     public class AbortableBackgroundWorker : BackgroundWorker
     {
@@ -259,4 +294,5 @@ namespace OpenCVForUnityExample
             }
         }
     }
+    #endregion
 }
