@@ -22,7 +22,7 @@ public class SymbolPrefabController : MonoBehaviour
     public void ProcessSymbolImage()
     {
         Texture2D imageTexture = new Texture2D(512, 512, TextureFormat.PVRTC_RGBA4, false);
-        byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, symbol.symbol_name);
+        byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, symbol.symbol_name, ".svg");
         imageTexture.LoadImage(resultBytes);
         symbolImage.texture = imageTexture;
         Color currColor = symbolImage.color;

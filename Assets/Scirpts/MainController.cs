@@ -103,6 +103,7 @@ public class MainController : MonoBehaviour
                     StartCoroutine(endpointReader.GetImage(templeData.cover_image, templeData.name, SaveImageLocally));
                     LocalTempleData newLocalTempleData = new LocalTempleData(templeData.updated_at, templeData.name, false);
                     allLocalTempleData[counter] = newLocalTempleData;
+                    counter++;
                 }
                 
             }
@@ -136,7 +137,7 @@ public class MainController : MonoBehaviour
                             StartCoroutine(endpointReader.GetImage(templeData.cover_image, templeData.name, SaveImageLocally));
                             allLocalTempleData[index].downloaded = false;
                             allLocalTempleData[index].updated_at = templeData.updated_at;
-                            foreach (Symbol symbol in templeData.symbols)
+                            foreach (Symbol symbol in templeData.symbol_groups.csillag.symbols)
                             {
                                 PlayerPrefs.DeleteKey(templeData.name + "/" + symbol.symbol_name);
                             }
@@ -198,7 +199,11 @@ public class MainController : MonoBehaviour
         Dictionary<string, LocalTempleData> result = new Dictionary<string, LocalTempleData>();
         foreach (LocalTempleData ltd in allLocalTempleData)
         {
-            result.Add(ltd.name, ltd);
+            if (ltd != null)
+            {
+                result.Add(ltd.name, ltd);
+            }
+            
         }
         return result;
     }
@@ -259,9 +264,9 @@ public class MainController : MonoBehaviour
         StartCoroutine(endpointReader.GetAudio(path, name, callback));
     }
 
-    public byte[] GetImageLocaly(string templeName, string fileName)
+    public byte[] GetImageLocaly(string templeName, string fileName, string extension = ".png")
     {
-        return dataController.LoadImageLocally(templeName,fileName);
+        return dataController.LoadImageLocally(templeName,fileName, extension);
     }
 
     public enum SystemLanguage
@@ -301,7 +306,8 @@ public class MainController : MonoBehaviour
     public int GetNumberOfSymbolsVisited(TempleData templeData)
     {
         int counter = 0;
-        foreach(Symbol symbol in templeData.symbols)
+        Debug.Log(templeData + " symbol");
+        foreach (Symbol symbol in templeData.symbol_groups.csillag.symbols)
         {
             if (PlayerPrefs.HasKey(templeData.name + "/" + symbol.symbol_name))
             {

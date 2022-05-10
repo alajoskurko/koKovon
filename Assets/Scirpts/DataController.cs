@@ -31,13 +31,13 @@ public class DataController : MonoBehaviour
         {
             var folder = Directory.CreateDirectory(Application.persistentDataPath + "/" + templeName);
         }
-        Debug.Log("Saving to: " + Application.persistentDataPath + "/" + templeName +"/"+fileName+ ".png");
-        File.WriteAllBytes(Application.persistentDataPath + "/" + templeName +"/"+fileName+ ".png", resultBytes);
+        Debug.Log("Saving to: " + Application.persistentDataPath + "/" + templeName +"/"+fileName+ ".jpg");
+        File.WriteAllBytes(Application.persistentDataPath + "/" + templeName +"/"+fileName+ ".jpg", resultBytes);
     }
 
-    public byte[] LoadImageLocally(string templeName,string fileName)
+    public byte[] LoadImageLocally(string templeName,string fileName , string extension = ".jpg")
     {
-        return File.ReadAllBytes(Application.persistentDataPath + "/" + templeName + "/" + fileName + ".png");
+        return File.ReadAllBytes(Application.persistentDataPath + "/" + templeName + "/" + fileName + ".jpg");
     }
 
     public void SaveAudioLocally(byte[] resultBytes, string templeName, string fileName)

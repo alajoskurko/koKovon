@@ -49,7 +49,6 @@ namespace OpenCVForUnityExample
            // symbolTextures = MainController.Instance.GetSymbolTextures();
 
             panelBg.GetComponent<RawImage>().texture = backCam;
-
         }
 
         #region InitialSetups

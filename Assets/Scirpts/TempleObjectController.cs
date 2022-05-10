@@ -45,6 +45,7 @@ public class TempleObjectController : MonoBehaviour
         {
             Texture2D imageTexture = new Texture2D(150, 150, TextureFormat.PVRTC_RGBA4, false);
 
+
             byte[] resultBytes = MainController.Instance.GetImageLocaly(templeData.name, templeData.name);
 
             imageTexture.LoadImage(resultBytes);

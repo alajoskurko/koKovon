@@ -21,6 +21,8 @@ public class TempleSceneController : MonoBehaviour
     TempleData currentTemple;
     string templeName;
     Symbol[] symbols;
+    SymbolGroup[] symbolGroups;
+    //SymbolGroups symbolGroupss;
 
     private void Awake()
     {
@@ -33,8 +35,8 @@ public class TempleSceneController : MonoBehaviour
         currentTemple = MainController.Instance.getCurrentTempleData();
         templeName= currentTemple.name;
         templeNameText.text = templeName;
-        symbolsDiscoveredText.text =MainController.Instance.GetNumberOfSymbolsVisited(currentTemple).ToString()+"/"+currentTemple.symbols.Length.ToString();
-        slider.maxValue = currentTemple.symbols.Length;
+        //symbolsDiscoveredText.text =MainController.Instance.GetNumberOfSymbolsVisited(currentTemple).ToString()+"/"+currentTemple.symbol_groups.csillag.symbols.Length.ToString();
+        //slider.maxValue = currentTemple.symbol_groups[csillag].symbols.Length;
         slider.value = MainController.Instance.GetNumberOfSymbolsVisited(currentTemple);
         SetDownloadButtonState(MainController.Instance.isDownloading);
 
@@ -62,7 +64,7 @@ public class TempleSceneController : MonoBehaviour
 
     public void LoadSymbolsForDiscoverScene()
     {
-        symbols = currentTemple.symbols;
+        symbols = currentTemple.symbol_groups.csillag.symbols;
 
         foreach (Symbol symbol in symbols)
         {
@@ -71,7 +73,19 @@ public class TempleSceneController : MonoBehaviour
             imageTexture.LoadImage(resultBytes);
             MainController.Instance.AddToSymbolTextures(imageTexture, symbol.symbol_name);
         }
-      
+
+    }
+    public void LoadSymbolGropus(){
+        //symbolGroups = user.GetType().GetProperties();
+        // symbolGroups = currentTemple.symbol_groups;
+
+        // foreach (Symbol symbol in symbols)
+        // {
+        //     Texture2D imageTexture = new Texture2D(512, 512, TextureFormat.PVRTC_RGBA4, false);
+        //     byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, symbol.symbol_name);
+        //     imageTexture.LoadImage(resultBytes);
+        //     MainController.Instance.AddToSymbolTextures(imageTexture, symbol.symbol_name);
+        // }
     }
     public void ProcessSymbolImage(byte[] resultBytes, string name)
     { 
@@ -111,9 +125,9 @@ public class TempleSceneController : MonoBehaviour
     {
         MainController.Instance.StartDownload();
         MainController.Instance.downloadCompleted = 0;
-        MainController.Instance.downloadTarget = currentTemple.symbols.Length;
-        // Should download and save the data also it should store that the temple data was downloaded
-        foreach (Symbol symbol in currentTemple.symbols)
+        MainController.Instance.downloadTarget = currentTemple.symbol_groups.csillag.symbols.Length;
+        //Should download and save the data also it should store that the temple data was downloaded
+        foreach (Symbol symbol in currentTemple.symbol_groups.csillag.symbols)
         {
             MainController.Instance.GetImage(symbol.symbol_path, symbol.symbol_name, SaveSymbolImage);
             foreach (AudioData audioData in symbol.audios)
@@ -135,6 +149,10 @@ public class TempleSceneController : MonoBehaviour
     }
 
     private void SaveSymbolImage(byte[] resultBytes, string fileName) {
+
+        MainController.Instance.dataController.SaveImageLocally(resultBytes, templeName, fileName);
+    }
+     private void SaveSymbolGroupImage(byte[] resultBytes, string fileName) {
 
         MainController.Instance.dataController.SaveImageLocally(resultBytes, templeName, fileName);
     }
