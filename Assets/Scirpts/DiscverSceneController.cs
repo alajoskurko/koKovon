@@ -13,29 +13,56 @@ public class DiscverSceneController : MonoBehaviour
     [SerializeField]
     GameObject symbolContainer,symbolGropuContainer;
     [SerializeField]
+    GameObject symbolPanel, symbolGroupPanel;
+    [SerializeField]
     GameObject symbolPrefab;
     [SerializeField]
     GameObject symbolGroupPrefab;
     TempleData currentTempleData;
     Dictionary<string, SymbolGroup> symbolsGroups = new Dictionary<string, SymbolGroup>();
     Symbol[] symbols;
+    public static DiscverSceneController Instance;
+    SymbolGroup chosenSymbolGroup;
 
 
 
     private void Awake()
     {
         SwipeDetector.OnSwipe += SwipeDetector_OnSwipe;
+        if (Instance == null) { Instance = this; }
+        else { Destroy(gameObject); }
     }
     void Start()
     {
        
-        MainController.Instance.ResetSymbolTexturesList();
+        
         currentTempleData = MainController.Instance.getCurrentTempleData();
         templeNameText.text = currentTempleData.name;
-        symbols = currentTempleData.symbol_groups["csillag"].symbols;
         symbolsGroups = currentTempleData.symbol_groups;
-        InstantiatewSymbols(symbolContainer);
         InstantiateSymbolGroups(symbolGropuContainer);
+
+    }
+    void InitSymbols()
+    {
+        MainController.Instance.ResetSymbolTexturesList();
+        symbols = chosenSymbolGroup.symbols;
+        InstantiateSymbols(symbolContainer);
+        symbolGroupPanel.gameObject.SetActive(false);
+    }
+    public void InstantiateSymbols(GameObject parent)
+    {
+        foreach (Symbol symbol in symbols)
+        {
+            var newSymbolItem = Instantiate(symbolPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            if (parent != null)
+            {
+                newSymbolItem.transform.parent = parent.transform;
+                newSymbolItem.transform.localScale = new Vector3(1, 1, 1);
+
+            }
+            newSymbolItem.GetComponent<SymbolPrefabController>().SetSymbolData(symbol);
+
+        }
     }
 
     public void InstantiateSymbolGroups(GameObject parent)
@@ -53,20 +80,10 @@ public class DiscverSceneController : MonoBehaviour
         }
     }
 
-    public void InstantiatewSymbols(GameObject parent)
+    public void ChooseSymbolGroup(string symbolGroupName)
     {
-        foreach (Symbol symbol in symbols)
-        {
-            var newSymbolItem = Instantiate(symbolPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-            if (parent != null)
-            {
-                newSymbolItem.transform.parent = parent.transform;
-                newSymbolItem.transform.localScale = new Vector3(1, 1, 1);
-
-            }
-            newSymbolItem.GetComponent<SymbolPrefabController>().SetSymbolData(symbol);
-
-        }
+        chosenSymbolGroup = symbolsGroups[symbolGroupName];
+        InitSymbols();
     }
 
     private void SwipeDetector_OnSwipe(SwipeData data)

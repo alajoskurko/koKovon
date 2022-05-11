@@ -11,6 +11,7 @@ public class SymbolGroupPrefabController : MonoBehaviour
     KeyValuePair<string, SymbolGroup> symbol = new KeyValuePair<string, SymbolGroup>();
 
 
+
     // Start is called before the first frame update
     public void SetSymbolData(KeyValuePair<string, SymbolGroup> symbolData)
     {
@@ -28,5 +29,10 @@ public class SymbolGroupPrefabController : MonoBehaviour
         currColor.a = 1;
         symbolImage.color = currColor;
 
+    }
+
+    public void ChooseThisSymbolGroup()
+    {
+        DiscverSceneController.Instance.ChooseSymbolGroup(symbol.Key);
     }
 }

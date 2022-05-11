@@ -125,22 +125,49 @@ public class TempleSceneController : MonoBehaviour
     {
         MainController.Instance.StartDownload();
         MainController.Instance.downloadCompleted = 0;
-        MainController.Instance.downloadTarget = currentTemple.symbol_groups["csillag"].symbols.Length;
+        MainController.Instance.downloadTarget = GetSymbolsLength();
+
         //Should download and save the data also it should store that the temple data was downloaded
-        foreach (Symbol symbol in currentTemple.symbol_groups["csillag"].symbols)
+        foreach (KeyValuePair<string, SymbolGroup> symbolGroup in currentTemple.symbol_groups)
         {
-            MainController.Instance.GetImage(symbol.symbol_path, symbol.symbol_name, SaveSymbolImage);
-            foreach (AudioData audioData in symbol.audios)
+            foreach (Symbol symbol in symbolGroup.Value.symbols)
             {
-                MainController.Instance.GetAudio(audioData.path, audioData.name, SaveSymbolAudio);
+                MainController.Instance.GetImage(symbol.symbol_path, symbol.symbol_name, SaveSymbolImage);
+                foreach (AudioData audioData in symbol.audios)
+                {
+                    MainController.Instance.GetAudio(audioData.path, audioData.name, SaveSymbolAudio);
+                }
             }
         }
+        
         // TODO edit this part
         Dictionary<string,LocalTempleData> allLocalTempledata = MainController.Instance.LoadAllLocalTempledata();
         allLocalTempledata[templeName].downloaded = true;
         MainController.Instance.SaveLocalTempleData(allLocalTempledata);     
     }
+    int GetSymbolsLength()
+    {
+        int symbolsLength = 0;
+        foreach (KeyValuePair<string,SymbolGroup> symbolGroup in currentTemple.symbol_groups)
+        {
+            symbolsLength += symbolGroup.Value.symbols.Length;
+        }
+        return symbolsLength;
+    }
+    //public void InstantiateSymbolGroups(GameObject parent)
+    //{
+    //    foreach (KeyValuePair<string, SymbolGroup> symbol in symbolsGroups)
+    //    {
+    //        var newSymbolItem = Instantiate(symbolGroupPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+    //        if (parent != null)
+    //        {
+    //            newSymbolItem.transform.parent = parent.transform;
+    //            newSymbolItem.transform.localScale = new Vector3(1, 1, 1);
 
+    //        }
+    //        newSymbolItem.GetComponent<SymbolGroupPrefabController>().SetSymbolData(symbol);
+    //    }
+    //}
     public void OnGoogleMapsButtonHit()
     {
         Application.OpenURL(currentTemple.google_map);
