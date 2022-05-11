@@ -64,7 +64,7 @@ public class TempleSceneController : MonoBehaviour
 
     public void LoadSymbolsForDiscoverScene()
     {
-        symbols = currentTemple.symbol_groups.csillag.symbols;
+        symbols = currentTemple.symbol_groups["csillag"].symbols;
 
         foreach (Symbol symbol in symbols)
         {
@@ -125,9 +125,9 @@ public class TempleSceneController : MonoBehaviour
     {
         MainController.Instance.StartDownload();
         MainController.Instance.downloadCompleted = 0;
-        MainController.Instance.downloadTarget = currentTemple.symbol_groups.csillag.symbols.Length;
+        MainController.Instance.downloadTarget = currentTemple.symbol_groups["csillag"].symbols.Length;
         //Should download and save the data also it should store that the temple data was downloaded
-        foreach (Symbol symbol in currentTemple.symbol_groups.csillag.symbols)
+        foreach (Symbol symbol in currentTemple.symbol_groups["csillag"].symbols)
         {
             MainController.Instance.GetImage(symbol.symbol_path, symbol.symbol_name, SaveSymbolImage);
             foreach (AudioData audioData in symbol.audios)
@@ -138,9 +138,7 @@ public class TempleSceneController : MonoBehaviour
         // TODO edit this part
         Dictionary<string,LocalTempleData> allLocalTempledata = MainController.Instance.LoadAllLocalTempledata();
         allLocalTempledata[templeName].downloaded = true;
-        MainController.Instance.SaveLocalTempleData(allLocalTempledata);
-
-        
+        MainController.Instance.SaveLocalTempleData(allLocalTempledata);     
     }
 
     public void OnGoogleMapsButtonHit()
@@ -152,10 +150,9 @@ public class TempleSceneController : MonoBehaviour
 
         MainController.Instance.dataController.SaveImageLocally(resultBytes, templeName, fileName);
     }
-     private void SaveSymbolGroupImage(byte[] resultBytes, string fileName) {
 
-        MainController.Instance.dataController.SaveImageLocally(resultBytes, templeName, fileName);
-    }
+
+
     private void SaveSymbolAudio(byte[] resultBytes, string fileName)
     {
         MainController.Instance.dataController.SaveAudioLocally(resultBytes, templeName, fileName);

@@ -15,7 +15,7 @@ public class TempleData
     public string updated_at;
     public string google_map;
     public ForeignTempleDetails[] temple_details;
-    public SymbolGroups symbol_groups;
+    public Dictionary<string,SymbolGroup> symbol_groups = new Dictionary<string,SymbolGroup>();
 
 
     [Serializable]
@@ -26,17 +26,16 @@ public class TempleData
         public string name;
     }
 
-    [Serializable]
-    public class SymbolGroups
-    {
-        public SymbolGroup csillag;
-        public SymbolGroup kor;
-        public SymbolGroup negyzet;
-        //public string symbol_path;
-        //public AudioData[] audios;
-        //public string symbol_name;
+    //public class SymbolGroups
+    //{
+    //    public SymbolGroup csillag;
+    //    public SymbolGroup kor;
+    //    public SymbolGroup negyzet;
+    //    //public string symbol_path;
+    //    //public AudioData[] audios;
+    //    //public string symbol_name;
 
-    }
+    //}
 
     [Serializable]
     public class SymbolGroup

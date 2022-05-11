@@ -21,6 +21,8 @@ public class MainController : MonoBehaviour
 
     private TempleData currentTempleData;
 
+    private TempleData currentTempleDataForGroups;
+
     private EndpointReader endpointReader;
 
     public DataController dataController;
@@ -101,6 +103,8 @@ public class MainController : MonoBehaviour
                 if (templeData!= null)
                 {
                     StartCoroutine(endpointReader.GetImage(templeData.cover_image, templeData.name, SaveImageLocally));
+                    currentTempleDataForGroups = templeData;
+                    SaveSymbolGroups(templeData);
                     LocalTempleData newLocalTempleData = new LocalTempleData(templeData.updated_at, templeData.name, false);
                     allLocalTempleData[counter] = newLocalTempleData;
                     counter++;
@@ -135,9 +139,11 @@ public class MainController : MonoBehaviour
                         if (updated_at != allLocalTempleData[index].updated_at)
                         {
                             StartCoroutine(endpointReader.GetImage(templeData.cover_image, templeData.name, SaveImageLocally));
+                            currentTempleDataForGroups = templeData;
+                            SaveSymbolGroups(templeData);
                             allLocalTempleData[index].downloaded = false;
                             allLocalTempleData[index].updated_at = templeData.updated_at;
-                            foreach (Symbol symbol in templeData.symbol_groups.csillag.symbols)
+                            foreach (Symbol symbol in templeData.symbol_groups["csillag"].symbols)
                             {
                                 PlayerPrefs.DeleteKey(templeData.name + "/" + symbol.symbol_name);
                             }
@@ -146,6 +152,8 @@ public class MainController : MonoBehaviour
                     else
                     {
                         StartCoroutine(endpointReader.GetImage(templeData.cover_image, templeData.name, SaveImageLocally));
+                        currentTempleDataForGroups = templeData;
+                        SaveSymbolGroups(templeData);
                         // Todo some specific testing needed here, I am not 100% sure about the indexing, nope it is not gonna work like this
 
                         allLocalTempleData.Append(new LocalTempleData(templeData.updated_at, templeData.name, false));
@@ -258,6 +266,10 @@ public class MainController : MonoBehaviour
     {
         StartCoroutine(endpointReader.GetImage(path,name,callback));
     }
+    public void GetImage(string path, string name, string fileName, System.Action<byte[], string, string> callback)
+    {
+        StartCoroutine(endpointReader.GetImage(path, name, fileName, callback));
+    }
 
     public void GetAudio(string path, string name, System.Action<byte[], string> callback) {
 
@@ -307,7 +319,7 @@ public class MainController : MonoBehaviour
     {
         int counter = 0;
         Debug.Log(templeData + " symbol");
-        foreach (Symbol symbol in templeData.symbol_groups.csillag.symbols)
+        foreach (Symbol symbol in templeData.symbol_groups["csillag"].symbols)
         {
             if (PlayerPrefs.HasKey(templeData.name + "/" + symbol.symbol_name))
             {
@@ -331,8 +343,25 @@ public class MainController : MonoBehaviour
         symbolTextures = new Dictionary<string, Texture2D>();
     }
 
-   
+    private void SaveSymbolGroups(TempleData templeData)
+    {
+        var symbolGroups = templeData.symbol_groups;
+        foreach (var symbolGroup in symbolGroups)
+        {
+            MainController.Instance.GetImage(symbolGroup.Value.path, templeData.name, symbolGroup.Key, SaveGroupImageLocally);
+        }
+    }
 
+
+    /// <summary>
+    /// / to continue
+    /// </summary>
+    /// <param name="resultBytes"></param>
+    /// <param name="fileName"></param>
+    public void SaveGroupImageLocally(byte[] resultBytes, string name, string fileName)
+    {
+        dataController.SaveImageLocally(resultBytes, name, fileName);
+    }
 
 
 }

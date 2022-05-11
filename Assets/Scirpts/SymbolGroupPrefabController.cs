@@ -8,9 +8,11 @@ public class SymbolGroupPrefabController : MonoBehaviour
 {
     [SerializeField]
     RawImage symbolImage;
-    SymbolGroup symbol;
+    KeyValuePair<string, SymbolGroup> symbol = new KeyValuePair<string, SymbolGroup>();
+
+
     // Start is called before the first frame update
-    public void SetSymbolData(SymbolGroup symbolData)
+    public void SetSymbolData(KeyValuePair<string, SymbolGroup> symbolData)
     {
         symbol = symbolData;
         ProcessSymbolImage();
@@ -18,13 +20,13 @@ public class SymbolGroupPrefabController : MonoBehaviour
 
     public void ProcessSymbolImage()
     {
-        //Texture2D imageTexture = new Texture2D(512, 512, TextureFormat.PVRTC_RGBA4, false);
-        //byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, symbol.symbol_name, ".svg");
-        //imageTexture.LoadImage(resultBytes);
-        //symbolImage.texture = imageTexture;
-        //Color currColor = symbolImage.color;
-        //currColor.a = 1;
-        //symbolImage.color = currColor;
+        Texture2D imageTexture = new Texture2D(512, 512, TextureFormat.PVRTC_RGBA4, false);
+        byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, symbol.Key, ".svg");
+        imageTexture.LoadImage(resultBytes);
+        symbolImage.texture = imageTexture;
+        Color currColor = symbolImage.color;
+        currColor.a = 1;
+        symbolImage.color = currColor;
 
     }
 }

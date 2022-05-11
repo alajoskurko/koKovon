@@ -17,7 +17,7 @@ public class DiscverSceneController : MonoBehaviour
     [SerializeField]
     GameObject symbolGroupPrefab;
     TempleData currentTempleData;
-    SymbolGroup[] symbolsGroups;
+    Dictionary<string, SymbolGroup> symbolsGroups = new Dictionary<string, SymbolGroup>();
     Symbol[] symbols;
 
 
@@ -32,14 +32,15 @@ public class DiscverSceneController : MonoBehaviour
         MainController.Instance.ResetSymbolTexturesList();
         currentTempleData = MainController.Instance.getCurrentTempleData();
         templeNameText.text = currentTempleData.name;
-        symbols = currentTempleData.symbol_groups.csillag.symbols;
+        symbols = currentTempleData.symbol_groups["csillag"].symbols;
+        symbolsGroups = currentTempleData.symbol_groups;
         InstantiatewSymbols(symbolContainer);
-        //InstantiateSymbolGroups(symbolGropuContainer);
+        InstantiateSymbolGroups(symbolGropuContainer);
     }
 
     public void InstantiateSymbolGroups(GameObject parent)
     {
-        foreach (SymbolGroup symbol in symbolsGroups)
+        foreach (KeyValuePair<string, SymbolGroup> symbol in symbolsGroups )
         {
             var newSymbolItem = Instantiate(symbolGroupPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             if (parent != null)
@@ -48,7 +49,7 @@ public class DiscverSceneController : MonoBehaviour
                 newSymbolItem.transform.localScale = new Vector3(1, 1, 1);
 
             }
-            //newSymbolItem.GetComponent<SymbolGroupPrefabController>().SetSymbolData(symbol);
+            newSymbolItem.GetComponent<SymbolGroupPrefabController>().SetSymbolData(symbol);
         }
     }
 

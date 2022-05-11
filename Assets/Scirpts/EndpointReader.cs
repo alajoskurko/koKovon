@@ -72,6 +72,28 @@ public class EndpointReader : MonoBehaviour
 
         }
     }
+    public IEnumerator GetImage(string path, string name, string fileName, System.Action<byte[], string, string> callback)
+    {
+        UnityWebRequest www = UnityWebRequest.Get(path);
+        yield return www.SendWebRequest();
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("There was an error reading the image");
+
+        }
+        else
+        {
+
+            byte[] resultBytes = www.downloadHandler.data;
+
+            //   var pngFormatedImage = imageTexture.EncodeToPNG();
+
+            print("image loaded with success");
+
+            callback(resultBytes, name, fileName);
+
+        }
+    }
 
     public IEnumerator GetAudio(string path, string name, System.Action<byte[], string> callback)
     {
