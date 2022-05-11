@@ -1065,11 +1065,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6760372245681328344, guid: 18f913dc0532d5e4886bd2d0313c4b13, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 282.5
       objectReference: {fileID: 0}
     - target: {fileID: 6760372245681328344, guid: 18f913dc0532d5e4886bd2d0313c4b13, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 6760372245681328344, guid: 18f913dc0532d5e4886bd2d0313c4b13, type: 3}
       propertyPath: m_AnchorMin.y
@@ -1176,6 +1176,16 @@ PrefabInstance:
 --- !u!224 &963585777 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6760372245755596695, guid: 18f913dc0532d5e4886bd2d0313c4b13, type: 3}
+  m_PrefabInstance: {fileID: 963585776}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &963585778 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6760372245755596694, guid: 18f913dc0532d5e4886bd2d0313c4b13, type: 3}
+  m_PrefabInstance: {fileID: 963585776}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &963585779 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6760372245681328347, guid: 18f913dc0532d5e4886bd2d0313c4b13, type: 3}
   m_PrefabInstance: {fileID: 963585776}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &983263837
@@ -1789,7 +1799,7 @@ PrefabInstance:
       objectReference: {fileID: 1897394782}
     - target: {fileID: 3042055933905607407, guid: e648c8ced49e48f49a12cf966199453a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: LoadImageDetectionScene
+      value: ShowSymbolGroupsForScan
       objectReference: {fileID: 0}
     - target: {fileID: 3042055933905607407, guid: e648c8ced49e48f49a12cf966199453a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -2116,6 +2126,10 @@ MonoBehaviour:
   templeImage: {fileID: 2026916740}
   slider: {fileID: 1250457529}
   downloadButton: {fileID: 134612380}
+  symbolGroupPrefab: {fileID: 8055642429804803998, guid: 73c2d3714858f5c449091fea4909113e, type: 3}
+  groupChoosePanel: {fileID: 963585778}
+  groupContainer: {fileID: 963585779}
+  mainUIPanel: {fileID: 1414141875}
 --- !u!4 &1897394783
 Transform:
   m_ObjectHideFlags: 0

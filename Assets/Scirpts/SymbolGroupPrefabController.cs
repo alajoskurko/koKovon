@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using static TempleData;
 
 public class SymbolGroupPrefabController : MonoBehaviour
@@ -9,8 +10,6 @@ public class SymbolGroupPrefabController : MonoBehaviour
     [SerializeField]
     RawImage symbolImage;
     KeyValuePair<string, SymbolGroup> symbol = new KeyValuePair<string, SymbolGroup>();
-
-
 
     // Start is called before the first frame update
     public void SetSymbolData(KeyValuePair<string, SymbolGroup> symbolData)
@@ -33,6 +32,15 @@ public class SymbolGroupPrefabController : MonoBehaviour
 
     public void ChooseThisSymbolGroup()
     {
-        DiscverSceneController.Instance.ChooseSymbolGroup(symbol.Key);
+        Scene scene = SceneManager.GetActiveScene();
+        if(scene.name == "DiscoverScene")
+        {
+            DiscverSceneController.Instance.ChooseSymbolGroup(symbol.Key);
+        }
+        else
+        {
+            TempleSceneController.Instance.ChooseSymbolGroupForScan(symbol);
+        }
+        
     }
 }

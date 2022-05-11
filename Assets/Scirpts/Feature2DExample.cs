@@ -32,6 +32,7 @@ namespace OpenCVForUnityExample
         Texture2D test2;
 
         List<Texture2D> imagesList = new List<Texture2D>();
+        Dictionary<string, Texture2D> scannableImagesDic = new Dictionary<string, Texture2D>(); 
         double bestDistanceAvarage;
         string compareFinhisString;
 
@@ -40,6 +41,9 @@ namespace OpenCVForUnityExample
         {
             test1 = Resources.Load("Test/New1") as Texture2D;
             test2 = Resources.Load("Test/New2") as Texture2D;
+
+            Debug.Log(MainController.Instance.chosenSymbol +  " chosensymbol");
+            ProcessSymbolImages();
 
             ///get comparable images
             GetImages();
@@ -50,15 +54,31 @@ namespace OpenCVForUnityExample
 
             panelBg.GetComponent<RawImage>().texture = backCam;
         }
+        public void ProcessSymbolImages()
+        {
+            foreach (var symbol in MainController.Instance.chosenSymbol.Value.symbols)
+            {
+                Texture2D imageTexture = new Texture2D(512, 512, TextureFormat.PVRTC_RGBA4, false);
+                byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, symbol.symbol_name, ".jpg");
+                imageTexture.LoadImage(resultBytes);
+                var akarmi = imageTexture;
+                scannableImagesDic.Add(symbol.symbol_name, imageTexture);
+                imagesList.Add(akarmi);
+                //symbolImage.texture = imageTexture;
+                //Color currColor = symbolImage.color;
+                //currColor.a = 1;
+                //symbolImage.color = currColor;
+            }
+        }
 
         #region InitialSetups
         void GetImages()
         {
-            imagesList.Add(test1);
-            imagesList.Add(test2);
-            imagesList.Add(test1);
-            imagesList.Add(test2);
-            imagesList.Add(test1);
+            //imagesList.Add(test1);
+            //imagesList.Add(test2);
+            //imagesList.Add(test1);
+            //imagesList.Add(test2);
+            //imagesList.Add(test1);
 
         }
         void StartWebcamDevice()
@@ -135,9 +155,12 @@ namespace OpenCVForUnityExample
         void CompareAllImages(Texture2D cameraTexture)
         {
 
-            for (int i = 0; i < imagesList.Count; i++)
+            for (int i = 0; i < scannableImagesDic.Count; i++)
             {
-                CompareImages(backgroundWorkers[i],imagesList[i], i.ToString(), cameraTexture);
+                var akarmi = scannableImagesDic.ElementAt(i).Value;
+                var barmi = scannableImagesDic.ElementAt(i).Key;
+                var ize = 0;
+                CompareImages(backgroundWorkers[i], scannableImagesDic.ElementAt(i).Value, scannableImagesDic.ElementAt(i).Key, cameraTexture);
             }
             
             // CompareImages(bgWoker2,test2, "2", cameraTexture);
@@ -208,7 +231,7 @@ namespace OpenCVForUnityExample
               
                if (bestDistanceAvarage < 29 && !isComparingFinished)
                {
-     compareFinhisString = img1Name + "image name";
+     compareFinhisString = img1Name + "image name" + " bestdistance" + bestDistanceAvarage;
                    checkImages = false;
        
                     isComparingFinished = true;
@@ -228,6 +251,11 @@ namespace OpenCVForUnityExample
             MainController.Instance.SetDetectedSymbolName(result);
            //?? backCam.Stop();
             SceneManager.LoadScene("AudiPlayerScene");
+        }
+        public void GobackToTempleSelection()
+        {
+            backCam.Stop();
+            SceneManager.LoadScene("DiscoverScene");
         }
 
         public Texture2D GetTexture2DFromWebcamTexture(WebCamTexture webCamTexture)
@@ -261,6 +289,7 @@ namespace OpenCVForUnityExample
         // }
       
     }
+
 
     #region AbortableBackground
 

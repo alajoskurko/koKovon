@@ -22,10 +22,16 @@ public class TempleSceneController : MonoBehaviour
     string templeName;
     Symbol[] symbols;
     SymbolGroup[] symbolGroups;
+    Dictionary<string, SymbolGroup> symbolsGroups = new Dictionary<string, SymbolGroup>();
+    [SerializeField]
+    GameObject symbolGroupPrefab,groupChoosePanel,groupContainer,mainUIPanel;
+
+    public static TempleSceneController Instance;
     //SymbolGroups symbolGroupss;
 
     private void Awake()
     {
+        Instance = this;
         MainController.OnDownloadStateChanged += SetDownloadButtonState;
         SwipeDetector.OnSwipe += SwipeDetector_OnSwipe;
     }
@@ -59,7 +65,7 @@ public class TempleSceneController : MonoBehaviour
             templeImage.texture = imageTexture;
             templeImage.color = new Color32(111, 189, 195, 255);
         }
-        
+        InstantiateSymbolGroups(groupContainer);
     }
 
     public void LoadSymbolsForDiscoverScene()
@@ -75,17 +81,18 @@ public class TempleSceneController : MonoBehaviour
         }
 
     }
-    public void LoadSymbolGropus(){
-        //symbolGroups = user.GetType().GetProperties();
-        // symbolGroups = currentTemple.symbol_groups;
+    public void LoadSymbolGropus(GameObject parent){
+        foreach (KeyValuePair<string, SymbolGroup> symbol in symbolsGroups)
+        {
+            var newSymbolItem = Instantiate(symbolGroupPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            if (parent != null)
+            {
+                newSymbolItem.transform.parent = parent.transform;
+                newSymbolItem.transform.localScale = new Vector3(1, 1, 1);
 
-        // foreach (Symbol symbol in symbols)
-        // {
-        //     Texture2D imageTexture = new Texture2D(512, 512, TextureFormat.PVRTC_RGBA4, false);
-        //     byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, symbol.symbol_name);
-        //     imageTexture.LoadImage(resultBytes);
-        //     MainController.Instance.AddToSymbolTextures(imageTexture, symbol.symbol_name);
-        // }
+            }
+            newSymbolItem.GetComponent<SymbolGroupPrefabController>().SetSymbolData(symbol);
+        }
     }
     public void ProcessSymbolImage(byte[] resultBytes, string name)
     { 
@@ -103,6 +110,12 @@ public class TempleSceneController : MonoBehaviour
 
         }
 
+    }
+
+    public void ChooseSymbolGroupForScan(KeyValuePair<string,SymbolGroup> symbolGroup)
+    {
+        MainController.Instance.chosenSymbol = symbolGroup;
+        LoadImageDetectionScene();
     }
 
     public void OnDiscoverButtonHit()
@@ -154,20 +167,20 @@ public class TempleSceneController : MonoBehaviour
         }
         return symbolsLength;
     }
-    //public void InstantiateSymbolGroups(GameObject parent)
-    //{
-    //    foreach (KeyValuePair<string, SymbolGroup> symbol in symbolsGroups)
-    //    {
-    //        var newSymbolItem = Instantiate(symbolGroupPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-    //        if (parent != null)
-    //        {
-    //            newSymbolItem.transform.parent = parent.transform;
-    //            newSymbolItem.transform.localScale = new Vector3(1, 1, 1);
+    public void InstantiateSymbolGroups(GameObject parent)
+    {
+        foreach (KeyValuePair<string, SymbolGroup> symbol in currentTemple.symbol_groups)
+        {
+            var newSymbolItem = Instantiate(symbolGroupPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            if (parent != null)
+            {
+                newSymbolItem.transform.parent = parent.transform;
+                newSymbolItem.transform.localScale = new Vector3(1, 1, 1);
 
-    //        }
-    //        newSymbolItem.GetComponent<SymbolGroupPrefabController>().SetSymbolData(symbol);
-    //    }
-    //}
+            }
+            newSymbolItem.GetComponent<SymbolGroupPrefabController>().SetSymbolData(symbol);
+        }
+    }
     public void OnGoogleMapsButtonHit()
     {
         Application.OpenURL(currentTemple.google_map);
@@ -186,11 +199,6 @@ public class TempleSceneController : MonoBehaviour
         MainController.Instance.downloadCompleted++;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void LoadHomeScreen()
     {
@@ -216,6 +224,12 @@ public class TempleSceneController : MonoBehaviour
         {
             LoadHomeScreen();
         }
+    }
+
+    public void ShowSymbolGroupsForScan()
+    {
+        groupChoosePanel.SetActive(true);
+        mainUIPanel.SetActive(false);
     }
 
     public void LoadImageDetectionScene()

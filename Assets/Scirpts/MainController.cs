@@ -39,6 +39,8 @@ public class MainController : MonoBehaviour
 
     public static event Action<bool> OnDownloadStateChanged = delegate { };
 
+    public KeyValuePair<string, SymbolGroup> chosenSymbol;
+
     private void Awake()
     {
 
