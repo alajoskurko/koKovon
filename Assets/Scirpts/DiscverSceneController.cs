@@ -18,8 +18,11 @@ public class DiscverSceneController : MonoBehaviour
     GameObject symbolPrefab;
     [SerializeField]
     GameObject symbolGroupPrefab;
+    [SerializeField]
+    GameObject scrollRectForSymbols;
     TempleData currentTempleData;
     Dictionary<string, SymbolGroup> symbolsGroups = new Dictionary<string, SymbolGroup>();
+   
     Symbol[] symbols;
     public static DiscverSceneController Instance;
     SymbolGroup chosenSymbolGroup;
@@ -46,12 +49,12 @@ public class DiscverSceneController : MonoBehaviour
     {
         MainController.Instance.ResetSymbolTexturesList();
         symbols = chosenSymbolGroup.symbols;
-        InstantiateSymbols(symbolContainer);
+        //InstantiateSymbols(symbolContainer);
         symbolGroupPanel.gameObject.SetActive(false);
     }
-    public void InstantiateSymbols(GameObject parent)
+    public void InstantiateSymbols(GameObject parent, Symbol[] symbolGroup)
     {
-        foreach (Symbol symbol in symbols)
+        foreach (Symbol symbol in symbolGroup)
         {
             var newSymbolItem = Instantiate(symbolPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             if (parent != null)
@@ -67,16 +70,26 @@ public class DiscverSceneController : MonoBehaviour
 
     public void InstantiateSymbolGroups(GameObject parent)
     {
-        foreach (KeyValuePair<string, SymbolGroup> symbol in symbolsGroups )
+        int yPos = 200;
+        foreach (KeyValuePair<string, SymbolGroup> symbolGroup in symbolsGroups )
         {
-            var newSymbolItem = Instantiate(symbolGroupPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-            if (parent != null)
+            
+            var newSymbolScrollRect = Instantiate(scrollRectForSymbols, new Vector3(symbolGroupPanel.transform.position.x, symbolGroupPanel.transform.position.y - yPos, 0), Quaternion.identity);
+            if(symbolGroupPanel != null)
             {
-                newSymbolItem.transform.parent = parent.transform;
-                newSymbolItem.transform.localScale = new Vector3(1, 1, 1);
-
+                newSymbolScrollRect.transform.parent = symbolGroupPanel.transform;
+                newSymbolScrollRect.transform.localScale = new Vector3(1, 1, 1);
             }
-            newSymbolItem.GetComponent<SymbolGroupPrefabController>().SetSymbolData(symbol);
+            InstantiateSymbols(newSymbolScrollRect.transform.GetChild(0).gameObject, symbolGroup.Value.symbols);
+            yPos += 350;
+            //var newSymbolItem = Instantiate(symbolGroupPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            //if (parent != null)
+            //{
+            //    newSymbolItem.transform.parent = parent.transform;
+            //    newSymbolItem.transform.localScale = new Vector3(1, 1, 1);
+
+            //}
+            //newSymbolItem.GetComponent<SymbolGroupPrefabController>().SetSymbolData(symbolGroup);
         }
     }
 
