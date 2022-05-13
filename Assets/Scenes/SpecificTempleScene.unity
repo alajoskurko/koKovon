@@ -1079,6 +1079,22 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6760372245755596692, guid: 18f913dc0532d5e4886bd2d0313c4b13, type: 3}
+      propertyPath: m_Color.r
+      value: 0.96862745
+      objectReference: {fileID: 0}
+    - target: {fileID: 6760372245755596692, guid: 18f913dc0532d5e4886bd2d0313c4b13, type: 3}
+      propertyPath: m_Color.g
+      value: 0.60784316
+      objectReference: {fileID: 0}
+    - target: {fileID: 6760372245755596692, guid: 18f913dc0532d5e4886bd2d0313c4b13, type: 3}
+      propertyPath: m_Color.b
+      value: 0.41568628
+      objectReference: {fileID: 0}
+    - target: {fileID: 6760372245755596692, guid: 18f913dc0532d5e4886bd2d0313c4b13, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6760372245755596694, guid: 18f913dc0532d5e4886bd2d0313c4b13, type: 3}
       propertyPath: m_Name
       value: GroupChoosePanel

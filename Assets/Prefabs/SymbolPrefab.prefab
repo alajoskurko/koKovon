@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8188496784236543236}
   - component: {fileID: 2731631839186864154}
   - component: {fileID: -8007517432474149448}
+  - component: {fileID: 7031245248171692370}
   m_Layer: 5
   m_Name: SymbolPrefab
   m_TagString: Untagged
@@ -37,7 +38,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -360, y: -640}
-  m_SizeDelta: {x: 50, y: 50}
+  m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8188496784236543236
 CanvasRenderer:
@@ -88,6 +89,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   symbolImage: {fileID: 2731631839186864154}
   checkmarkImage: {fileID: 6592706472838235530}
+--- !u!114 &7031245248171692370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 645907996557588239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AspectMode: 2
+  m_AspectRatio: 1
 --- !u!1 &1074419332920972209
 GameObject:
   m_ObjectHideFlags: 0
