@@ -26,27 +26,12 @@ public class TempleData
         public string name;
     }
 
-    //public class SymbolGroups
-    //{
-    //    public SymbolGroup csillag;
-    //    public SymbolGroup kor;
-    //    public SymbolGroup negyzet;
-    //    //public string symbol_path;
-    //    //public AudioData[] audios;
-    //    //public string symbol_name;
-
-    //}
 
     [Serializable]
     public class SymbolGroup
     {
         public string path;
         public Symbol[] symbols;
-        //public string symbol_path;
-        //public AudioData[] audios;
-        //public string symbol_name;
-
-
     }
     [Serializable]
     public class Symbol

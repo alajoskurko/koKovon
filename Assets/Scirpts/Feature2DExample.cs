@@ -22,7 +22,7 @@ namespace OpenCVForUnityExample
         Text myMessageBox;
         Dictionary<string,Texture2D> symbolTextures;
         static WebCamTexture backCam;
-        // BackgroundWorker bgWoker1,bgWoker2,bgWoker3,bgWoker4,bgWoker5;
+        BackgroundWorker bgWoker1,bgWoker2,bgWoker3,bgWoker4,bgWoker5;
         List<BackgroundWorker> backgroundWorkers = new List<BackgroundWorker>();
         bool checkImages = true;
         [SerializeField]
@@ -44,7 +44,7 @@ namespace OpenCVForUnityExample
 
             Debug.Log(MainController.Instance.chosenSymbol +  " chosensymbol");
             ProcessSymbolImages();
-
+            bgWoker1 = new BackgroundWorker();
             ///get comparable images
             GetImages();
             StartWebcamDevice();
@@ -63,7 +63,6 @@ namespace OpenCVForUnityExample
                 imageTexture.LoadImage(resultBytes);
                 var akarmi = imageTexture;
                 scannableImagesDic.Add(symbol.symbol_name, imageTexture);
-                imagesList.Add(akarmi);
                 //symbolImage.texture = imageTexture;
                 //Color currColor = symbolImage.color;
                 //currColor.a = 1;
@@ -123,7 +122,7 @@ namespace OpenCVForUnityExample
 
         void SetBackgroundWorkers()
         {
-            for (int i = 0; i < imagesList.Count; i++)
+            for (int i = 0; i < scannableImagesDic.Count; i++)
             {
                 var bgWorker = new BackgroundWorker();
                 backgroundWorkers.Add(bgWorker);
@@ -154,13 +153,14 @@ namespace OpenCVForUnityExample
 
         void CompareAllImages(Texture2D cameraTexture)
         {
-
+            
             for (int i = 0; i < scannableImagesDic.Count; i++)
             {
                 var akarmi = scannableImagesDic.ElementAt(i).Value;
                 var barmi = scannableImagesDic.ElementAt(i).Key;
                 var ize = 0;
-                CompareImages(backgroundWorkers[i], scannableImagesDic.ElementAt(i).Value, scannableImagesDic.ElementAt(i).Key, cameraTexture);
+                
+                CompareImages(bgWoker1, scannableImagesDic.ElementAt(1).Value, scannableImagesDic.ElementAt(1).Key, cameraTexture);
             }
             
             // CompareImages(bgWoker2,test2, "2", cameraTexture);
@@ -255,7 +255,7 @@ namespace OpenCVForUnityExample
         public void GobackToTempleSelection()
         {
             backCam.Stop();
-            SceneManager.LoadScene("DiscoverScene");
+            SceneManager.LoadScene("SpecificTempleScene");
         }
 
         public Texture2D GetTexture2DFromWebcamTexture(WebCamTexture webCamTexture)

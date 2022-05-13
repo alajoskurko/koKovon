@@ -41,8 +41,8 @@ public class TempleSceneController : MonoBehaviour
         currentTemple = MainController.Instance.getCurrentTempleData();
         templeName= currentTemple.name;
         templeNameText.text = templeName;
-        //symbolsDiscoveredText.text =MainController.Instance.GetNumberOfSymbolsVisited(currentTemple).ToString()+"/"+currentTemple.symbol_groups.csillag.symbols.Length.ToString();
-        //slider.maxValue = currentTemple.symbol_groups[csillag].symbols.Length;
+        symbolsDiscoveredText.text =MainController.Instance.GetNumberOfSymbolsVisited(currentTemple).ToString()+"/"+ GetSymbolsLength().ToString();
+        slider.maxValue = GetSymbolsLength();
         slider.value = MainController.Instance.GetNumberOfSymbolsVisited(currentTemple);
         SetDownloadButtonState(MainController.Instance.isDownloading);
 
@@ -67,17 +67,37 @@ public class TempleSceneController : MonoBehaviour
         }
         InstantiateSymbolGroups(groupContainer);
     }
-
-    public void LoadSymbolsForDiscoverScene()
+    int GetSymbolsLength()
     {
-        symbols = currentTemple.symbol_groups["csillag"].symbols;
-
-        foreach (Symbol symbol in symbols)
+        int symbolsLength = 0;
+        foreach (KeyValuePair<string, SymbolGroup> symbolGroup in currentTemple.symbol_groups)
         {
-            Texture2D imageTexture = new Texture2D(512, 512, TextureFormat.PVRTC_RGBA4, false);
-            byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, symbol.symbol_name);
-            imageTexture.LoadImage(resultBytes);
-            MainController.Instance.AddToSymbolTextures(imageTexture, symbol.symbol_name);
+            symbolsLength += symbolGroup.Value.symbols.Length;
+        }
+        return symbolsLength;
+    }
+        //}
+        //void int GetSymbolsLength()
+        //{
+        //    int symbolsLength = 0;
+        //    foreach (KeyValuePair<string,SymbolGroup> symbolGroup in currentTemple.symbol_groups)
+        //    {
+        //        symbolsLength += symbolGroup.Value.symbols.Length;
+        //    }
+        //    return symbolsLength;
+        //}
+
+        public void LoadSymbolsForDiscoverScene()
+    {
+        foreach (KeyValuePair<string, SymbolGroup> symbolGroup in symbolsGroups)
+        {
+            foreach (Symbol symbol in symbolGroup.Value.symbols)
+            {
+                Texture2D imageTexture = new Texture2D(512, 512, TextureFormat.PVRTC_RGBA4, false);
+                byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, symbol.symbol_name);
+                imageTexture.LoadImage(resultBytes);
+                MainController.Instance.AddToSymbolTextures(imageTexture, symbol.symbol_name);
+            }
         }
 
     }
@@ -157,15 +177,6 @@ public class TempleSceneController : MonoBehaviour
         Dictionary<string,LocalTempleData> allLocalTempledata = MainController.Instance.LoadAllLocalTempledata();
         allLocalTempledata[templeName].downloaded = true;
         MainController.Instance.SaveLocalTempleData(allLocalTempledata);     
-    }
-    int GetSymbolsLength()
-    {
-        int symbolsLength = 0;
-        foreach (KeyValuePair<string,SymbolGroup> symbolGroup in currentTemple.symbol_groups)
-        {
-            symbolsLength += symbolGroup.Value.symbols.Length;
-        }
-        return symbolsLength;
     }
     public void InstantiateSymbolGroups(GameObject parent)
     {

@@ -145,10 +145,14 @@ public class MainController : MonoBehaviour
                             SaveSymbolGroups(templeData);
                             allLocalTempleData[index].downloaded = false;
                             allLocalTempleData[index].updated_at = templeData.updated_at;
-                            foreach (Symbol symbol in templeData.symbol_groups["csillag"].symbols)
+                            foreach (KeyValuePair<string, SymbolGroup> symbolGroup in templeData.symbol_groups)
                             {
-                                PlayerPrefs.DeleteKey(templeData.name + "/" + symbol.symbol_name);
+                                foreach (Symbol symbol in symbolGroup.Value.symbols)
+                                {
+                                    PlayerPrefs.DeleteKey(templeData.name + "/" + symbol.symbol_name);
+                                }
                             }
+                              
                         }
                     }
                     else
@@ -321,11 +325,14 @@ public class MainController : MonoBehaviour
     {
         int counter = 0;
         Debug.Log(templeData + " symbol");
-        foreach (Symbol symbol in templeData.symbol_groups["csillag"].symbols)
+        foreach (KeyValuePair<string, SymbolGroup> symbolGroup in templeData.symbol_groups)
         {
-            if (PlayerPrefs.HasKey(templeData.name + "/" + symbol.symbol_name))
+            foreach (Symbol symbol in symbolGroup.Value.symbols)
             {
-                counter++;
+                if (PlayerPrefs.HasKey(templeData.name + "/" + symbol.symbol_name))
+                {
+                    counter++;
+                }
             }
         }
         return counter;
