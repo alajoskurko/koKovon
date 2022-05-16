@@ -109,6 +109,7 @@ public class DiscverSceneController : MonoBehaviour
 
     public void LoadSpecificTempleScene()
     {
+        Debug.Log("load spec temple");
         SwipeDetector.OnSwipe -= SwipeDetector_OnSwipe;
         SceneManager.LoadScene("SpecificTempleScene");
    

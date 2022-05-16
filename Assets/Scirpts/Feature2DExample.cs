@@ -160,7 +160,7 @@ namespace OpenCVForUnityExample
                 var barmi = scannableImagesDic.ElementAt(i).Key;
                 var ize = 0;
                 
-                CompareImages(bgWoker1, scannableImagesDic.ElementAt(1).Value, scannableImagesDic.ElementAt(1).Key, cameraTexture);
+                CompareImages(backgroundWorkers[i], scannableImagesDic.ElementAt(i).Value, scannableImagesDic.ElementAt(i).Key, cameraTexture);
             }
             
             // CompareImages(bgWoker2,test2, "2", cameraTexture);

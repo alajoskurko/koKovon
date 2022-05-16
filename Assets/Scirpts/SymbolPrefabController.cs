@@ -25,6 +25,18 @@ public class SymbolPrefabController : MonoBehaviour
         byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, symbol.symbol_name, ".svg");
         imageTexture.LoadImage(resultBytes);
         symbolImage.texture = imageTexture;
+        int height = imageTexture.height;
+        int width = imageTexture.width;
+        float ratio = ((float ) width )/ ((float)height);
+       if(ratio <= 1)
+        {
+            symbolImage.rectTransform.sizeDelta = new Vector2(170 * ratio, 170);
+        }
+        else
+        {
+            symbolImage.rectTransform.sizeDelta = new Vector2(170, 170 / ratio);
+        }
+        
         Color currColor = symbolImage.color;
         currColor.a = 1;
         symbolImage.color = currColor;
