@@ -11,6 +11,8 @@ public class DiscverSceneController : MonoBehaviour
     [SerializeField]
     Text templeNameText;
     [SerializeField]
+    RawImage symbolGroupImage;
+    [SerializeField]
     GameObject symbolContainer,symbolGropuContainer;
     [SerializeField]
     GameObject symbolPanel, symbolGroupPanel;
@@ -22,6 +24,10 @@ public class DiscverSceneController : MonoBehaviour
     GameObject scrollRectForSymbols;
     TempleData currentTempleData;
     Dictionary<string, SymbolGroup> symbolsGroups = new Dictionary<string, SymbolGroup>();
+
+    ProgressObject progressObject;
+
+    ProgressController progressController;
    
     Symbol[] symbols;
     public static DiscverSceneController Instance;
@@ -37,11 +43,12 @@ public class DiscverSceneController : MonoBehaviour
     }
     void Start()
     {
-       
-        
         currentTempleData = MainController.Instance.getCurrentTempleData();
+        progressController = MainController.Instance.progressController;
         templeNameText.text = currentTempleData.name;
         symbolsGroups = currentTempleData.symbol_groups;
+        progressObject = progressController.LoadProgressObject();
+        Debug.Log(progressObject + " progressobject");
         InstantiateSymbolGroups(symbolGropuContainer);
 
     }
@@ -64,7 +71,31 @@ public class DiscverSceneController : MonoBehaviour
 
             }
             newSymbolItem.GetComponent<SymbolPrefabController>().SetSymbolData(symbol);
+            if (ChecIfSymbolIsScanned(symbol.symbol_name))
+            {
+                newSymbolItem.transform.GetChild(0).GetComponent<RawImage>().color = Color.green;
+            }
 
+        }
+    }
+
+    bool ChecIfSymbolIsScanned(string symbolName)
+    {
+        if(progressObject.scannedSymbols.Count > 0)
+        {
+            if (progressObject.scannedSymbols.Contains(symbolName))
+            {
+                Debug.Log("megvan a " + symbolName);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
         }
     }
 
@@ -80,7 +111,13 @@ public class DiscverSceneController : MonoBehaviour
                 newSymbolScrollRect.transform.parent = symbolGroupPanel.transform;
                 newSymbolScrollRect.transform.localScale = new Vector3(1, 1, 1);
             }
-            InstantiateSymbols(newSymbolScrollRect.transform.GetChild(0).gameObject, symbolGroup.Value.symbols);
+            Texture2D imageTexture = new Texture2D(0, 0, TextureFormat.PVRTC_RGBA4, false);
+            byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, symbolGroup.Key, ".svg");
+            imageTexture.LoadImage(resultBytes);
+            symbolGroupImage = newSymbolScrollRect.transform.GetChild(0).GetComponentInChildren<RawImage>();
+            symbolGroupImage.texture = imageTexture;
+            Debug.Log("keeep  " + resultBytes);
+            InstantiateSymbols(newSymbolScrollRect.transform.GetChild(1).gameObject, symbolGroup.Value.symbols);
             yPos += 350;
             //var newSymbolItem = Instantiate(symbolGroupPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             //if (parent != null)

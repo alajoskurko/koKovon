@@ -41,6 +41,8 @@ public class MainController : MonoBehaviour
 
     public KeyValuePair<string, SymbolGroup> chosenSymbol;
 
+    public ProgressController progressController;
+
     private void Awake()
     {
 
@@ -48,6 +50,7 @@ public class MainController : MonoBehaviour
         CheckConnection();
         endpointReader = gameObject.GetComponent<EndpointReader>();
         dataController = gameObject.GetComponent<DataController>();
+        progressController = gameObject.GetComponent<ProgressController>();
         symbolTextures = new Dictionary<string, Texture2D>();
         if (hasInternetConnection)
         {

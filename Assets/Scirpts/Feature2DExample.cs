@@ -37,6 +37,11 @@ namespace OpenCVForUnityExample
         string compareFinhisString;
 
         public bool isComparingFinished = false;
+        bool scanIsOver = false;
+        string scannedSymbolName = "";
+
+        ProgressController progressController;
+
         void Start ()
         {
             test1 = Resources.Load("Test/New1") as Texture2D;
@@ -53,6 +58,8 @@ namespace OpenCVForUnityExample
            // symbolTextures = MainController.Instance.GetSymbolTextures();
 
             panelBg.GetComponent<RawImage>().texture = backCam;
+
+            progressController = MainController.Instance.progressController;
         }
         public void ProcessSymbolImages()
         {
@@ -140,14 +147,18 @@ namespace OpenCVForUnityExample
 
         private void FixedUpdate()
         {
-            if (isComparingFinished)
-            {
-                myMessageBox.text = compareFinhisString;
-                Debug.Log("compare finish");
-            }
-            else
-            {
-                myMessageBox.text = bestDistanceAvarage.ToString();
+            if (!scanIsOver) { 
+                if (isComparingFinished)
+                {
+                    myMessageBox.text = compareFinhisString;
+                    progressController.UpdateProgressInJson(scannedSymbolName);
+                    scanIsOver = true;
+                    Debug.Log("compare finish");
+                }
+                else
+                {
+                    myMessageBox.text = bestDistanceAvarage.ToString();
+                }
             }
         }
 
@@ -229,12 +240,14 @@ namespace OpenCVForUnityExample
   print(img1Name+" best distance: " +bestDistanceAvarage);
             }
               
-               if (bestDistanceAvarage < 29 && !isComparingFinished)
+               if (bestDistanceAvarage < 49 && !isComparingFinished)
                {
      compareFinhisString = img1Name + "image name" + " bestdistance" + bestDistanceAvarage;
+                    scannedSymbolName = img1Name;
                    checkImages = false;
        
                     isComparingFinished = true;
+                    
                    StartCoroutine(setResult(img1Name));
                     
                }

@@ -362,8 +362,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -294.09, y: 544.2}
-  m_SizeDelta: {x: 76.25256, y: 79.29193}
+  m_AnchoredPosition: {x: -287.4, y: 529}
+  m_SizeDelta: {x: 110.10309, y: 100.360825}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &364587161
 MonoBehaviour:
@@ -907,7 +907,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1247101041
 RectTransform:
   m_ObjectHideFlags: 0
@@ -999,8 +999,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   templeNameText: {fileID: 904670135}
+  symbolGroupImage: {fileID: 0}
   symbolContainer: {fileID: 1951496006}
-  symbolGropuContainer: {fileID: 0}
+  symbolGropuContainer: {fileID: 1951496006}
   symbolPanel: {fileID: 157102253}
   symbolGroupPanel: {fileID: 1951496006}
   symbolPrefab: {fileID: 1153455396833079838, guid: 86b4ffd2c0747f74f8c5f1a5c14ba8a0, type: 3}
