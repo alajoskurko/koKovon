@@ -29,9 +29,6 @@ namespace OpenCVForUnityExample
         RawImage panelBg;
         Texture2D test1;
         public Quaternion baseRotation;
-        Texture2D test2;
-
-        List<Texture2D> imagesList = new List<Texture2D>();
         Dictionary<string, Texture2D> scannableImagesDic = new Dictionary<string, Texture2D>(); 
         double bestDistanceAvarage;
         string compareFinhisString;
@@ -41,13 +38,14 @@ namespace OpenCVForUnityExample
         string scannedSymbolName = "";
 
         ProgressController progressController;
+        public SuccessfulScan successfulScanController;
 
         void Start ()
         {
-            test1 = Resources.Load("Test/New1") as Texture2D;
-            test2 = Resources.Load("Test/New2") as Texture2D;
+            //test1 = Resources.Load("Test/New1") as Texture2D;
+            //test2 = Resources.Load("Test/New2") as Texture2D;
 
-            Debug.Log(MainController.Instance.chosenSymbol +  " chosensymbol");
+            successfulScanController = this.gameObject.GetComponent<SuccessfulScan>();
             ProcessSymbolImages();
             bgWoker1 = new BackgroundWorker();
             ///get comparable images
@@ -119,8 +117,6 @@ namespace OpenCVForUnityExample
                     return;
                 }
 
-
-
                 backCam.Play();
 
 
@@ -139,9 +135,12 @@ namespace OpenCVForUnityExample
 
         void Update()
         {
-            //converts webcam texture to Texture2D, that can later be converted into 
-            Texture2D cameraTexture = GetTexture2DFromWebcamTexture(backCam);
-            CompareAllImages(cameraTexture);
+            if (!scanIsOver)
+            {
+                //converts webcam texture to Texture2D, that can later be converted into 
+                Texture2D cameraTexture = GetTexture2DFromWebcamTexture(backCam);
+                CompareAllImages(cameraTexture);
+            }
 
         }
 
@@ -150,15 +149,22 @@ namespace OpenCVForUnityExample
             if (!scanIsOver) { 
                 if (isComparingFinished)
                 {
+                    backCam.Stop();
                     myMessageBox.text = compareFinhisString;
-                    progressController.UpdateProgressInJson(scannedSymbolName);
+                    
                     scanIsOver = true;
                     Debug.Log("compare finish");
+                    progressController.UpdateProgressInJson(scannedSymbolName);
+                    successfulScanController.SuccessfulScanHappened(scannedSymbolName);
                 }
                 else
                 {
                     myMessageBox.text = bestDistanceAvarage.ToString();
                 }
+            }
+            else
+            {
+                
             }
         }
 
@@ -170,7 +176,6 @@ namespace OpenCVForUnityExample
                 var akarmi = scannableImagesDic.ElementAt(i).Value;
                 var barmi = scannableImagesDic.ElementAt(i).Key;
                 var ize = 0;
-                
                 CompareImages(backgroundWorkers[i], scannableImagesDic.ElementAt(i).Value, scannableImagesDic.ElementAt(i).Key, cameraTexture);
             }
             

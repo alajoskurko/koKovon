@@ -9,7 +9,7 @@ using static TempleData;
 public class TempleSceneController : MonoBehaviour
 {
     [SerializeField]
-    TMPro.TMP_Text templeNameText;
+    Text templeNameText;
     [SerializeField]
     TMPro.TMP_Text symbolsDiscoveredText;
     [SerializeField]
