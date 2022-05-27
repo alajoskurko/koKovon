@@ -2147,6 +2147,7 @@ MonoBehaviour:
   groupChoosePanel: {fileID: 963585778}
   groupContainer: {fileID: 963585779}
   mainUIPanel: {fileID: 1414141875}
+  scanSliderProgress: {fileID: 1250457529}
 --- !u!4 &1897394783
 Transform:
   m_ObjectHideFlags: 0

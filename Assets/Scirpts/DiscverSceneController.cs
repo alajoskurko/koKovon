@@ -83,7 +83,11 @@ public class DiscverSceneController : MonoBehaviour
     {
         if(progressObject.scannedSymbols.Count > 0)
         {
-            if (progressObject.scannedSymbols.Contains(symbolName))
+            if (!progressObject.scannedSymbols.ContainsKey(currentTempleData.name))
+            {
+                return false;
+            }
+            if (progressObject.scannedSymbols[currentTempleData.name].Contains(symbolName))
             {
                 Debug.Log("megvan a " + symbolName);
                 return true;

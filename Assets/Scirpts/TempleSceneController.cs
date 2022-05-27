@@ -25,6 +25,8 @@ public class TempleSceneController : MonoBehaviour
     Dictionary<string, SymbolGroup> symbolsGroups = new Dictionary<string, SymbolGroup>();
     [SerializeField]
     GameObject symbolGroupPrefab,groupChoosePanel,groupContainer,mainUIPanel;
+    [SerializeField]
+    Slider scanSliderProgress;
 
     public static TempleSceneController Instance;
     //SymbolGroups symbolGroupss;
@@ -41,11 +43,14 @@ public class TempleSceneController : MonoBehaviour
         currentTemple = MainController.Instance.getCurrentTempleData();
         templeName= currentTemple.name;
         templeNameText.text = templeName;
-        symbolsDiscoveredText.text =MainController.Instance.GetNumberOfSymbolsVisited(currentTemple).ToString()+"/"+ GetSymbolsLength().ToString();
         slider.maxValue = GetSymbolsLength();
         slider.value = MainController.Instance.GetNumberOfSymbolsVisited(currentTemple);
         SetDownloadButtonState(MainController.Instance.isDownloading);
-
+        if (MainController.Instance.progressController.progress.scannedSymbols.ContainsKey(currentTemple.name))
+        {
+            scanSliderProgress.value = MainController.Instance.progressController.progress.scannedSymbols[currentTemple.name].Count;
+            symbolsDiscoveredText.text = MainController.Instance.progressController.progress.scannedSymbols[currentTemple.name].Count.ToString()+"/"+ GetSymbolsLength().ToString();
+        }
         Dictionary<string,LocalTempleData> allLocalTempleData = MainController.Instance.LoadAllLocalTempledata();
 
         // Todo make this inot a function

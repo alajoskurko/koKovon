@@ -152,7 +152,7 @@ namespace OpenCVForUnityExample
                     scanIsOver = true;
                     Debug.Log("compare finish");
                     GetAudioForSymbol();
-                    progressController.UpdateProgressInJson(scannedSymbolName);
+                    progressController.UpdateProgressInJson(scannedSymbolName, MainController.Instance.getCurrentTempleData().name);
                     successfulScanController.SuccessfulScanHappened(scannedSymbolName);
                 }
                 else

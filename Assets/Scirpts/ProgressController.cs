@@ -34,15 +34,23 @@ public class ProgressController : MonoBehaviour
         return progress;
     }
 
-    public void UpdateProgressInJson(string symbolName)
+    public void UpdateProgressInJson(string symbolName, string currentTemple)
     {
-        if (progress.scannedSymbols.Contains(symbolName))
-        {
+        if (progress.scannedSymbols.ContainsKey(currentTemple)) {
+            if (progress.scannedSymbols[currentTemple].Contains(symbolName))
+            {
 
+            }
+            else {
+                progress.scannedSymbols[currentTemple].Add(symbolName);
+                dataController.SaveIntoJson(progress, progressFileName);
+            }
+            
         }
         else
         {
-            progress.scannedSymbols.Add(symbolName);
+            progress.scannedSymbols.Add(currentTemple, new List<string>());
+            progress.scannedSymbols[currentTemple].Add(symbolName);
             dataController.SaveIntoJson(progress, progressFileName);
         }
     }
@@ -50,6 +58,5 @@ public class ProgressController : MonoBehaviour
 
 public class ProgressObject
 {
-    //public KeyValuePair<string, List<string>> =
-    public List<string> scannedSymbols = new List<string>();
+   public Dictionary<string, List<string>> scannedSymbols = new Dictionary<string, List<string>>();
 }
