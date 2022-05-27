@@ -50,5 +50,6 @@ public class ProgressController : MonoBehaviour
 
 public class ProgressObject
 {
+    //public KeyValuePair<string, List<string>> =
     public List<string> scannedSymbols = new List<string>();
 }

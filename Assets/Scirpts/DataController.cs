@@ -46,7 +46,6 @@ public class DataController : MonoBehaviour
         {
             var folder = Directory.CreateDirectory(Application.persistentDataPath + "/" + templeName);
         }
-        Debug.Log("Saving to: " + Application.persistentDataPath + "/" + templeName + "/" + fileName + ".mp3");
         File.WriteAllBytes(Application.persistentDataPath + "/" + templeName + "/" + fileName + ".mp3", resultBytes);
     }
     

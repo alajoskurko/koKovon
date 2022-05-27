@@ -40,11 +40,11 @@ namespace OpenCVForUnityExample
         ProgressController progressController;
         public SuccessfulScan successfulScanController;
 
+        TempleData.AudioData[] symbolAudios;
+
+
         void Start ()
         {
-            //test1 = Resources.Load("Test/New1") as Texture2D;
-            //test2 = Resources.Load("Test/New2") as Texture2D;
-
             successfulScanController = this.gameObject.GetComponent<SuccessfulScan>();
             ProcessSymbolImages();
             bgWoker1 = new BackgroundWorker();
@@ -53,10 +53,7 @@ namespace OpenCVForUnityExample
             StartWebcamDevice();
             /// set the workers for the separated threads
             SetBackgroundWorkers();
-           // symbolTextures = MainController.Instance.GetSymbolTextures();
-
             panelBg.GetComponent<RawImage>().texture = backCam;
-
             progressController = MainController.Instance.progressController;
         }
         public void ProcessSymbolImages()
@@ -154,6 +151,7 @@ namespace OpenCVForUnityExample
                     
                     scanIsOver = true;
                     Debug.Log("compare finish");
+                    GetAudioForSymbol();
                     progressController.UpdateProgressInJson(scannedSymbolName);
                     successfulScanController.SuccessfulScanHappened(scannedSymbolName);
                 }
@@ -168,6 +166,17 @@ namespace OpenCVForUnityExample
             }
         }
 
+        void GetAudioForSymbol()
+        {
+            foreach (var symbol in MainController.Instance.chosenSymbol.Value.symbols)
+            {
+                if(symbol.symbol_name == scannedSymbolName)
+                {
+                    symbolAudios = symbol.audios;
+                }
+            }
+        }
+
         void CompareAllImages(Texture2D cameraTexture)
         {
             
@@ -178,12 +187,6 @@ namespace OpenCVForUnityExample
                 var ize = 0;
                 CompareImages(backgroundWorkers[i], scannableImagesDic.ElementAt(i).Value, scannableImagesDic.ElementAt(i).Key, cameraTexture);
             }
-            
-            // CompareImages(bgWoker2,test2, "2", cameraTexture);
-            // CompareImages(bgWoker3,test1, "3", cameraTexture);
-            // CompareImages(bgWoker4,test2, "4", cameraTexture);
-            // CompareImages(bgWoker5,test2, "5", cameraTexture);
-
         }
 
 
