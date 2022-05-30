@@ -73,7 +73,7 @@ public class DiscverSceneController : MonoBehaviour
             newSymbolItem.GetComponent<SymbolPrefabController>().SetSymbolData(symbol);
             if (ChecIfSymbolIsScanned(symbol.symbol_name))
             {
-                newSymbolItem.transform.GetChild(0).GetComponent<RawImage>().color = Color.green;
+                newSymbolItem.transform.GetChild(0).GetComponent<RawImage>().color = new Color32(8, 149, 160, 250);
             }
 
         }
