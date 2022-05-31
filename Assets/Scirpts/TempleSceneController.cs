@@ -13,6 +13,8 @@ public class TempleSceneController : MonoBehaviour
     [SerializeField]
     TMPro.TMP_Text symbolsDiscoveredText;
     [SerializeField]
+    Text downloadTheFilesWarning;
+    [SerializeField]
     RawImage templeImage;
     [SerializeField]
     Slider slider;
@@ -51,6 +53,10 @@ public class TempleSceneController : MonoBehaviour
             scanSliderProgress.value = MainController.Instance.progressController.progress.scannedSymbols[currentTemple.name].Count;
             symbolsDiscoveredText.text = MainController.Instance.progressController.progress.scannedSymbols[currentTemple.name].Count.ToString()+"/"+ GetSymbolsLength().ToString();
         }
+        else
+        {
+            symbolsDiscoveredText.text = "0/" + GetSymbolsLength().ToString();
+        }
         Dictionary<string,LocalTempleData> allLocalTempleData = MainController.Instance.LoadAllLocalTempledata();
 
         // Todo make this inot a function
@@ -60,6 +66,7 @@ public class TempleSceneController : MonoBehaviour
             byte[] resultBytes = MainController.Instance.GetImageLocaly(templeName, templeName);
             imageTexture.LoadImage(resultBytes);
             templeImage.texture = imageTexture;
+            templeImage.SetNativeSize();
             LoadSymbolsForDiscoverScene();
         }
         else
@@ -69,6 +76,7 @@ public class TempleSceneController : MonoBehaviour
             imageTexture.LoadImage(resultBytes);
             templeImage.texture = imageTexture;
             templeImage.color = new Color32(111, 189, 195, 255);
+            templeImage.SetNativeSize();
         }
         InstantiateSymbolGroups(groupContainer);
     }
@@ -132,7 +140,6 @@ public class TempleSceneController : MonoBehaviour
         {
             print("HEYHO");
             downloadButton.gameObject.SetActive(true);
-
         }
 
     }
@@ -155,6 +162,7 @@ public class TempleSceneController : MonoBehaviour
         {
             //Todo probably popup needed or something
             print("Donwload the files first please");
+            downloadTheFilesWarning.gameObject.SetActive(true);
         }
       
     }
@@ -244,8 +252,20 @@ public class TempleSceneController : MonoBehaviour
 
     public void ShowSymbolGroupsForScan()
     {
-        groupChoosePanel.SetActive(true);
-        mainUIPanel.SetActive(false);
+        Dictionary<string, LocalTempleData> allLocalTempleData = MainController.Instance.LoadAllLocalTempledata();
+        if (allLocalTempleData[templeName].downloaded)
+        {
+            groupChoosePanel.SetActive(true);
+            mainUIPanel.SetActive(false);
+        }
+        else
+        {
+            //Todo probably popup needed or something
+            print("Donwload the files first please");
+            downloadTheFilesWarning.gameObject.SetActive(true);
+        }
+
+        
     }
 
     public void LoadImageDetectionScene()

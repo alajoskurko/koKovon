@@ -37,22 +37,31 @@ public class SuccessfulScan : MonoBehaviour
 
     public IEnumerator LoadAudioLocaly(string templeName, string fileName)
     {
+        Debug.LogWarning(templeName + " " + fileName + " belepik");
         string path = Application.persistentDataPath + "/" + templeName + "/" + fileName + ".mp3";
-        using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(path, AudioType.MPEG))
-        {
-            yield return www.SendWebRequest();
+        string url = string.Format("file://{0}", path);
+        WWW www = new WWW(url);
+        yield return www;
+        audioClip = www.GetAudioClip(false, false);
+        audioSource.clip = audioClip;
+        audioSource.Play();
 
-            if (www.isNetworkError || www.isHttpError)
-            {
-                Debug.Log(www.error);
-            }
-            else
-            {
-                AudioClip myClip = DownloadHandlerAudioClip.GetContent(www);
-                audioSource.clip = myClip;
-                audioSource.Play();
-            }
-        }
+        //string path = Application.persistentDataPath + "/" + templeName + "/" + fileName + ".mp3";
+        //using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(path, AudioType.MPEG))
+        //{
+        //    yield return www.SendWebRequest();
+
+        //    if (www.isNetworkError || www.isHttpError)
+        //    {
+        //        Debug.Log(www.error);
+        //    }
+        //    else
+        //    {
+        //        AudioClip myClip = DownloadHandlerAudioClip.GetContent(www);
+        //        audioSource.clip = myClip;
+        //        audioSource.Play();
+        //    }
+        //}
     }
     private void CreatSymbol()
     {
@@ -60,6 +69,8 @@ public class SuccessfulScan : MonoBehaviour
         byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, scannedSymbolName, ".jpg");
         imageTexture.LoadImage(resultBytes);
         symbolImage.sprite = Sprite.Create(imageTexture, new Rect(0, 0, imageTexture.width, imageTexture.height), new Vector2());
+        symbolImage.SetNativeSize();
+        symbolImage.transform.localScale = new Vector3(.8f, .8f, .8f);
     }
 
     public void LoadSpecificTempleScene()
