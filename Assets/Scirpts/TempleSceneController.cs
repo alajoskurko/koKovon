@@ -136,6 +136,7 @@ public class TempleSceneController : MonoBehaviour
     {
         if (state)
         {
+            downloadButtonAnimator.SetBool("playWarning", false);
             downloadButtonAnimator.SetBool("isDownloading", true);
             //downloadButton.gameObject.SetActive(!state);
         }
@@ -143,6 +144,7 @@ public class TempleSceneController : MonoBehaviour
         {
             print("HEYHO");
             downloadButtonAnimator.SetBool("isDownloading", false);
+            downloadTheFilesWarning.gameObject.SetActive(false);
             downloadButton.gameObject.SetActive(true);
         }
 
@@ -167,6 +169,7 @@ public class TempleSceneController : MonoBehaviour
             //Todo probably popup needed or something
             print("Donwload the files first please");
             downloadTheFilesWarning.gameObject.SetActive(true);
+            downloadButtonAnimator.SetBool("playWarning", true);
         }
       
     }
@@ -267,6 +270,7 @@ public class TempleSceneController : MonoBehaviour
             //Todo probably popup needed or something
             print("Donwload the files first please");
             downloadTheFilesWarning.gameObject.SetActive(true);
+            downloadButtonAnimator.SetBool("playWarning", true);
         }
 
         
