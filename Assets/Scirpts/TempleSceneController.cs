@@ -29,6 +29,8 @@ public class TempleSceneController : MonoBehaviour
     GameObject symbolGroupPrefab,groupChoosePanel,groupContainer,mainUIPanel;
     [SerializeField]
     Slider scanSliderProgress;
+    [SerializeField]
+    Animator downloadButtonAnimator;
 
     public static TempleSceneController Instance;
     //SymbolGroups symbolGroupss;
@@ -134,11 +136,13 @@ public class TempleSceneController : MonoBehaviour
     {
         if (state)
         {
-            downloadButton.gameObject.SetActive(!state);
+            downloadButtonAnimator.SetBool("isDownloading", true);
+            //downloadButton.gameObject.SetActive(!state);
         }
         else
         {
             print("HEYHO");
+            downloadButtonAnimator.SetBool("isDownloading", false);
             downloadButton.gameObject.SetActive(true);
         }
 

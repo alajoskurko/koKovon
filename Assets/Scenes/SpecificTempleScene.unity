@@ -267,6 +267,7 @@ GameObject:
   - component: {fileID: 134612382}
   - component: {fileID: 134612381}
   - component: {fileID: 134612380}
+  - component: {fileID: 134612383}
   m_Layer: 5
   m_Name: DownloadButton
   m_TagString: Untagged
@@ -386,6 +387,25 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 134612378}
   m_CullTransparentMesh: 1
+--- !u!95 &134612383
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 134612378}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a411d753dd5aca64f908a96544924073, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &196569616
 GameObject:
   m_ObjectHideFlags: 0
@@ -2337,6 +2357,7 @@ MonoBehaviour:
   groupContainer: {fileID: 963585779}
   mainUIPanel: {fileID: 1414141875}
   scanSliderProgress: {fileID: 1250457529}
+  downloadButtonAnimator: {fileID: 134612383}
 --- !u!4 &1897394783
 Transform:
   m_ObjectHideFlags: 0
