@@ -11,8 +11,21 @@ using System;
 public class MainController : MonoBehaviour
 {
     public static MainController Instance;
+    private string _selectedLanguage = "en";
 
+    public string selectedLanguage
+    {
+        get
+        {
+            return _selectedLanguage;
+        }
 
+        set
+        {
+            _selectedLanguage = value;
+        }
+    }
+    public const string hunLanguage = "hu", roLanguage = "ro", enLanguage = "en";
     private string detectedSymbolName;
 
     private SystemLanguage systemLanguage = SystemLanguage.hu;
@@ -75,6 +88,11 @@ public class MainController : MonoBehaviour
         {
             DownloadEnded();
         }
+    }
+
+    public void ChangeLanguage(string languageParam)
+    {
+        selectedLanguage = languageParam;
     }
 
     void CheckConnection()

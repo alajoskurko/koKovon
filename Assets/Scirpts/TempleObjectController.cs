@@ -38,8 +38,22 @@ public class TempleObjectController : MonoBehaviour
     {
         templeData = newTempleData;
 
-        //Set temple name
-        templeNameText.text = templeData.name;
+        if (MainController.Instance.selectedLanguage == "hu")
+        {
+            //Set temple name
+            templeNameText.text = templeData.name;
+        }
+        else
+        {
+            foreach (var templeDetail in templeData.temple_details)
+            {
+                if(templeDetail.lang == MainController.Instance.selectedLanguage)
+                {
+                    templeNameText.text = templeDetail.name;
+                }
+            }
+        }
+        
 
         if (isDownloaded)
         {
