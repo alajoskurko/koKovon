@@ -40,13 +40,13 @@ public class DataController : MonoBehaviour
         return File.ReadAllBytes(Application.persistentDataPath + "/" + templeName + "/" + fileName + ".jpg");
     }
 
-    public void SaveAudioLocally(byte[] resultBytes, string templeName, string fileName)
+    public void SaveAudioLocally(string lang,byte[] resultBytes, string templeName, string fileName)
     {
-        if (!Directory.Exists(Application.persistentDataPath + "/" + templeName))
+        if (!Directory.Exists(Application.persistentDataPath + "/" + templeName + "/" + lang))
         {
-            var folder = Directory.CreateDirectory(Application.persistentDataPath + "/" + templeName);
+            var folder = Directory.CreateDirectory(Application.persistentDataPath + "/" + templeName + "/" + lang);
         }
-        File.WriteAllBytes(Application.persistentDataPath + "/" + templeName + "/" + fileName + ".mp3", resultBytes);
+        File.WriteAllBytes(Application.persistentDataPath + "/" + templeName + "/" + lang + "/" + fileName + ".mp3", resultBytes);
     }
     
     private float[] ConvertByteToFloat(byte[] array)

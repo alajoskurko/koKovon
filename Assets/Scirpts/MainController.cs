@@ -298,9 +298,9 @@ public class MainController : MonoBehaviour
         StartCoroutine(endpointReader.GetImage(path, name, fileName, callback));
     }
 
-    public void GetAudio(string path, string name, System.Action<byte[], string> callback) {
+    public void GetAudio(TempleData.AudioData audioData, string name, System.Action<TempleData.AudioData, byte[], string> callback) {
 
-        StartCoroutine(endpointReader.GetAudio(path, name, callback));
+        StartCoroutine(endpointReader.GetAudio(audioData,audioData.path, name, callback));
     }
 
     public byte[] GetImageLocaly(string templeName, string fileName, string extension = ".png")

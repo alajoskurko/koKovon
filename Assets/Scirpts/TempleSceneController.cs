@@ -202,7 +202,7 @@ public class TempleSceneController : MonoBehaviour
                 MainController.Instance.GetImage(symbol.symbol_path, symbol.symbol_name, SaveSymbolImage);
                 foreach (AudioData audioData in symbol.audios)
                 {
-                    MainController.Instance.GetAudio(audioData.path, audioData.name, SaveSymbolAudio);
+                    MainController.Instance.GetAudio(audioData, audioData.name, SaveSymbolAudio);
                 }
             }
         }
@@ -238,9 +238,9 @@ public class TempleSceneController : MonoBehaviour
 
 
 
-    private void SaveSymbolAudio(byte[] resultBytes, string fileName)
+    private void SaveSymbolAudio(TempleData.AudioData audiodata, byte[] resultBytes, string fileName)
     {
-        MainController.Instance.dataController.SaveAudioLocally(resultBytes, templeName, fileName);
+        MainController.Instance.dataController.SaveAudioLocally(audiodata.lang,resultBytes, templeName, fileName);
         MainController.Instance.downloadCompleted++;
     }
 

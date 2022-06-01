@@ -38,7 +38,7 @@ public class SuccessfulScan : MonoBehaviour
     public IEnumerator LoadAudioLocaly(string templeName, string fileName)
     {
         Debug.LogWarning(templeName + " " + fileName + " belepik");
-        string path = Application.persistentDataPath + "/" + templeName + "/" + fileName + ".mp3";
+        string path = Application.persistentDataPath + "/" + templeName + "/" + MainController.Instance.selectedLanguage + "/" + fileName + ".mp3";
         string url = string.Format("file://{0}", path);
         WWW www = new WWW(url);
         yield return www;

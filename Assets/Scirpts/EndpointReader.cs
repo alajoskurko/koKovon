@@ -95,7 +95,7 @@ public class EndpointReader : MonoBehaviour
         }
     }
 
-    public IEnumerator GetAudio(string path, string name, System.Action<byte[], string> callback)
+    public IEnumerator GetAudio(TempleData.AudioData audiodata, string path, string name, System.Action<TempleData.AudioData, byte[], string> callback)
     {
         UnityWebRequest www = UnityWebRequest.Get(path);
         yield return www.SendWebRequest();
@@ -112,7 +112,7 @@ public class EndpointReader : MonoBehaviour
 
             print("audio loaded with success");
 
-            callback(resultBytes, name);
+            callback(audiodata,resultBytes, name);
 
         }
     }
