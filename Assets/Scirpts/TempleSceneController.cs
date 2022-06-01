@@ -46,7 +46,21 @@ public class TempleSceneController : MonoBehaviour
     {
         currentTemple = MainController.Instance.getCurrentTempleData();
         templeName= currentTemple.name;
-        templeNameText.text = templeName;
+        if(MainController.Instance.selectedLanguage == "hu")
+        {
+            templeNameText.text = templeName;
+        }
+        else
+        {
+            foreach (var templeDetail in currentTemple.temple_details)
+            {
+                if (templeDetail.lang == MainController.Instance.selectedLanguage)
+                {
+                    templeNameText.text = templeDetail.name;
+                }
+            }
+        }
+        
         slider.maxValue = GetSymbolsLength();
         slider.value = MainController.Instance.GetNumberOfSymbolsVisited(currentTemple);
         SetDownloadButtonState(MainController.Instance.isDownloading);
