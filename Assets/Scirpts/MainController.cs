@@ -11,7 +11,7 @@ using System;
 public class MainController : MonoBehaviour
 {
     public static MainController Instance;
-    private string _selectedLanguage = "en";
+    private string _selectedLanguage = "hu";
 
     public string selectedLanguage
     {

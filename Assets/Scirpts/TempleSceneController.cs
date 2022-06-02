@@ -106,13 +106,11 @@ public class TempleSceneController : MonoBehaviour
     {
         if (audioSource.isPlaying)
         {
-            audioPlayButton.GetComponent<Image>().enabled = false;
-            audioPlayButton.transform.GetChild(0).gameObject.SetActive(true);
+            
         }
         else
         {
-            audioPlayButton.GetComponent<Image>().enabled = true;
-            audioPlayButton.transform.GetChild(0).gameObject.SetActive(false);
+           
         }
     }
     int GetSymbolsLength()
@@ -340,9 +338,13 @@ public class TempleSceneController : MonoBehaviour
             if (audioSource.isPlaying)
             {
                 audioSource.Pause();
+                audioPlayButton.GetComponent<Image>().enabled = true;
+                audioPlayButton.transform.GetChild(0).gameObject.SetActive(false);
             }
             else
             {
+                audioPlayButton.GetComponent<Image>().enabled = false;
+                audioPlayButton.transform.GetChild(0).gameObject.SetActive(true);
                 StartCoroutine(LoadAudioLocaly());
             }
             
