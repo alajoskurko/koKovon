@@ -45,23 +45,6 @@ public class SuccessfulScan : MonoBehaviour
         audioClip = www.GetAudioClip(false, false);
         audioSource.clip = audioClip;
         audioSource.Play();
-
-        //string path = Application.persistentDataPath + "/" + templeName + "/" + fileName + ".mp3";
-        //using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(path, AudioType.MPEG))
-        //{
-        //    yield return www.SendWebRequest();
-
-        //    if (www.isNetworkError || www.isHttpError)
-        //    {
-        //        Debug.Log(www.error);
-        //    }
-        //    else
-        //    {
-        //        AudioClip myClip = DownloadHandlerAudioClip.GetContent(www);
-        //        audioSource.clip = myClip;
-        //        audioSource.Play();
-        //    }
-        //}
     }
     private void CreatSymbol()
     {

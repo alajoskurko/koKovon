@@ -31,6 +31,12 @@ public class TempleSceneController : MonoBehaviour
     Slider scanSliderProgress;
     [SerializeField]
     Animator downloadButtonAnimator;
+    [SerializeField]
+    AudioSource audioSource;
+    AudioClip audioClip;
+
+    [SerializeField]
+    GameObject audioPlayButton;
 
     public static TempleSceneController Instance;
     //SymbolGroups symbolGroupss;
@@ -95,6 +101,19 @@ public class TempleSceneController : MonoBehaviour
             templeImage.SetNativeSize();
         }
         InstantiateSymbolGroups(groupContainer);
+    }
+    private void Update()
+    {
+        if (audioSource.isPlaying)
+        {
+            audioPlayButton.GetComponent<Image>().enabled = false;
+            audioPlayButton.transform.GetChild(0).gameObject.SetActive(true);
+        }
+        else
+        {
+            audioPlayButton.GetComponent<Image>().enabled = true;
+            audioPlayButton.transform.GetChild(0).gameObject.SetActive(false);
+        }
     }
     int GetSymbolsLength()
     {
@@ -206,7 +225,30 @@ public class TempleSceneController : MonoBehaviour
                 }
             }
         }
+        string hungarianName = "";
+        AudioData audioData2 = new AudioData();
+        audioData2.path = currentTemple.audio_intro;
+        audioData2.name = currentTemple.name;
+        audioData2.lang = "hu";
+        hungarianName = currentTemple.name;
+
+        List<AudioData> audioDatas = new List<AudioData>();
+        audioDatas.Add(audioData2);
+        foreach (var detail in currentTemple.temple_details)
+        {
+            AudioData audioData = new AudioData();
+            audioData.path = detail.audio_intro;
+            audioData.name = detail.name;
+            audioData.lang = detail.lang;
+            audioDatas.Add(audioData);
+        }
+
+        foreach (var audiodata in audioDatas)
+        {
+            MainController.Instance.GetAudio(audiodata, hungarianName, SaveSymbolAudio);
+        }
         
+
         // TODO edit this part
         Dictionary<string,LocalTempleData> allLocalTempledata = MainController.Instance.LoadAllLocalTempledata();
         allLocalTempledata[templeName].downloaded = true;
@@ -243,7 +285,6 @@ public class TempleSceneController : MonoBehaviour
         MainController.Instance.dataController.SaveAudioLocally(audiodata.lang,resultBytes, templeName, fileName);
         MainController.Instance.downloadCompleted++;
     }
-
 
     public void LoadHomeScreen()
     {
@@ -288,6 +329,41 @@ public class TempleSceneController : MonoBehaviour
         }
 
         
+    }
+
+    public void PlayIntroMusic()
+    {
+        // should chekc if temple data is downloaded or not
+        Dictionary<string, LocalTempleData> allLocalTempleData = MainController.Instance.LoadAllLocalTempledata();
+        if (allLocalTempleData[templeName].downloaded)
+        {
+            if (audioSource.isPlaying)
+            {
+                audioSource.Pause();
+            }
+            else
+            {
+                StartCoroutine(LoadAudioLocaly());
+            }
+            
+        }
+        else
+        {
+
+            downloadTheFilesWarning.gameObject.SetActive(true);
+            downloadButtonAnimator.SetBool("playWarning", true);
+        }
+       
+    }
+    public IEnumerator LoadAudioLocaly()
+    {
+        string path = Application.persistentDataPath + "/" + templeName + "/" + MainController.Instance.selectedLanguage + "/" + currentTemple.name + ".mp3";
+        string url = string.Format("file://{0}", path);
+        WWW www = new WWW(url);
+        yield return www;
+        audioClip = www.GetAudioClip(false, false);
+        audioSource.clip = audioClip;
+        audioSource.Play();
     }
 
     public void LoadImageDetectionScene()

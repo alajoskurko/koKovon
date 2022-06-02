@@ -101,7 +101,7 @@ public class EndpointReader : MonoBehaviour
         yield return www.SendWebRequest();
         if (www.result != UnityWebRequest.Result.Success)
         {
-            Debug.Log("There was an error reading the image");
+            Debug.Log("There was an error reading the audio");
 
         }
         else
