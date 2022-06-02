@@ -10,6 +10,7 @@ using System.Threading;
 using OpenCVForUnity.CoreModule;
 using OpenCVForUnity.UnityUtils;
 using OpenCVForUnity.Features2dModule;
+using static SwipeDetector;
 
 namespace OpenCVForUnityExample
 {
@@ -55,6 +56,7 @@ namespace OpenCVForUnityExample
             SetBackgroundWorkers();
             panelBg.GetComponent<RawImage>().texture = backCam;
             progressController = MainController.Instance.progressController;
+            SwipeDetector.OnSwipe += SwipeDetector_OnSwipe;
         }
         public void ProcessSymbolImages()
         {
@@ -206,7 +208,13 @@ namespace OpenCVForUnityExample
             }
 
         }
-
+        private void SwipeDetector_OnSwipe(SwipeData data)
+        {
+            if (data.Direction == SwipeDirection.Right)
+            {
+                GobackToTempleSelection();
+            }
+        }
         void DetectAndCalculate(Mat img1Mat, Mat img2Mat,string img1Name){
             
             ORB detector = ORB.create();

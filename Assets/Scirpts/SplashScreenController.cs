@@ -3,11 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Video;
+using UnityEngine.Android;
+//using UnityEngine.iOS;
 
 public class SplashScreenController : MonoBehaviour
 {
     private void Start()
     {
+
+        if (Permission.HasUserAuthorizedPermission(Permission.Microphone))
+        {
+
+        }
+        else
+        {
+
+            // We do not have permission to use the microphone.
+            // Ask for permission or proceed without the functionality enabled.
+            #if UNITY_ANDROID
+            Permission.RequestUserPermission(Permission.Camera);
+            #endif
+            #if UNITY_IOS
+                    StartCoroutine(GetPermissionForCameraOnIOS());           
+            #endif
+
+        }
+
         // Will attach a VideoPlayer to the main camera.
         GameObject camera = GameObject.Find("Main Camera");
 
@@ -28,6 +49,19 @@ public class SplashScreenController : MonoBehaviour
         videoPlayer.isLooping = true;
 
         videoPlayer.Play();
+    }
+
+    IEnumerator GetPermissionForCameraOnIOS()
+    {
+        if (Application.HasUserAuthorization(UserAuthorization.WebCam))
+        {
+            Debug.Log("webcam found");
+        }
+        else
+        {
+            yield return Application.RequestUserAuthorization(UserAuthorization.WebCam);
+        }
+
     }
     public void LoadTempleSelectionScreen()
     {
