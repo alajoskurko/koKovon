@@ -84,7 +84,7 @@ public class MainController : MonoBehaviour
 
     private void Update()
     {
-        if (downloadCompleted == downloadTarget && isDownloading)
+        if (downloadCompleted > downloadTarget-1 && isDownloading)
         {
             DownloadEnded();
         }

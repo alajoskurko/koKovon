@@ -206,7 +206,6 @@ namespace OpenCVForUnityExample
                 //DetectAndCalculate(detector,img2Mat,keypoints2,extractor,descriptors1,descriptors2,img1Name);
                 bgWoker.RunWorkerAsync();
             }
-
         }
         private void SwipeDetector_OnSwipe(SwipeData data)
         {
@@ -289,12 +288,19 @@ namespace OpenCVForUnityExample
 
         public Texture2D GetTexture2DFromWebcamTexture(WebCamTexture webCamTexture)
         {
-            
-            Texture2D tx2d = new Texture2D(webCamTexture.width, webCamTexture.height);
-            tx2d.SetPixels(webCamTexture.GetPixels());
-          
-            tx2d.Apply();
-            return tx2d;
+            if (webCamTexture)
+            {
+                Texture2D tx2d = new Texture2D(webCamTexture.width, webCamTexture.height);
+                tx2d.SetPixels(webCamTexture.GetPixels());
+
+                tx2d.Apply();
+                return tx2d;
+            }
+            else
+            {
+                return new Texture2D(100, 100);
+            }   
+           
         }
 
         // public void SearchForImage()

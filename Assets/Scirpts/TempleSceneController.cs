@@ -169,11 +169,12 @@ public class TempleSceneController : MonoBehaviour
         {
             downloadButtonAnimator.SetBool("playWarning", false);
             downloadButtonAnimator.SetBool("isDownloading", true);
+            Debug.LogWarning("toltodik");
             //downloadButton.gameObject.SetActive(!state);
         }
         else
         {
-            print("HEYHO");
+            Debug.LogWarning("letoltodottt");
             downloadButtonAnimator.SetBool("isDownloading", false);
             downloadTheFilesWarning.gameObject.SetActive(false);
             downloadButton.gameObject.SetActive(true);
@@ -210,6 +211,7 @@ public class TempleSceneController : MonoBehaviour
         MainController.Instance.StartDownload();
         MainController.Instance.downloadCompleted = 0;
         MainController.Instance.downloadTarget = GetSymbolsLength();
+        Debug.LogWarning("download targer :   " + MainController.Instance.downloadTarget);
 
         //Should download and save the data also it should store that the temple data was downloaded
         foreach (KeyValuePair<string, SymbolGroup> symbolGroup in currentTemple.symbol_groups)
@@ -282,6 +284,7 @@ public class TempleSceneController : MonoBehaviour
     {
         MainController.Instance.dataController.SaveAudioLocally(audiodata.lang,resultBytes, templeName, fileName);
         MainController.Instance.downloadCompleted++;
+        Debug.LogWarning(MainController.Instance.downloadCompleted + " downloaded files numbe"); ;
     }
 
     public void LoadHomeScreen()
