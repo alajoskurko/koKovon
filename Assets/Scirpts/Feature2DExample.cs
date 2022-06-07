@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Linq;
-using OpenCVForUnity;
+//using OpenCVForUnity;
 using System.ComponentModel;
 using System.Threading;
 using OpenCVForUnity.CoreModule;
@@ -194,9 +194,9 @@ namespace OpenCVForUnityExample
 
         void CompareImages(BackgroundWorker bgWoker,Texture2D img1, string img1Name, Texture2D img2)
         {
-            
-            Mat img1Mat = new Mat(img1.height, img1.width, CvType.CV_8UC3);
-            Mat img2Mat = new Mat(img2.height, img2.width, CvType.CV_8UC3);
+
+            OpenCVForUnity.CoreModule.Mat img1Mat = new Mat(img1.height, img1.width, CvType.CV_8UC3);
+            OpenCVForUnity.CoreModule.Mat img2Mat = new Mat(img2.height, img2.width, CvType.CV_8UC3);
 
             Utils.texture2DToMat(img1, img1Mat);
             Utils.texture2DToMat(img2, img2Mat);
