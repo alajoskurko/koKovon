@@ -23,8 +23,8 @@ namespace OpenCVForUnityExample
         Text myMessageBox;
         Dictionary<string,Texture2D> symbolTextures;
         static WebCamTexture backCam;
-        BackgroundWorker bgWoker1,bgWoker2,bgWoker3,bgWoker4,bgWoker5;
-        List<BackgroundWorker> backgroundWorkers = new List<BackgroundWorker>();
+        AbortableBackgroundWorker bgWoker1,bgWoker2,bgWoker3,bgWoker4,bgWoker5;
+        List<AbortableBackgroundWorker> backgroundWorkers = new List<AbortableBackgroundWorker>();
         bool checkImages = true;
         [SerializeField]
         RawImage panelBg;
@@ -43,14 +43,19 @@ namespace OpenCVForUnityExample
 
         TempleData.AudioData[] symbolAudios;
 
+        Dictionary<string, int> symbolsAndDetectionNumber = new Dictionary<string, int>();
+        [SerializeField]
+        List<Text> textsForSymbols = new List<Text>();
+
+        int counter = 0;
 
         void Start ()
         {
             successfulScanController = this.gameObject.GetComponent<SuccessfulScan>();
             ProcessSymbolImages();
-            bgWoker1 = new BackgroundWorker();
+            bgWoker1 = new AbortableBackgroundWorker();
             ///get comparable images
-            GetImages();
+            //GetImages();
             StartWebcamDevice();
             /// set the workers for the separated threads
             SetBackgroundWorkers();
@@ -67,6 +72,8 @@ namespace OpenCVForUnityExample
                 imageTexture.LoadImage(resultBytes);
                 var akarmi = imageTexture;
                 scannableImagesDic.Add(symbol.symbol_name, imageTexture);
+                symbolsAndDetectionNumber.Add(symbol.symbol_name, 0);
+                
                 //symbolImage.texture = imageTexture;
                 //Color currColor = symbolImage.color;
                 //currColor.a = 1;
@@ -75,14 +82,13 @@ namespace OpenCVForUnityExample
         }
 
         #region InitialSetups
-        void GetImages()
+        void TextSymbols()
         {
-            //imagesList.Add(test1);
-            //imagesList.Add(test2);
-            //imagesList.Add(test1);
-            //imagesList.Add(test2);
-            //imagesList.Add(test1);
 
+            for (int i = 0; i < symbolsAndDetectionNumber.Count; i++)
+            {
+                textsForSymbols[i].text = symbolsAndDetectionNumber.ElementAt(i).Key.ToString() + " " + symbolsAndDetectionNumber[symbolsAndDetectionNumber.ElementAt(i).Key].ToString();
+            }
         }
         void StartWebcamDevice()
         {
@@ -126,7 +132,7 @@ namespace OpenCVForUnityExample
         {
             for (int i = 0; i < scannableImagesDic.Count; i++)
             {
-                var bgWorker = new BackgroundWorker();
+                var bgWorker = new AbortableBackgroundWorker();
                 backgroundWorkers.Add(bgWorker);
             }
         }
@@ -134,13 +140,19 @@ namespace OpenCVForUnityExample
 
         void Update()
         {
-            if (!scanIsOver)
-            {
-                //converts webcam texture to Texture2D, that can later be converted into 
-                Texture2D cameraTexture = GetTexture2DFromWebcamTexture(backCam);
-                CompareAllImages(cameraTexture);
-            }
 
+            if (counter > 30)
+            {
+                TextSymbols();
+                if (!scanIsOver)
+                {
+                    //converts webcam texture to Texture2D, that can later be converted into 
+                    Texture2D cameraTexture = GetTexture2DFromWebcamTexture(backCam);
+                    CompareAllImages(cameraTexture);
+                }
+                counter = 0;
+            }
+            counter++;
         }
 
         private void FixedUpdate()
@@ -152,7 +164,6 @@ namespace OpenCVForUnityExample
                     myMessageBox.text = compareFinhisString;
                     
                     scanIsOver = true;
-                    Debug.Log("compare finish");
                     GetAudioForSymbol();
                     progressController.UpdateProgressInJson(scannedSymbolName, MainController.Instance.getCurrentTempleData().name);
                     successfulScanController.SuccessfulScanHappened(scannedSymbolName);
@@ -184,15 +195,12 @@ namespace OpenCVForUnityExample
             
             for (int i = 0; i < scannableImagesDic.Count; i++)
             {
-                var akarmi = scannableImagesDic.ElementAt(i).Value;
-                var barmi = scannableImagesDic.ElementAt(i).Key;
-                var ize = 0;
                 CompareImages(backgroundWorkers[i], scannableImagesDic.ElementAt(i).Value, scannableImagesDic.ElementAt(i).Key, cameraTexture);
             }
         }
 
 
-        void CompareImages(BackgroundWorker bgWoker,Texture2D img1, string img1Name, Texture2D img2)
+        void CompareImages(AbortableBackgroundWorker bgWoker,Texture2D img1, string img1Name, Texture2D img2)
         {
 
             OpenCVForUnity.CoreModule.Mat img1Mat = new Mat(img1.height, img1.width, CvType.CV_8UC3);
@@ -202,9 +210,15 @@ namespace OpenCVForUnityExample
             Utils.texture2DToMat(img2, img2Mat);
             
             if( !bgWoker.IsBusy ){
+                
+                Debug.Log(bgWoker+ " bgworker container count");
                 bgWoker.DoWork += (o, a) => DetectAndCalculate(img1Mat,img2Mat,img1Name);
                 //DetectAndCalculate(detector,img2Mat,keypoints2,extractor,descriptors1,descriptors2,img1Name);
                 bgWoker.RunWorkerAsync();
+            }
+            else
+            {
+                bgWoker.Abort();
             }
         }
         private void SwipeDetector_OnSwipe(SwipeData data)
@@ -251,19 +265,28 @@ namespace OpenCVForUnityExample
                var bestDistances = distances.Take(20);
                bestDistanceAvarage = bestDistances.Average();
             //    myMessageBox.text = img1Name+ ": "+ bestDistancesAverage.ToString();
-            if(!isComparingFinished){
-  print(img1Name+" best distance: " +bestDistanceAvarage);
-            }
+            
               
                if (bestDistanceAvarage < 49 && !isComparingFinished)
                {
+                    Debug.Log("megvan");
+                    symbolsAndDetectionNumber[img1Name] = symbolsAndDetectionNumber[img1Name] + 1;
+                    var akarmi = symbolsAndDetectionNumber;
+                    var hakarmi = 0;
      compareFinhisString = img1Name + "image name" + " bestdistance" + bestDistanceAvarage;
                     scannedSymbolName = img1Name;
-                   checkImages = false;
-       
-                    isComparingFinished = true;
-                    
-                   StartCoroutine(setResult(img1Name));
+                    Scene scene = SceneManager.GetActiveScene(); SceneManager.LoadScene(scene.name);
+                                        /*heckImages = false;*/
+
+                    //isComparingFinished = true;
+
+                    //StartCoroutine(setResult(img1Name));
+
+                    foreach (var backgroundWorker in backgroundWorkers)
+                    {
+                        backgroundWorker.Dispose();
+                        backgroundWorker.Abort();
+                    }
                     
                }
           
