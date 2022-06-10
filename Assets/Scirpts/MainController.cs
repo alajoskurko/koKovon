@@ -215,6 +215,9 @@ public class MainController : MonoBehaviour
         downloadCompleted = 0;
         downloadTarget = 0;
         isDownloading = false;
+        Dictionary<string, LocalTempleData> allLocalTempledata = MainController.Instance.LoadAllLocalTempledata();
+        allLocalTempledata[currentTempleData.name].downloaded = true;
+        MainController.Instance.SaveLocalTempleData(allLocalTempledata);
     }
     public void SaveImageLocally(byte[] resultBytes, string templeName)
     {

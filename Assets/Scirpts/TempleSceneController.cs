@@ -52,7 +52,7 @@ public class TempleSceneController : MonoBehaviour
     {
         currentTemple = MainController.Instance.getCurrentTempleData();
         templeName= currentTemple.name;
-        if(MainController.Instance.selectedLanguage == "hu")
+        if (MainController.Instance.selectedLanguage == "hu")
         {
             templeNameText.text = templeName;
         }
@@ -208,6 +208,10 @@ public class TempleSceneController : MonoBehaviour
 
     public void OnDownloadButtonHit()
     {
+        if (MainController.Instance.isDownloading)
+        {
+            return;
+        }
         MainController.Instance.StartDownload();
         MainController.Instance.downloadCompleted = 0;
         MainController.Instance.downloadTarget = GetSymbolsLength();
@@ -250,9 +254,9 @@ public class TempleSceneController : MonoBehaviour
         
 
         // TODO edit this part
-        Dictionary<string,LocalTempleData> allLocalTempledata = MainController.Instance.LoadAllLocalTempledata();
-        allLocalTempledata[templeName].downloaded = true;
-        MainController.Instance.SaveLocalTempleData(allLocalTempledata);     
+        //Dictionary<string,LocalTempleData> allLocalTempledata = MainController.Instance.LoadAllLocalTempledata();
+        //allLocalTempledata[templeName].downloaded = true;
+        //MainController.Instance.SaveLocalTempleData(allLocalTempledata);     
     }
     public void InstantiateSymbolGroups(GameObject parent)
     {
