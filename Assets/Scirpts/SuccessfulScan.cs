@@ -58,6 +58,8 @@ public class SuccessfulScan : MonoBehaviour
 
     public void LoadSpecificTempleScene()
     {
-        SceneManager.LoadScene("SpecificTempleScene");
+        Debug.Log(SceneManager.GetActiveScene().buildIndex + "current scene");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        //SceneManager.LoadScene("SpecificTempleScene");
     }
 }

@@ -56,6 +56,10 @@ public class MainController : MonoBehaviour
 
     public ProgressController progressController;
 
+    public Dictionary<string, int> symbolsAndDetectionNumber = new Dictionary<string, int>();
+
+    public string sceneName = "";
+
     private void Awake()
     {
 

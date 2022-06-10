@@ -42,6 +42,12 @@ namespace OpenCVForUnityExample
         public SuccessfulScan successfulScanController;
 
         TempleData.AudioData[] symbolAudios;
+        int symbolScannedNumber = 0;
+
+        [SerializeField]
+        List<Text> textsForSymbols = new List<Text>();
+
+        int counter = 0;
 
 
         void Start ()
@@ -67,6 +73,11 @@ namespace OpenCVForUnityExample
                 imageTexture.LoadImage(resultBytes);
                 var akarmi = imageTexture;
                 scannableImagesDic.Add(symbol.symbol_name, imageTexture);
+
+                    if (!MainController.Instance.symbolsAndDetectionNumber.ContainsKey(symbol.symbol_name))
+                    {
+                        MainController.Instance.symbolsAndDetectionNumber.Add(symbol.symbol_name, 0);
+                    }
                 //symbolImage.texture = imageTexture;
                 //Color currColor = symbolImage.color;
                 //currColor.a = 1;
@@ -83,6 +94,14 @@ namespace OpenCVForUnityExample
             //imagesList.Add(test2);
             //imagesList.Add(test1);
 
+        }
+         void TextSymbols()
+        {
+
+            for (int i = 0; i < MainController.Instance.symbolsAndDetectionNumber.Count; i++)
+            {
+                textsForSymbols[i].text = MainController.Instance.symbolsAndDetectionNumber.ElementAt(i).Key.ToString() + " " + MainController.Instance.symbolsAndDetectionNumber[MainController.Instance.symbolsAndDetectionNumber.ElementAt(i).Key].ToString();
+            }
         }
         void StartWebcamDevice()
         {
@@ -134,13 +153,18 @@ namespace OpenCVForUnityExample
 
         void Update()
         {
-            if (!scanIsOver)
+            if (counter > 30)
             {
-                //converts webcam texture to Texture2D, that can later be converted into 
-                Texture2D cameraTexture = GetTexture2DFromWebcamTexture(backCam);
-                CompareAllImages(cameraTexture);
+                TextSymbols();
+                if (!scanIsOver)
+                {
+                    //converts webcam texture to Texture2D, that can later be converted into 
+                    Texture2D cameraTexture = GetTexture2DFromWebcamTexture(backCam);
+                    CompareAllImages(cameraTexture);
+                }
+                counter = 0;
             }
-
+            counter++;
         }
 
         private void FixedUpdate()
@@ -255,9 +279,11 @@ namespace OpenCVForUnityExample
   print(img1Name+" best distance: " +bestDistanceAvarage);
             }
               
-               if (bestDistanceAvarage < 49 && !isComparingFinished)
+               if (bestDistanceAvarage < 39 && !isComparingFinished)
                {
-     compareFinhisString = img1Name + "image name" + " bestdistance" + bestDistanceAvarage;
+                    MainController.Instance.symbolsAndDetectionNumber[img1Name] = MainController.Instance.symbolsAndDetectionNumber[img1Name] + 1;
+                    compareFinhisString = img1Name + "image name" + " bestdistance" + bestDistanceAvarage + " scanned number " + symbolScannedNumber;
+
                     scannedSymbolName = img1Name;
                    checkImages = false;
        
@@ -283,6 +309,7 @@ namespace OpenCVForUnityExample
         public void GobackToTempleSelection()
         {
             backCam.Stop();
+            MainController.Instance.symbolsAndDetectionNumber.Clear();
             SceneManager.LoadScene("SpecificTempleScene");
         }
 
