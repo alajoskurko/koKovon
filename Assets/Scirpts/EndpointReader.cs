@@ -56,8 +56,8 @@ public class EndpointReader : MonoBehaviour
         yield return www.SendWebRequest();
         if (www.result != UnityWebRequest.Result.Success)
         {
-            Debug.Log("There was an error reading the image");
-
+            callback(null, "error");
+            Debug.LogError("There was an error reading the image");
         }
         else
         {
@@ -78,8 +78,8 @@ public class EndpointReader : MonoBehaviour
         yield return www.SendWebRequest();
         if (www.result != UnityWebRequest.Result.Success)
         {
-            Debug.Log("There was an error reading the image");
-
+            Debug.LogError("There was an error reading the image");
+            callback(null, null, "error");
         }
         else
         {
@@ -101,8 +101,8 @@ public class EndpointReader : MonoBehaviour
         yield return www.SendWebRequest();
         if (www.result != UnityWebRequest.Result.Success)
         {
-            Debug.Log("There was an error reading the audio");
-
+            Debug.LogError("There was an error reading the audio");
+            callback(null, null, "error");
         }
         else
         {

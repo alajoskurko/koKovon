@@ -36,6 +36,9 @@ public class TempleSceneController : MonoBehaviour
     AudioClip audioClip;
 
     [SerializeField]
+    Text downloadErrorText;
+
+    [SerializeField]
     GameObject audioPlayButton;
 
     public static TempleSceneController Instance;
@@ -208,6 +211,7 @@ public class TempleSceneController : MonoBehaviour
 
     public void OnDownloadButtonHit()
     {
+        downloadErrorText.text = "";
         if (MainController.Instance.isDownloading)
         {
             return;
@@ -278,14 +282,23 @@ public class TempleSceneController : MonoBehaviour
     }
 
     private void SaveSymbolImage(byte[] resultBytes, string fileName) {
-
+        if (resultBytes == null)
+        {
+            downloadButtonAnimator.SetBool("isDownloading", false);
+            downloadErrorText.text = "Error while downloading files";
+            return;
+        }
         MainController.Instance.dataController.SaveImageLocally(resultBytes, templeName, fileName);
     }
 
-
-
     private void SaveSymbolAudio(TempleData.AudioData audiodata, byte[] resultBytes, string fileName)
     {
+        if(audiodata == null)
+        {
+            downloadButtonAnimator.SetBool("isDownloading", false);
+            downloadErrorText.text = "Error while downloading files";
+            return;
+        }
         MainController.Instance.dataController.SaveAudioLocally(audiodata.lang,resultBytes, templeName, fileName);
         MainController.Instance.downloadCompleted++;
         Debug.LogWarning(MainController.Instance.downloadCompleted + " downloaded files numbe"); ;
