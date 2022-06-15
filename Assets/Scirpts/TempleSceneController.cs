@@ -285,6 +285,7 @@ public class TempleSceneController : MonoBehaviour
         if (resultBytes == null)
         {
             downloadButtonAnimator.SetBool("isDownloading", false);
+            MainController.Instance.isDownloading = false;
             downloadErrorText.text = "Error while downloading files";
             return;
         }
@@ -297,6 +298,7 @@ public class TempleSceneController : MonoBehaviour
         {
             downloadButtonAnimator.SetBool("isDownloading", false);
             downloadErrorText.text = "Error while downloading files";
+            MainController.Instance.isDownloading = false;
             return;
         }
         MainController.Instance.dataController.SaveAudioLocally(audiodata.lang,resultBytes, templeName, fileName);

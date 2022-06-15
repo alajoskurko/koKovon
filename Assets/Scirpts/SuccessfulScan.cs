@@ -53,7 +53,7 @@ public class SuccessfulScan : MonoBehaviour
         imageTexture.LoadImage(resultBytes);
         symbolImage.sprite = Sprite.Create(imageTexture, new Rect(0, 0, imageTexture.width, imageTexture.height), new Vector2());
         symbolImage.SetNativeSize();
-        symbolImage.transform.localScale = new Vector3(.8f, .8f, .8f);
+        symbolImage.transform.localScale = new Vector3(.65f, .65f, .65f);
     }
 
     public void LoadSpecificTempleScene()
