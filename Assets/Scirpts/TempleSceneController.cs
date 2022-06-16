@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,7 +13,9 @@ public class TempleSceneController : MonoBehaviour
     [SerializeField]
     TMPro.TMP_Text symbolsDiscoveredText;
     [SerializeField]
-    Text downloadTheFilesWarning;
+    Text warningText;
+    [SerializeField]
+    GameObject warningPanel;
     [SerializeField]
     RawImage templeImage;
     [SerializeField]
@@ -26,7 +28,7 @@ public class TempleSceneController : MonoBehaviour
     SymbolGroup[] symbolGroups;
     Dictionary<string, SymbolGroup> symbolsGroups = new Dictionary<string, SymbolGroup>();
     [SerializeField]
-    GameObject symbolGroupPrefab,groupChoosePanel,groupContainer,mainUIPanel;
+    GameObject symbolGroupPrefab, groupChoosePanel, groupContainer, mainUIPanel;
     [SerializeField]
     Slider scanSliderProgress;
     [SerializeField]
@@ -34,12 +36,11 @@ public class TempleSceneController : MonoBehaviour
     [SerializeField]
     AudioSource audioSource;
     AudioClip audioClip;
-
-    [SerializeField]
-    Text downloadErrorText;
-
     [SerializeField]
     GameObject audioPlayButton;
+
+    Dictionary<string, string> downloadWarning = new Dictionary<string, string>() { { "hu", "Kérem töltse le a file-okat" }, { "ro", "Vă rog descărcați fișierele" }, { "en", "Please download the files first" } };
+    Dictionary<string, string> downloadError = new Dictionary<string, string>() { { "hu", "A letöltés közben hiba lépett fel!" }, { "ro", "Eroare de descărcare!" }, { "en", "Error while downloading file!" } };
 
     public static TempleSceneController Instance;
     //SymbolGroups symbolGroupss;
@@ -177,9 +178,8 @@ public class TempleSceneController : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("letoltodottt");
             downloadButtonAnimator.SetBool("isDownloading", false);
-            downloadTheFilesWarning.gameObject.SetActive(false);
+            warningPanel.gameObject.SetActive(false);
             downloadButton.gameObject.SetActive(true);
         }
 
@@ -203,7 +203,8 @@ public class TempleSceneController : MonoBehaviour
         {
             //Todo probably popup needed or something
             print("Donwload the files first please");
-            downloadTheFilesWarning.gameObject.SetActive(true);
+            warningPanel.gameObject.SetActive(true);
+            warningText.text = downloadWarning[MainController.Instance.selectedLanguage];
             downloadButtonAnimator.SetBool("playWarning", true);
         }
       
@@ -211,7 +212,8 @@ public class TempleSceneController : MonoBehaviour
 
     public void OnDownloadButtonHit()
     {
-        downloadErrorText.text = "";
+        warningText.text = "";
+        warningPanel.gameObject.SetActive(false);
         if (MainController.Instance.isDownloading)
         {
             return;
@@ -286,7 +288,8 @@ public class TempleSceneController : MonoBehaviour
         {
             downloadButtonAnimator.SetBool("isDownloading", false);
             MainController.Instance.isDownloading = false;
-            downloadErrorText.text = "Error while downloading files";
+            warningPanel.gameObject.SetActive(true);
+            warningText.text = downloadError[MainController.Instance.selectedLanguage];
             return;
         }
         MainController.Instance.dataController.SaveImageLocally(resultBytes, templeName, fileName);
@@ -297,7 +300,8 @@ public class TempleSceneController : MonoBehaviour
         if(audiodata == null)
         {
             downloadButtonAnimator.SetBool("isDownloading", false);
-            downloadErrorText.text = "Error while downloading files";
+            warningPanel.gameObject.SetActive(true);
+            warningText.text = downloadError[MainController.Instance.selectedLanguage];
             MainController.Instance.isDownloading = false;
             return;
         }
@@ -344,7 +348,8 @@ public class TempleSceneController : MonoBehaviour
         {
             //Todo probably popup needed or something
             print("Donwload the files first please");
-            downloadTheFilesWarning.gameObject.SetActive(true);
+            warningPanel.gameObject.SetActive(true);
+            warningText.gameObject.SetActive(true);
             downloadButtonAnimator.SetBool("playWarning", true);
         }
 
@@ -373,11 +378,15 @@ public class TempleSceneController : MonoBehaviour
         }
         else
         {
-
-            downloadTheFilesWarning.gameObject.SetActive(true);
+            warningPanel.gameObject.SetActive(true);
+            warningText.gameObject.SetActive(true);
             downloadButtonAnimator.SetBool("playWarning", true);
         }
        
+    }
+    public void HideWarningPanel ()
+    {
+        warningPanel.gameObject.SetActive(false);
     }
     public IEnumerator LoadAudioLocaly()
     {
