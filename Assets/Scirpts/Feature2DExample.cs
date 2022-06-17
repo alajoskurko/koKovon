@@ -255,7 +255,7 @@ namespace OpenCVForUnityExample
   print(img1Name+" best distance: " +bestDistanceAvarage);
             }
               
-               if (bestDistanceAvarage < 49 && !isComparingFinished)
+               if (bestDistanceAvarage < 29 && !isComparingFinished)
                {
      compareFinhisString = img1Name + "image name" + " bestdistance" + bestDistanceAvarage;
                     scannedSymbolName = img1Name;
