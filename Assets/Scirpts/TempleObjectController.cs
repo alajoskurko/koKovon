@@ -104,11 +104,13 @@ public class TempleObjectController : MonoBehaviour
             Debug.Log("nev " + templeData.name);
             if (templeData.name == "Jézus kápolna")
             {
-                templeImage.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
+                templeImage.transform.localScale = new Vector3(1.3f, 1.3f, 1.3f);
+                templeImage.uvRect = new Rect(0, 0, 1, 0.990f);
             }
             else
             {
                 templeImage.transform.localScale = new Vector3(.75f, .75f, .5f);
+                
             }
         }
       
