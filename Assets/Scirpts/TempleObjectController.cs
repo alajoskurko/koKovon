@@ -57,7 +57,7 @@ public class TempleObjectController : MonoBehaviour
 
         if (isDownloaded)
         {
-            Texture2D imageTexture = new Texture2D(150, 150, TextureFormat.PVRTC_RGBA4, false);
+            Texture2D imageTexture = new Texture2D(150, 150, TextureFormat.RGB565, false);
 
 
             byte[] resultBytes = MainController.Instance.GetImageLocaly(templeData.name, templeData.name);
@@ -91,7 +91,7 @@ public class TempleObjectController : MonoBehaviour
         }
         else
         {
-            Texture2D imageTexture = new Texture2D(150, 150, TextureFormat.PVRTC_RGBA4, false);
+            Texture2D imageTexture = new Texture2D(150, 150, TextureFormat.RGB565, false);
 
             byte[] resultBytes = MainController.Instance.GetImageLocaly(templeData.name, templeData.name);
 

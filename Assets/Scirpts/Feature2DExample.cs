@@ -42,7 +42,7 @@ namespace OpenCVForUnityExample
         public SuccessfulScan successfulScanController;
 
         TempleData.AudioData[] symbolAudios;
-
+        Texture2D cameraTexture;
 
         void Start ()
         {
@@ -57,6 +57,7 @@ namespace OpenCVForUnityExample
             panelBg.GetComponent<RawImage>().texture = backCam;
             progressController = MainController.Instance.progressController;
             SwipeDetector.OnSwipe += SwipeDetector_OnSwipe;
+            cameraTexture = Resources.Load("Test/scanTest") as Texture2D;
         }
         public void ProcessSymbolImages()
         {
@@ -137,7 +138,7 @@ namespace OpenCVForUnityExample
             if (!scanIsOver)
             {
                 //converts webcam texture to Texture2D, that can later be converted into 
-                Texture2D cameraTexture = GetTexture2DFromWebcamTexture(backCam);
+                //Texture2D cameraTexture = GetTexture2DFromWebcamTexture(backCam);
                 CompareAllImages(cameraTexture);
             }
 
@@ -255,7 +256,7 @@ namespace OpenCVForUnityExample
   print(img1Name+" best distance: " +bestDistanceAvarage);
             }
               
-               if (bestDistanceAvarage < 29 && !isComparingFinished)
+               if (bestDistanceAvarage < 31 && !isComparingFinished)
                {
      compareFinhisString = img1Name + "image name" + " bestdistance" + bestDistanceAvarage;
                     scannedSymbolName = img1Name;

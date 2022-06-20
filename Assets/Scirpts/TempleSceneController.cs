@@ -88,7 +88,7 @@ public class TempleSceneController : MonoBehaviour
         // Todo make this inot a function
         if (allLocalTempleData[templeName].downloaded)
         {
-            Texture2D imageTexture = new Texture2D(150, 150, TextureFormat.PVRTC_RGBA4, false);
+            Texture2D imageTexture = new Texture2D(150, 150, TextureFormat.RGB565, false);
             byte[] resultBytes = MainController.Instance.GetImageLocaly(templeName, templeName);
             imageTexture.LoadImage(resultBytes);
             templeImage.texture = imageTexture;
@@ -97,7 +97,7 @@ public class TempleSceneController : MonoBehaviour
         }
         else
         {
-            Texture2D imageTexture = new Texture2D(150, 150, TextureFormat.PVRTC_RGBA4, false);
+            Texture2D imageTexture = new Texture2D(150, 150, TextureFormat.RGB565, false);
             byte[] resultBytes = MainController.Instance.GetImageLocaly(templeName, templeName);
             imageTexture.LoadImage(resultBytes);
             templeImage.texture = imageTexture;
@@ -143,7 +143,7 @@ public class TempleSceneController : MonoBehaviour
         {
             foreach (Symbol symbol in symbolGroup.Value.symbols)
             {
-                Texture2D imageTexture = new Texture2D(512, 512, TextureFormat.PVRTC_RGBA4, false);
+                Texture2D imageTexture = new Texture2D(512, 512, TextureFormat.RGB565, false);
                 byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, symbol.symbol_name);
                 imageTexture.LoadImage(resultBytes);
                 MainController.Instance.AddToSymbolTextures(imageTexture, symbol.symbol_name);
