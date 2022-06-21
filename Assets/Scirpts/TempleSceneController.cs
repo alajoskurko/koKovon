@@ -231,7 +231,7 @@ public class TempleSceneController : MonoBehaviour
                 MainController.Instance.GetImage(symbol.symbol_path, symbol.symbol_name, SaveSymbolImage);
                 foreach (AudioData audioData in symbol.audios)
                 {
-                    MainController.Instance.GetAudio(audioData, audioData.name, SaveSymbolAudio);
+                    MainController.Instance.GetAudio(audioData, symbol.symbol_name, SaveSymbolAudio);
                 }
             }
         }
