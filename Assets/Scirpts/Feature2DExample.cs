@@ -36,7 +36,7 @@ namespace OpenCVForUnityExample
 
         public bool isComparingFinished = false;
         bool scanIsOver = false;
-        string scannedSymbolName = "";
+        string scannedSymbolName = null;
 
         ProgressController progressController;
         public SuccessfulScan successfulScanController;
@@ -44,20 +44,31 @@ namespace OpenCVForUnityExample
         TempleData.AudioData[] symbolAudios;
         Texture2D cameraTexture;
 
+        int counter = 0;
+
         void Start ()
         {
             successfulScanController = this.gameObject.GetComponent<SuccessfulScan>();
+            //cameraTexture = new Texture2D(512, 512, TextureFormat.PVRTC_RGBA4, false);
+            //byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, "scanTest", ".jpg");
+            //cameraTexture.LoadImage(resultBytes);
+
+            //cameraTexture = Resources.Load("Test/scanTest") as Texture2D;
+            //cameraTexture.SetPixels(cameraTexture.GetPixels());
+            StartWebcamDevice();
             ProcessSymbolImages();
+            
+            backCam.Play();
             bgWoker1 = new BackgroundWorker();
             ///get comparable images
             GetImages();
-            StartWebcamDevice();
+            
             /// set the workers for the separated threads
             SetBackgroundWorkers();
             panelBg.GetComponent<RawImage>().texture = backCam;
             progressController = MainController.Instance.progressController;
             SwipeDetector.OnSwipe += SwipeDetector_OnSwipe;
-            cameraTexture = Resources.Load("Test/scanTest") as Texture2D;
+            
         }
         public void ProcessSymbolImages()
         {
@@ -66,6 +77,9 @@ namespace OpenCVForUnityExample
                 Texture2D imageTexture = new Texture2D(512, 512, TextureFormat.PVRTC_RGBA4, false);
                 byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, symbol.symbol_name, ".jpg");
                 imageTexture.LoadImage(resultBytes);
+                //imageTexture.Reinitialize(backCam.width, imageTexture.height * backCam.width / imageTexture.width);
+                //Debug.Log(imageTexture.height + " heigjht" + imageTexture.width + " width");
+                //Debug.Log(backCam.width + " " + backCam.height);
                 var akarmi = imageTexture;
                 scannableImagesDic.Add(symbol.symbol_name, imageTexture);
                 //symbolImage.texture = imageTexture;
@@ -117,7 +131,7 @@ namespace OpenCVForUnityExample
                     return;
                 }
 
-                backCam.Play();
+                
 
 
             }
@@ -135,25 +149,26 @@ namespace OpenCVForUnityExample
 
         void Update()
         {
+            if (counter > 3)
+            {
+                if (!scanIsOver)
+                {
+                    //converts webcam texture to Texture2D, that can later be converted into 
+                    Texture2D cameraTexture = GetTexture2DFromWebcamTexture(backCam);
+                    CompareAllImages(cameraTexture);
+                }
+                counter = 0;
+            }
+            counter++;
             if (!scanIsOver)
             {
-                //converts webcam texture to Texture2D, that can later be converted into 
-                //Texture2D cameraTexture = GetTexture2DFromWebcamTexture(backCam);
-                CompareAllImages(cameraTexture);
-            }
-
-        }
-
-        private void FixedUpdate()
-        {
-            if (!scanIsOver) { 
                 if (isComparingFinished)
                 {
                     backCam.Stop();
                     myMessageBox.text = compareFinhisString;
-                    
+
                     scanIsOver = true;
-                    Debug.Log("compare finish");
+                    Debug.LogWarning("compare finish + " + scannedSymbolName);
                     GetAudioForSymbol();
                     progressController.UpdateProgressInJson(scannedSymbolName, MainController.Instance.getCurrentTempleData().name);
                     successfulScanController.SuccessfulScanHappened(scannedSymbolName);
@@ -163,10 +178,13 @@ namespace OpenCVForUnityExample
                     myMessageBox.text = bestDistanceAvarage.ToString();
                 }
             }
-            else
-            {
-                
-            }
+
+        }
+
+        private void FixedUpdate()
+        {
+            
+
         }
 
         void GetAudioForSymbol()
@@ -256,13 +274,19 @@ namespace OpenCVForUnityExample
   print(img1Name+" best distance: " +bestDistanceAvarage);
             }
               
-               if (bestDistanceAvarage < 31 && !isComparingFinished)
+               if (bestDistanceAvarage < 30 && !isComparingFinished)
                {
-     compareFinhisString = img1Name + "image name" + " bestdistance" + bestDistanceAvarage;
-                    scannedSymbolName = img1Name;
+                    isComparingFinished = true;
+                    compareFinhisString = img1Name + "image name" + " bestdistance" + bestDistanceAvarage;
+                    Debug.LogWarning("compare finish string + " + compareFinhisString);
+                    if(scannedSymbolName == null)
+                    {
+                        scannedSymbolName = img1Name;
+                    }
+                    
                    checkImages = false;
        
-                    isComparingFinished = true;
+                    
                     
                    StartCoroutine(setResult(img1Name));
                     

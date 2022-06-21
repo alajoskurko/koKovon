@@ -101,7 +101,7 @@ public class EndpointReader : MonoBehaviour
         yield return www.SendWebRequest();
         if (www.result != UnityWebRequest.Result.Success)
         {
-            Debug.LogError("There was an error reading the audio");
+            Debug.LogError("There was an error reading the audio" + "name " + name);
             callback(null, null, "error");
         }
         else
