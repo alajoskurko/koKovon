@@ -8,10 +8,10 @@ public class LocalTempleData
 {
     public string updated_at;
     public string name;
-    public bool downloaded;
+    public Dictionary<string,bool> downloaded;
    
     
-    public LocalTempleData(string updated_at,string name, bool downloaded)
+    public LocalTempleData(string updated_at,string name, Dictionary<string,bool> downloaded)
     {
         this.updated_at = updated_at;
         this.name = name;

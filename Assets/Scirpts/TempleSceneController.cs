@@ -86,7 +86,7 @@ public class TempleSceneController : MonoBehaviour
         Dictionary<string,LocalTempleData> allLocalTempleData = MainController.Instance.LoadAllLocalTempledata();
 
         // Todo make this inot a function
-        if (allLocalTempleData[templeName].downloaded)
+        if (allLocalTempleData[templeName].downloaded[MainController.Instance.selectedLanguage])
         {
             Texture2D imageTexture = new Texture2D(150, 150, TextureFormat.RGB565, false);
             byte[] resultBytes = MainController.Instance.GetImageLocaly(templeName, templeName);
@@ -195,7 +195,7 @@ public class TempleSceneController : MonoBehaviour
     {
         // should chekc if temple data is downloaded or not
         Dictionary<string, LocalTempleData> allLocalTempleData =  MainController.Instance.LoadAllLocalTempledata();
-        if (allLocalTempleData[templeName].downloaded)
+        if (allLocalTempleData[templeName].downloaded[MainController.Instance.selectedLanguage])
         {
             LoadDiscoverScene();
         }
@@ -231,7 +231,11 @@ public class TempleSceneController : MonoBehaviour
                 MainController.Instance.GetImage(symbol.symbol_path, symbol.symbol_name, SaveSymbolImage);
                 foreach (AudioData audioData in symbol.audios)
                 {
-                    MainController.Instance.GetAudio(audioData, symbol.symbol_name, SaveSymbolAudio);
+                    if(audioData.lang == MainController.Instance.selectedLanguage)
+                    {
+                        MainController.Instance.GetAudio(audioData, symbol.symbol_name, SaveSymbolAudio);
+                    }
+                    
                 }
             }
         }
@@ -339,7 +343,7 @@ public class TempleSceneController : MonoBehaviour
     public void ShowSymbolGroupsForScan()
     {
         Dictionary<string, LocalTempleData> allLocalTempleData = MainController.Instance.LoadAllLocalTempledata();
-        if (allLocalTempleData[templeName].downloaded)
+        if (allLocalTempleData[templeName].downloaded[MainController.Instance.selectedLanguage])
         {
             groupChoosePanel.SetActive(true);
             mainUIPanel.SetActive(false);
@@ -360,7 +364,7 @@ public class TempleSceneController : MonoBehaviour
     {
         // should chekc if temple data is downloaded or not
         Dictionary<string, LocalTempleData> allLocalTempleData = MainController.Instance.LoadAllLocalTempledata();
-        if (allLocalTempleData[templeName].downloaded)
+        if (allLocalTempleData[templeName].downloaded[MainController.Instance.selectedLanguage])
         {
             if (audioSource.isPlaying)
             {

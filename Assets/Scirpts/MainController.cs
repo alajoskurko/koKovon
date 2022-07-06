@@ -128,7 +128,13 @@ public class MainController : MonoBehaviour
                     StartCoroutine(endpointReader.GetImage(templeData.cover_image, templeData.name, SaveImageLocally));
                     currentTempleDataForGroups = templeData;
                     SaveSymbolGroups(templeData);
-                    LocalTempleData newLocalTempleData = new LocalTempleData(templeData.updated_at, templeData.name, false);
+                    Dictionary<string, bool> downloadedLangs = new Dictionary<string, bool>()
+                    {
+                        { "hu",false },
+                        { "ro",false },
+                        { "en",false }
+                    };
+                    LocalTempleData newLocalTempleData = new LocalTempleData(templeData.updated_at, templeData.name, downloadedLangs);
                     allLocalTempleData[counter] = newLocalTempleData;
                     counter++;
                 }
@@ -164,7 +170,12 @@ public class MainController : MonoBehaviour
                             StartCoroutine(endpointReader.GetImage(templeData.cover_image, templeData.name, SaveImageLocally));
                             currentTempleDataForGroups = templeData;
                             SaveSymbolGroups(templeData);
-                            allLocalTempleData[index].downloaded = false;
+                          
+                            allLocalTempleData[index].downloaded = new Dictionary<string, bool>(){
+                                {"hu",false },
+                                {"ro",false },
+                                {"en",false }
+                            };
                             allLocalTempleData[index].updated_at = templeData.updated_at;
                             foreach (KeyValuePair<string, SymbolGroup> symbolGroup in templeData.symbol_groups)
                             {
@@ -182,8 +193,12 @@ public class MainController : MonoBehaviour
                         currentTempleDataForGroups = templeData;
                         SaveSymbolGroups(templeData);
                         // Todo some specific testing needed here, I am not 100% sure about the indexing, nope it is not gonna work like this
-
-                        allLocalTempleData.Append(new LocalTempleData(templeData.updated_at, templeData.name, false));
+                        Dictionary<string, bool> newDict = new Dictionary<string, bool>() {
+                            {"hu",false },
+                            {"ro",false },
+                            {"en",false }
+                        };
+                        allLocalTempleData.Append(new LocalTempleData(templeData.updated_at, templeData.name, newDict));
 
                     }
                 }
@@ -216,7 +231,7 @@ public class MainController : MonoBehaviour
         downloadTarget = 0;
         isDownloading = false;
         Dictionary<string, LocalTempleData> allLocalTempledata = MainController.Instance.LoadAllLocalTempledata();
-        allLocalTempledata[currentTempleData.name].downloaded = true;
+        allLocalTempledata[currentTempleData.name].downloaded[MainController.Instance.selectedLanguage] = true;
         MainController.Instance.SaveLocalTempleData(allLocalTempledata);
     }
     public void SaveImageLocally(byte[] resultBytes, string templeName)

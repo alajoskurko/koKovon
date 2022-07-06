@@ -18,6 +18,8 @@ public class TempleSelectionController : MonoBehaviour
     [SerializeField]
     Text currentLanguage;
 
+    [SerializeField]
+    List<GameObject> languagesList = new List<GameObject>();
     private void Awake()
     {
         InitTemples();
@@ -58,7 +60,7 @@ public class TempleSelectionController : MonoBehaviour
                 newTempleItem.transform.localScale = new Vector3(1,1,1);
             }
             TempleObjectController templeObjectController = newTempleItem.GetComponent<TempleObjectController>();
-            templeObjectController.SetTempleData(templeData, allLocalTempleData[templeData.name].downloaded);
+            templeObjectController.SetTempleData(templeData, allLocalTempleData[templeData.name].downloaded[MainController.Instance.selectedLanguage]);
         
         }
 
@@ -85,6 +87,18 @@ public class TempleSelectionController : MonoBehaviour
         currentLanguage.text = language;
         InitTemples();
         InstantiateTempleItems(templePrefab, mainTempleContainer);
+
+        foreach (var item in languagesList)
+        {
+            if(item.gameObject.name.ToLower() == language)
+            {
+                item.gameObject.SetActive(false);
+            }
+            else
+            {
+                item.gameObject.SetActive(true);
+            }
+        }
     }
   
 

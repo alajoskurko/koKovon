@@ -65,29 +65,17 @@ public class TempleObjectController : MonoBehaviour
             imageTexture.LoadImage(resultBytes);
 
             templeImage.texture = imageTexture;
+            //templeImage.color = new Color32(111, 189, 195, 255);
             templeImage.SetNativeSize();
-            Debug.Log("nev " + templeData.name);
             if(templeData.name == "Jézus kápolna")
             {
                 templeImage.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
+                templeImage.uvRect = new Rect(0, 0, 1, 0.990f);
             }
             else
             {
                 templeImage.transform.localScale = new Vector3(.75f, .75f, .5f);
             }
-            
-            //int height = imageTexture.height;
-            //int width = imageTexture.width;
-            //float ratio = ((float)width) / ((float)height);
-            //if (ratio <= 1)
-            //{
-            //    templeImage.rectTransform.sizeDelta = new Vector2(170 * ratio, 170);
-            //}
-            //else
-            //{
-            //    templeImage.rectTransform.sizeDelta = new Vector2(170, 170 / ratio);
-            //}
-
         }
         else
         {
@@ -99,12 +87,11 @@ public class TempleObjectController : MonoBehaviour
 
             templeImage.texture = imageTexture;
 
-            templeImage.color = new Color32(111, 189, 195, 255);
+            //templeImage.color = new Color32(111, 189, 195, 255);
             templeImage.SetNativeSize();
-            Debug.Log("nev " + templeData.name);
             if (templeData.name == "Jézus kápolna")
             {
-                templeImage.transform.localScale = new Vector3(1.3f, 1.3f, 1.3f);
+                templeImage.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
                 templeImage.uvRect = new Rect(0, 0, 1, 0.990f);
             }
             else
