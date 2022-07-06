@@ -169,7 +169,7 @@ public class TempleSceneController : MonoBehaviour
     }
         public void SetDownloadButtonState(bool state)
     {
-        if (state)
+        if (state && downloadButtonAnimator)
         {
             downloadButtonAnimator.SetBool("playWarning", false);
             downloadButtonAnimator.SetBool("isDownloading", true);
