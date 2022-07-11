@@ -66,6 +66,10 @@ namespace OpenCVForUnityExample
             /// set the workers for the separated threads
             SetBackgroundWorkers();
             panelBg.GetComponent<RawImage>().texture = backCam;
+
+            #if UNITY_IPHONE
+            panelBg.transform.localScale = new Vector3(1, -1, 1);
+            #endif
             progressController = MainController.Instance.progressController;
             SwipeDetector.OnSwipe += SwipeDetector_OnSwipe;
             
@@ -155,8 +159,9 @@ namespace OpenCVForUnityExample
             //{
                 if (!scanIsOver)
                 {
-                    //converts webcam texture to Texture2D, that can later be converted into 
-                    Texture2D cameraTexture = GetTexture2DFromWebcamTexture(backCam);
+                //converts webcam texture to Texture2D, that can later be converted into 
+                Destroy(cameraTexture);
+                    cameraTexture = GetTexture2DFromWebcamTexture(backCam);
                     CompareAllImages(cameraTexture);
                 }
                 counter = 0;
