@@ -74,7 +74,7 @@ namespace OpenCVForUnityExample
         {
             foreach (var symbol in MainController.Instance.chosenSymbol.Value.symbols)
             {
-                Texture2D imageTexture = new Texture2D(512, 512, TextureFormat.PVRTC_RGBA4, false);
+                Texture2D imageTexture = new Texture2D(512, 512, TextureFormat.PVRTC_RGB4, false);
                 byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, symbol.symbol_name, ".jpg");
                 imageTexture.LoadImage(resultBytes);
                 //imageTexture.Reinitialize(backCam.width, imageTexture.height * backCam.width / imageTexture.width);
@@ -147,10 +147,12 @@ namespace OpenCVForUnityExample
         }
         #endregion
 
+
+        
         void Update()
         {
-            if (counter > 3)
-            {
+            //if (counter > 15)
+            //{
                 if (!scanIsOver)
                 {
                     //converts webcam texture to Texture2D, that can later be converted into 
@@ -158,7 +160,7 @@ namespace OpenCVForUnityExample
                     CompareAllImages(cameraTexture);
                 }
                 counter = 0;
-            }
+            //}
             counter++;
             if (!scanIsOver)
             {
@@ -203,9 +205,6 @@ namespace OpenCVForUnityExample
             
             for (int i = 0; i < scannableImagesDic.Count; i++)
             {
-                var akarmi = scannableImagesDic.ElementAt(i).Value;
-                var barmi = scannableImagesDic.ElementAt(i).Key;
-                var ize = 0;
                 CompareImages(backgroundWorkers[i], scannableImagesDic.ElementAt(i).Value, scannableImagesDic.ElementAt(i).Key, cameraTexture);
             }
         }
@@ -219,12 +218,18 @@ namespace OpenCVForUnityExample
 
             Utils.texture2DToMat(img1, img1Mat);
             Utils.texture2DToMat(img2, img2Mat);
-            
-            if( !bgWoker.IsBusy ){
+            // if (bgWoker != null)
+            // {
+            //     bgWoker.Dispose();
+
+            // }
+
+                if( !bgWoker.IsBusy ){
                 bgWoker.DoWork += (o, a) => DetectAndCalculate(img1Mat,img2Mat,img1Name);
                 //DetectAndCalculate(detector,img2Mat,keypoints2,extractor,descriptors1,descriptors2,img1Name);
                 bgWoker.RunWorkerAsync();
-            }
+                }
+
         }
         private void SwipeDetector_OnSwipe(SwipeData data)
         {
@@ -274,7 +279,7 @@ namespace OpenCVForUnityExample
   print(img1Name+" best distance: " +bestDistanceAvarage);
             }
               
-               if (bestDistanceAvarage < 30 && !isComparingFinished)
+               if (bestDistanceAvarage < 29 && !isComparingFinished)
                {
                     isComparingFinished = true;
                     compareFinhisString = img1Name + "image name" + " bestdistance" + bestDistanceAvarage;
@@ -285,11 +290,6 @@ namespace OpenCVForUnityExample
                     }
                     
                    checkImages = false;
-       
-                    
-                    
-                   StartCoroutine(setResult(img1Name));
-                    
                }
           
             }

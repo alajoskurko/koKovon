@@ -50,7 +50,13 @@ public class SplashScreenController : MonoBehaviour
 
         videoPlayer.Play();
     }
-
+    void Update(){
+        if (!MainController.Instance.isInitializing)
+        {
+            StartCoroutine(LoadTempleSelectionScreen());
+            //TODO informative popup
+        }
+    }
     IEnumerator GetPermissionForCameraOnIOS()
     {
         if (Application.HasUserAuthorization(UserAuthorization.WebCam))
@@ -63,19 +69,11 @@ public class SplashScreenController : MonoBehaviour
         }
 
     }
-    public void LoadTempleSelectionScreen()
+
+    public IEnumerator LoadTempleSelectionScreen()
     {
-        if (!MainController.Instance.isInitializing)
-        {
-            SceneManager.LoadScene("TempleSelectionScene");
-            //TODO informative popup
-        }
-        else
-        {
-            // TODO
-            print("Wait for init to end");
-        }
-       
-       
+        yield return new WaitForSeconds(2f);
+        SceneManager.LoadScene("TempleSelectionScene");
+
     }
 }
