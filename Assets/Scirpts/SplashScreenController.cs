@@ -14,21 +14,39 @@ public class SplashScreenController : MonoBehaviour
 #if UNITY_IOS
            StartCoroutine(GetPermissionForCameraOnIOS());
 #endif
+#if UNITY_ANDROID
+        GetPermissionForCameraOnAndroid();
+#endif
+//#if UNITY_ANDROID
+//        Permission.RequestUserPermission(Permission.Camera);
+//        if (Permission.HasUserAuthorizedPermission(Permission.Camera))
+//        {
 
-        if (Permission.HasUserAuthorizedPermission(Permission.Camera))
-        {
+//        }
+//        else
+//        {
 
-        }
-        else
-        {
+//            // We do not have permission to use the microphone.
+//            // Ask for permission or proceed without the functionality enabled.
 
-            // We do not have permission to use the microphone.
-            // Ask for permission or proceed without the functionality enabled.
-            #if UNITY_ANDROID
-            Permission.RequestUserPermission(Permission.Camera);
-            #endif
 
-        }
+//        }
+//#endif
+
+//        if (Permission.HasUserAuthorizedPermission(Permission.Camera))
+//        {
+
+//        }
+//        else
+//        {
+
+//            // We do not have permission to use the microphone.
+//            // Ask for permission or proceed without the functionality enabled.
+//            #if UNITY_ANDROID
+//            Permission.RequestUserPermission(Permission.Camera);
+//            #endif
+
+//        }
 
         // Will attach a VideoPlayer to the main camera.
         GameObject camera = GameObject.Find("Main Camera");
@@ -49,7 +67,7 @@ public class SplashScreenController : MonoBehaviour
         // Restart from beginning when done.
         videoPlayer.isLooping = true;
 
-        videoPlayer.Play();
+        videoPlayer.Play(); 
     }
     void Update(){
         if (!MainController.Instance.isInitializing)
@@ -70,6 +88,43 @@ public class SplashScreenController : MonoBehaviour
         {
             Application.Quit();
         }
+
+    }
+    internal void PermissionCallbacks_PermissionDeniedAndDontAskAgain(string permissionName)
+    {
+        Application.Quit();
+    }
+
+    internal void PermissionCallbacks_PermissionGranted(string permissionName)
+    {
+        Debug.Log($"{permissionName} PermissionCallbacks_PermissionGranted");
+    }
+
+    internal void PermissionCallbacks_PermissionDenied(string permissionName)
+    {
+        Application.Quit();
+    }
+    void GetPermissionForCameraOnAndroid()
+    {
+
+        if (Permission.HasUserAuthorizedPermission(Permission.Camera))
+        {
+            
+        }
+        else
+        {
+            var callbacks = new PermissionCallbacks();
+            callbacks.PermissionDenied += PermissionCallbacks_PermissionDenied;
+            callbacks.PermissionGranted += PermissionCallbacks_PermissionGranted;
+            callbacks.PermissionDeniedAndDontAskAgain += PermissionCallbacks_PermissionDeniedAndDontAskAgain;
+            Permission.RequestUserPermission(Permission.Camera, callbacks);
+            // We do not have permission to use the microphone.
+            // Ask for permission or proceed without the functionality enabled
+        }
+
+    }
+    internal void QuitApp()
+    {
 
     }
 
