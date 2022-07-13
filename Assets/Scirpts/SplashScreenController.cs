@@ -11,9 +11,9 @@ public class SplashScreenController : MonoBehaviour
     private void Start()
     {
 
-        #if UNITY_IOS
-            Application.RequestUserAuthorization(UserAuthorization.WebCam);
-        #endif
+#if UNITY_IOS
+           StartCoroutine(GetPermissionForCameraOnIOS());
+#endif
 
         if (Permission.HasUserAuthorizedPermission(Permission.Camera))
         {
@@ -62,6 +62,14 @@ public class SplashScreenController : MonoBehaviour
     {
 
         yield return Application.RequestUserAuthorization(UserAuthorization.WebCam);
+        if (Application.HasUserAuthorization(UserAuthorization.WebCam))
+        {
+            Debug.Log("webcam found");
+        }
+        else
+        {
+            Application.Quit();
+        }
 
     }
 
