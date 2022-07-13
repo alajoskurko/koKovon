@@ -24,7 +24,7 @@ public class SplashScreenController : MonoBehaviour
             Permission.RequestUserPermission(Permission.Camera);
             #endif
             #if UNITY_IOS
-            // Application.RequestUserAuthorization(UserAuthorization.WebCam);
+            Application.RequestUserAuthorization(UserAuthorization.WebCam);
                 StartCoroutine(GetPermissionForCameraOnIOS());           
             #endif
 
