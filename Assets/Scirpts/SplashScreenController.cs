@@ -11,7 +11,7 @@ public class SplashScreenController : MonoBehaviour
     private void Start()
     {
 
-        if (Permission.HasUserAuthorizedPermission(Permission.Microphone))
+        if (Permission.HasUserAuthorizedPermission(Permission.webcam))
         {
 
         }
@@ -24,7 +24,8 @@ public class SplashScreenController : MonoBehaviour
             Permission.RequestUserPermission(Permission.Camera);
             #endif
             #if UNITY_IOS
-                    StartCoroutine(GetPermissionForCameraOnIOS());           
+            // Application.RequestUserAuthorization(UserAuthorization.WebCam);
+                StartCoroutine(GetPermissionForCameraOnIOS());           
             #endif
 
         }
@@ -59,14 +60,8 @@ public class SplashScreenController : MonoBehaviour
     }
     IEnumerator GetPermissionForCameraOnIOS()
     {
-        if (Application.HasUserAuthorization(UserAuthorization.WebCam))
-        {
-            Debug.Log("webcam found");
-        }
-        else
-        {
-            yield return Application.RequestUserAuthorization(UserAuthorization.WebCam);
-        }
+
+        yield return Application.RequestUserAuthorization(UserAuthorization.WebCam);
 
     }
 
