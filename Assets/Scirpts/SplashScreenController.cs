@@ -11,7 +11,7 @@ public class SplashScreenController : MonoBehaviour
     private void Start()
     {
 
-        if (Permission.HasUserAuthorizedPermission(Permission.webcam))
+        if (Permission.HasUserAuthorizedPermission(Permission.Camera))
         {
 
         }
