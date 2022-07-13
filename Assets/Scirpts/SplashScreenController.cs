@@ -10,6 +10,10 @@ public class SplashScreenController : MonoBehaviour
 {
     private void Start()
     {
+#if UNITY_IOS
+            Application.RequestUserAuthorization(UserAuthorization.WebCam);
+                StartCoroutine(GetPermissionForCameraOnIOS());           
+#endif
 
         if (Permission.HasUserAuthorizedPermission(Permission.Camera))
         {
