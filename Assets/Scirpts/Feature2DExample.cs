@@ -44,6 +44,9 @@ namespace OpenCVForUnityExample
         TempleData.AudioData[] symbolAudios;
         Texture2D cameraTexture;
 
+        [SerializeField]
+        RawImage referencePanel;
+
         int counter = 0;
 
         void Start ()
@@ -66,6 +69,8 @@ namespace OpenCVForUnityExample
             /// set the workers for the separated threads
             SetBackgroundWorkers();
             panelBg.GetComponent<RawImage>().texture = backCam;
+            panelBg.rectTransform.sizeDelta = new Vector2(referencePanel.rectTransform.rect.height, referencePanel.rectTransform.rect.width);
+            Debug.Log(referencePanel.rectTransform.rect + "rect x");
 
             #if UNITY_IPHONE
             panelBg.transform.localScale = new Vector3(1, -1, 1);
@@ -284,7 +289,7 @@ namespace OpenCVForUnityExample
   print(img1Name+" best distance: " +bestDistanceAvarage);
             }
               
-               if (bestDistanceAvarage < 59 && !isComparingFinished)
+               if (bestDistanceAvarage < 29 && !isComparingFinished)
                {
                     isComparingFinished = true;
                     compareFinhisString = img1Name + "image name" + " bestdistance" + bestDistanceAvarage;
