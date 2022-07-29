@@ -63,9 +63,6 @@ namespace OpenCVForUnityExample
             
             backCam.Play();
             bgWoker1 = new BackgroundWorker();
-            ///get comparable images
-            GetImages();
-            
             /// set the workers for the separated threads
             SetBackgroundWorkers();
             panelBg.GetComponent<RawImage>().texture = backCam;
@@ -99,15 +96,6 @@ namespace OpenCVForUnityExample
         }
 
         #region InitialSetups
-        void GetImages()
-        {
-            //imagesList.Add(test1);
-            //imagesList.Add(test2);
-            //imagesList.Add(test1);
-            //imagesList.Add(test2);
-            //imagesList.Add(test1);
-
-        }
         void StartWebcamDevice()
         {
             //Start webcam device
@@ -162,21 +150,19 @@ namespace OpenCVForUnityExample
         {
             //if (counter > 15)
             //{
-                if (!scanIsOver)
+            Destroy(cameraTexture);
+            cameraTexture = GetTexture2DFromWebcamTexture(backCam);
+            if (!scanIsOver)
                 {
                 //converts webcam texture to Texture2D, that can later be converted into 
-                Destroy(cameraTexture);
-                    cameraTexture = GetTexture2DFromWebcamTexture(backCam);
+                    
                     CompareAllImages(cameraTexture);
                 }
-                counter = 0;
-            //}
-            counter++;
             if (!scanIsOver)
             {
                 if (isComparingFinished)
                 {
-                    backCam.Stop();
+                    //backCam.Stop();
                     myMessageBox.text = compareFinhisString;
 
                     scanIsOver = true;
@@ -289,7 +275,7 @@ namespace OpenCVForUnityExample
   print(img1Name+" best distance: " +bestDistanceAvarage);
             }
               
-               if (bestDistanceAvarage < 29 && !isComparingFinished)
+               if (bestDistanceAvarage < 59 && !isComparingFinished)
                {
                     isComparingFinished = true;
                     compareFinhisString = img1Name + "image name" + " bestdistance" + bestDistanceAvarage;

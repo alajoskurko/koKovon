@@ -15,9 +15,13 @@ public class SuccessfulScan : MonoBehaviour
     string scannedSymbolName;
     [SerializeField]
     Image symbolImage;
+    [SerializeField]
+    Animator successAnimator;
 
     TempleData currentTempleData;
     Dictionary<string, SymbolGroup> symbolsGroups = new Dictionary<string, SymbolGroup>();
+    [SerializeField]
+    GameObject ScanImageController;
     // Start is called before the first frame update
     void Start()
     {
@@ -28,11 +32,20 @@ public class SuccessfulScan : MonoBehaviour
 
     public void SuccessfulScanHappened(string scannedSymbol)
     {
-        successfullScanPanel.gameObject.SetActive(true);
-        BGPanel.gameObject.SetActive(false);
+        //successfullScanPanel.gameObject.SetActive(true);
+        //BGPanel.gameObject.SetActive(false);
+        StartCoroutine(PlaySymbolPanelSliedUpAnimation());
+        
         scannedSymbolName = scannedSymbol;
-        CreatSymbol();
+        //CreatSymbol();
         StartCoroutine(LoadAudioLocaly(MainController.Instance.getCurrentTempleData().name,scannedSymbol));
+        ScanImageController scaniImgC = ScanImageController.GetComponent<ScanImageController>();
+        scaniImgC.InstantiateAll();
+    }
+    public IEnumerator PlaySymbolPanelSliedUpAnimation()
+    {
+        yield return new WaitForSeconds(2f);
+        successAnimator.SetBool("success", true);
     }
 
     public IEnumerator LoadAudioLocaly(string templeName, string fileName)
