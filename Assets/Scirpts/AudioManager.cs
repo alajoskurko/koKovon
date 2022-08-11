@@ -105,11 +105,11 @@ public class AudioManager : MonoBehaviour
     //Todod delete not working currently
     public IEnumerator LoadAudioLocaly(string templeName, string fileName)
     {
-        string path = Application.persistentDataPath + "/" + templeName + "/" + fileName + ".mp3";
+        string path = Application.persistentDataPath + "/" + templeName + "/" + MainController.Instance.selectedLanguage + "/" + fileName + ".mp3";
         string url = string.Format("file://{0}", path);
         WWW www = new WWW(url);
         yield return www;
-        audioClip= www.GetAudioClip(false, false);
+        audioClip = www.GetAudioClip(false, false);
         audioSouce.clip = audioClip;
         audioSouce.time = playTime;
         fullLength = (int)audioClip.length;
