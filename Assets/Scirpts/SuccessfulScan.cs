@@ -40,7 +40,6 @@ public class SuccessfulScan : MonoBehaviour
     {
         //successfullScanPanel.gameObject.SetActive(true);
         //BGPanel.gameObject.SetActive(false);
-        successAnimator.SetBool("success", true);
         border.gameObject.SetActive(false);
         scannedSymbolName = scannedSymbol;
         StartCoroutine(PlayAnims());
@@ -53,8 +52,9 @@ public class SuccessfulScan : MonoBehaviour
     public IEnumerator PlayAnims()
     {
         fadeAudioBG.SetTrigger("FadeAudioBG");
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(1);
         audioPanelAnim.SetBool("playZoomIn", true);
+        successAnimator.SetBool("success", true);
     }
     public IEnumerator LoadAudioLocaly(string templeName, string fileName)
     {
