@@ -28,6 +28,8 @@ public class SuccessfulScan : MonoBehaviour
     AudioManager audioManager;
     [SerializeField]
     Animator audioPanelAnim,fadeAudioBG;
+    [SerializeField]
+    GameObject audioBG;
     // Start is called before the first frame update
     void Start()
     {
@@ -51,7 +53,8 @@ public class SuccessfulScan : MonoBehaviour
 
     public IEnumerator PlayAnims()
     {
-        fadeAudioBG.SetTrigger("FadeAudioBG");
+        //fadeAudioBG.SetTrigger("FadeAudioBG");
+        audioBG.SetActive(true);
         yield return new WaitForSeconds(1);
         audioPanelAnim.SetBool("playZoomIn", true);
         successAnimator.SetBool("success", true);
