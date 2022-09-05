@@ -226,6 +226,8 @@ public class MainController : MonoBehaviour
 
     public void DownloadEnded()
     {
+        TempleSceneController templeSceneController = GameObject.Find("TempleSceneController").GetComponent<TempleSceneController>();
+        templeSceneController.showPlayAnim();
         OnDownloadStateChanged(false);
         downloadCompleted = 0;
         downloadTarget = 0;

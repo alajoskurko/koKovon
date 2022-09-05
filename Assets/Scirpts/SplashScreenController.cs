@@ -49,25 +49,25 @@ public class SplashScreenController : MonoBehaviour
 //        }
 
         // Will attach a VideoPlayer to the main camera.
-        GameObject camera = GameObject.Find("Main Camera");
+        // GameObject camera = GameObject.Find("Main Camera");
 
-        // VideoPlayer automatically targets the camera backplane when it is added
-        // to a camera object, no need to change videoPlayer.targetCamera.
-        var videoPlayer = camera.AddComponent<UnityEngine.Video.VideoPlayer>();
+        // // VideoPlayer automatically targets the camera backplane when it is added
+        // // to a camera object, no need to change videoPlayer.targetCamera.
+        // var videoPlayer = camera.AddComponent<UnityEngine.Video.VideoPlayer>();
     
 
-        // By default, VideoPlayers added to a camera will use the far plane.
-        // Let's target the near plane instead.
-        videoPlayer.renderMode = UnityEngine.Video.VideoRenderMode.CameraNearPlane;
+        // // By default, VideoPlayers added to a camera will use the far plane.
+        // // Let's target the near plane instead.
+        // videoPlayer.renderMode = UnityEngine.Video.VideoRenderMode.CameraNearPlane;
 
 
-        VideoClip clip = Resources.Load<VideoClip>("IntroClip") as VideoClip;
-        videoPlayer.clip = clip;
+        // VideoClip clip = Resources.Load<VideoClip>("IntroClip") as VideoClip;
+        // videoPlayer.clip = clip;
 
-        // Restart from beginning when done.
-        videoPlayer.isLooping = true;
+        // // Restart from beginning when done.
+        // videoPlayer.isLooping = true;
 
-        videoPlayer.Play(); 
+        // videoPlayer.Play(); 
     }
     void Update(){
         if (!MainController.Instance.isInitializing)
@@ -130,7 +130,7 @@ public class SplashScreenController : MonoBehaviour
 
     public IEnumerator LoadTempleSelectionScreen()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(5f);
         SceneManager.LoadScene("TempleSelectionScene");
 
     }
