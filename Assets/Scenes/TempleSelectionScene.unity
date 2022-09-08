@@ -622,7 +622,11 @@ MonoBehaviour:
   mainTempleContainer: {fileID: 1763148629}
   languageChooser: {fileID: 977695777}
   currentLanguage: {fileID: 1606633159}
-  languagesList: []
+  scrollRect: {fileID: 1365309133}
+  languagesList:
+  - {fileID: 578745468}
+  - {fileID: 116757390}
+  - {fileID: 1618129913}
 --- !u!4 &467369075
 Transform:
   m_ObjectHideFlags: 0

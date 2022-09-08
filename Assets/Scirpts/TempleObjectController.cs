@@ -12,6 +12,8 @@ public class TempleObjectController : MonoBehaviour
     RawImage templeImage;
     [SerializeField]
     TMP_Text templeNameText;
+    [SerializeField]
+    ScrollRect scrollrect;
     // Start is called before the first frame update
     void Start()
     {
@@ -26,11 +28,12 @@ public class TempleObjectController : MonoBehaviour
 
     public void TempleSelected()
     {
-        Debug.Log("Selected " + templeData.id);
+        var akarmi = GameObject.Find("TempleContainer").GetComponent<RectTransform>();
+        var scrrollrect = GameObject.Find("ScrollRect").GetComponent<ScrollRect>();
+        MainController.Instance.templeSelectorScrollrectPositionY = scrrollrect.verticalNormalizedPosition;;
         MainController.Instance.setCurrentTempleData(templeData);
         SceneManager.LoadScene("SpecificTempleScene");
-
-
+       
     }
    
 
@@ -89,7 +92,7 @@ public class TempleObjectController : MonoBehaviour
 
             //templeImage.color = new Color32(111, 189, 195, 255);
             templeImage.SetNativeSize();
-            if (templeData.name == "Jézus kápolna")
+            if (templeData.name == "Jézus-kápolna")
             {
                 templeImage.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
                 templeImage.uvRect = new Rect(0, 0, 1, 0.990f);

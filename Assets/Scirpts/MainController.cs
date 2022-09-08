@@ -56,6 +56,8 @@ public class MainController : MonoBehaviour
 
     public ProgressController progressController;
 
+    public float templeSelectorScrollrectPositionY = 1;
+
     private void Awake()
     {
 

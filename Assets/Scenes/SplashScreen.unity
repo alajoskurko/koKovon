@@ -648,6 +648,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4561650631705805880, guid: 83187f11d544dab47a4b65595d1d5aed, type: 3}
+      propertyPath: templeSelectorScrollrectPositionY
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4561650631705805881, guid: 83187f11d544dab47a4b65595d1d5aed, type: 3}
       propertyPath: m_RootOrder
       value: 4
