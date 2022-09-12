@@ -30,7 +30,7 @@ public class TempleObjectController : MonoBehaviour
     {
         var akarmi = GameObject.Find("TempleContainer").GetComponent<RectTransform>();
         var scrrollrect = GameObject.Find("ScrollRect").GetComponent<ScrollRect>();
-        MainController.Instance.templeSelectorScrollrectPositionY = scrrollrect.verticalNormalizedPosition;;
+        MainController.Instance.templeSelectorScrollrectPositionY = scrrollrect.verticalNormalizedPosition;
         MainController.Instance.setCurrentTempleData(templeData);
         SceneManager.LoadScene("SpecificTempleScene");
        

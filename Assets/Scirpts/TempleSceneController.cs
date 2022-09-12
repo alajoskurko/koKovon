@@ -48,10 +48,13 @@ public class TempleSceneController : MonoBehaviour
     GameObject audioPlayButton;
     [SerializeField]
     GameObject LoadingImage;
+    [SerializeField]
+    TMPro.TMP_Text chooseShapeText;
 
     Dictionary<string, string> downloadWarning = new Dictionary<string, string>() { { "hu", "Kérem töltse le a file-okat" }, { "ro", "Vă rog descărcați fișierele" }, { "en", "Please download the files first" } };
     Dictionary<string, string> downloadError = new Dictionary<string, string>() { { "hu", "A letöltés közben hiba lépett fel!" }, { "ro", "Eroare de descărcare!" }, { "en", "Error while downloading file!" } };
     Dictionary<string, string> playWarning = new Dictionary<string, string>() { { "hu", "Majd olvasd be az ikonokat!" }, { "ro", "Apoi scanează pictogramele!" }, { "en", "Then scan the icons!" } };
+    Dictionary<string, string> shapeTexts = new Dictionary<string, string>() { { "hu", "Válassz egy formát!" }, { "ro", "Alege o formă!" }, { "en", "Choose a shape!" } };
 
     public static TempleSceneController Instance;
     //SymbolGroups symbolGroupss;
@@ -65,11 +68,13 @@ public class TempleSceneController : MonoBehaviour
 
     void Start()
     {
+        chooseShapeText.text = shapeTexts[MainController.Instance.selectedLanguage];
         currentTemple = MainController.Instance.getCurrentTempleData();
         templeName= currentTemple.name;
         warningText.text = downloadWarning[MainController.Instance.selectedLanguage];
         netErrorText.text = downloadError[MainController.Instance.selectedLanguage];
         playWarningText.text = playWarning[MainController.Instance.selectedLanguage];
+       
         if (MainController.Instance.selectedLanguage == "hu")
         {
             templeNameText.text = templeName;
