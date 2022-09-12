@@ -17,7 +17,8 @@ public class TempleSelectionController : MonoBehaviour
     GameObject languageChooser;
     [SerializeField]
     Text currentLanguage;
-
+    [SerializeField]
+    ScrollRect scrollRect;
     [SerializeField]
     List<GameObject> languagesList = new List<GameObject>();
     private void Awake()
@@ -27,10 +28,15 @@ public class TempleSelectionController : MonoBehaviour
 
     void Start()
     {
-
+        //Canvas.ForceUpdateCanvases();
+        //RectTransform templecontainer = GameObject.Find("TempleContainer").GetComponent<RectTransform>();
+        //templecontainer.anchoredPosition =
+        //   (Vector2)scrollRect.transform.InverseTransformPoint(templecontainer.position)
+        //   - (Vector2)scrollRect.transform.InverseTransformPoint(MainController.Instance.templeSelectorScrollrectPosition);
+        Debug.Log(MainController.Instance.templeSelectorScrollrectPositionY + "MainController.Instance.templeSelectorScrollrectPositionY");
         InstantiateTempleItems(templePrefab,mainTempleContainer);
         currentLanguage.text = MainController.Instance.selectedLanguage;
-
+        scrollRect.verticalNormalizedPosition = MainController.Instance.templeSelectorScrollrectPositionY;
     }
 
     void InitTemples()

@@ -150,19 +150,19 @@ namespace OpenCVForUnityExample
         {
             //if (counter > 15)
             //{
-            Destroy(cameraTexture);
-            cameraTexture = GetTexture2DFromWebcamTexture(backCam);
+           
             if (!scanIsOver)
                 {
+                Destroy(cameraTexture);
+                cameraTexture = GetTexture2DFromWebcamTexture(backCam);
                 //converts webcam texture to Texture2D, that can later be converted into 
-                    
-                    CompareAllImages(cameraTexture);
+
+                CompareAllImages(cameraTexture);
                 }
             if (!scanIsOver)
             {
                 if (isComparingFinished)
                 {
-                    //backCam.Stop();
                     myMessageBox.text = compareFinhisString;
 
                     scanIsOver = true;
@@ -170,18 +170,14 @@ namespace OpenCVForUnityExample
                     GetAudioForSymbol();
                     progressController.UpdateProgressInJson(scannedSymbolName, MainController.Instance.getCurrentTempleData().name);
                     successfulScanController.SuccessfulScanHappened(scannedSymbolName);
+
+                    backCam.Stop();
                 }
                 else
                 {
                     myMessageBox.text = bestDistanceAvarage.ToString();
                 }
             }
-
-        }
-
-        private void FixedUpdate()
-        {
-            
 
         }
 
@@ -275,7 +271,7 @@ namespace OpenCVForUnityExample
   print(img1Name+" best distance: " +bestDistanceAvarage);
             }
               
-               if (bestDistanceAvarage < 59 && !isComparingFinished)
+               if (bestDistanceAvarage < 29 && !isComparingFinished)
                {
                     isComparingFinished = true;
                     compareFinhisString = img1Name + "image name" + " bestdistance" + bestDistanceAvarage;

@@ -15,7 +15,15 @@ public class TempleSceneController : MonoBehaviour
     [SerializeField]
     Text warningText;
     [SerializeField]
-    GameObject warningPanel;
+    Text netErrorText;
+    [SerializeField]
+    Text playWarningText;
+    [SerializeField]
+    GameObject downloadWarningPanel;
+    [SerializeField]
+    GameObject netErrorPanel;
+    [SerializeField]
+    GameObject playWarningPanel;
     [SerializeField]
     RawImage templeImage;
     [SerializeField]
@@ -38,9 +46,15 @@ public class TempleSceneController : MonoBehaviour
     AudioClip audioClip;
     [SerializeField]
     GameObject audioPlayButton;
+    [SerializeField]
+    GameObject LoadingImage;
+    [SerializeField]
+    TMPro.TMP_Text chooseShapeText;
 
     Dictionary<string, string> downloadWarning = new Dictionary<string, string>() { { "hu", "Kérem töltse le a file-okat" }, { "ro", "Vă rog descărcați fișierele" }, { "en", "Please download the files first" } };
     Dictionary<string, string> downloadError = new Dictionary<string, string>() { { "hu", "A letöltés közben hiba lépett fel!" }, { "ro", "Eroare de descărcare!" }, { "en", "Error while downloading file!" } };
+    Dictionary<string, string> playWarning = new Dictionary<string, string>() { { "hu", "Majd olvasd be az ikonokat!" }, { "ro", "Apoi scanează pictogramele!" }, { "en", "Then scan the icons!" } };
+    Dictionary<string, string> shapeTexts = new Dictionary<string, string>() { { "hu", "Válassz egy formát!" }, { "ro", "Alege o formă!" }, { "en", "Choose a shape!" } };
 
     public static TempleSceneController Instance;
     //SymbolGroups symbolGroupss;
@@ -54,8 +68,13 @@ public class TempleSceneController : MonoBehaviour
 
     void Start()
     {
+        chooseShapeText.text = shapeTexts[MainController.Instance.selectedLanguage];
         currentTemple = MainController.Instance.getCurrentTempleData();
         templeName= currentTemple.name;
+        warningText.text = downloadWarning[MainController.Instance.selectedLanguage];
+        netErrorText.text = downloadError[MainController.Instance.selectedLanguage];
+        playWarningText.text = playWarning[MainController.Instance.selectedLanguage];
+       
         if (MainController.Instance.selectedLanguage == "hu")
         {
             templeNameText.text = templeName;
@@ -164,9 +183,7 @@ public class TempleSceneController : MonoBehaviour
             newSymbolItem.GetComponent<SymbolGroupPrefabController>().SetSymbolData(symbol);
         }
     }
-    public void ProcessSymbolImage(byte[] resultBytes, string name)
-    { 
-    }
+
         public void SetDownloadButtonState(bool state)
     {
         if (state && downloadButtonAnimator)
@@ -179,7 +196,7 @@ public class TempleSceneController : MonoBehaviour
         else
         {
             downloadButtonAnimator.SetBool("isDownloading", false);
-            warningPanel.gameObject.SetActive(false);
+            downloadWarningPanel.gameObject.SetActive(false);
             downloadButton.gameObject.SetActive(true);
         }
 
@@ -203,8 +220,7 @@ public class TempleSceneController : MonoBehaviour
         {
             //Todo probably popup needed or something
             print("Donwload the files first please");
-            warningPanel.gameObject.SetActive(true);
-            warningText.text = downloadWarning[MainController.Instance.selectedLanguage];
+            downloadWarningPanel.gameObject.SetActive(true);
             downloadButtonAnimator.SetBool("playWarning", true);
         }
       
@@ -212,8 +228,7 @@ public class TempleSceneController : MonoBehaviour
 
     public void OnDownloadButtonHit()
     {
-        warningText.text = "";
-        warningPanel.gameObject.SetActive(false);
+        downloadWarningPanel.gameObject.SetActive(false);
         if (MainController.Instance.isDownloading)
         {
             return;
@@ -292,8 +307,8 @@ public class TempleSceneController : MonoBehaviour
         {
             downloadButtonAnimator.SetBool("isDownloading", false);
             MainController.Instance.isDownloading = false;
-            warningPanel.gameObject.SetActive(true);
-            warningText.text = downloadError[MainController.Instance.selectedLanguage];
+            downloadWarningPanel.gameObject.SetActive(false);
+            netErrorPanel.SetActive(true);
             return;
         }
         MainController.Instance.dataController.SaveImageLocally(resultBytes, templeName, fileName);
@@ -304,8 +319,8 @@ public class TempleSceneController : MonoBehaviour
         if(audiodata == null)
         {
             downloadButtonAnimator.SetBool("isDownloading", false);
-            warningPanel.gameObject.SetActive(true);
-            warningText.text = downloadError[MainController.Instance.selectedLanguage];
+            downloadWarningPanel.gameObject.SetActive(false);
+            netErrorPanel.SetActive(true);
             MainController.Instance.isDownloading = false;
             return;
         }
@@ -340,6 +355,12 @@ public class TempleSceneController : MonoBehaviour
         }
     }
 
+    public void showPlayAnim()
+    {
+        playWarningPanel.SetActive(true);
+        Debug.Log("playwarning active true");
+    }
+
     public void ShowSymbolGroupsForScan()
     {
         Dictionary<string, LocalTempleData> allLocalTempleData = MainController.Instance.LoadAllLocalTempledata();
@@ -352,7 +373,8 @@ public class TempleSceneController : MonoBehaviour
         {
             //Todo probably popup needed or something
             print("Donwload the files first please");
-            warningPanel.gameObject.SetActive(true);
+            downloadWarningPanel.gameObject.SetActive(true);
+            netErrorPanel.gameObject.SetActive(false);
             warningText.gameObject.SetActive(true);
             downloadButtonAnimator.SetBool("playWarning", true);
         }
@@ -382,7 +404,8 @@ public class TempleSceneController : MonoBehaviour
         }
         else
         {
-            warningPanel.gameObject.SetActive(true);
+            downloadWarningPanel.gameObject.SetActive(true);
+            netErrorPanel.gameObject.SetActive(false);
             warningText.gameObject.SetActive(true);
             downloadButtonAnimator.SetBool("playWarning", true);
         }
@@ -390,7 +413,7 @@ public class TempleSceneController : MonoBehaviour
     }
     public void HideWarningPanel ()
     {
-        warningPanel.gameObject.SetActive(false);
+        downloadWarningPanel.gameObject.SetActive(false);
     }
     public IEnumerator LoadAudioLocaly()
     {
@@ -407,7 +430,8 @@ public class TempleSceneController : MonoBehaviour
     {
         SwipeDetector.OnSwipe -= SwipeDetector_OnSwipe;
         MainController.OnDownloadStateChanged -= SetDownloadButtonState;
-        SceneManager.LoadScene("ImageDetectionScene");
+        LoadingImage.gameObject.SetActive(true);
+        SceneManager.LoadSceneAsync("ImageDetectionScene");  
     }
 
 }

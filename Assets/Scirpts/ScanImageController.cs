@@ -56,11 +56,7 @@ public class ScanImageController : MonoBehaviour
             {
                 xPos = -125;
                 yPos = -65;
-            }
-
-             
-
-            
+            }   
         }
     }
     bool ChecIfSymbolIsScanned(string symbolName)

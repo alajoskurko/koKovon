@@ -17,11 +17,19 @@ public class SuccessfulScan : MonoBehaviour
     Image symbolImage;
     [SerializeField]
     Animator successAnimator;
+    [SerializeField]
+    GameObject border;
 
     TempleData currentTempleData;
     Dictionary<string, SymbolGroup> symbolsGroups = new Dictionary<string, SymbolGroup>();
     [SerializeField]
     GameObject ScanImageController;
+    [SerializeField]
+    AudioManager audioManager;
+    [SerializeField]
+    Animator audioPanelAnim,fadeAudioBG;
+    [SerializeField]
+    GameObject audioBG;
     // Start is called before the first frame update
     void Start()
     {
@@ -34,20 +42,23 @@ public class SuccessfulScan : MonoBehaviour
     {
         //successfullScanPanel.gameObject.SetActive(true);
         //BGPanel.gameObject.SetActive(false);
-        StartCoroutine(PlaySymbolPanelSliedUpAnimation());
-        
+        border.gameObject.SetActive(false);
         scannedSymbolName = scannedSymbol;
-        //CreatSymbol();
-        StartCoroutine(LoadAudioLocaly(MainController.Instance.getCurrentTempleData().name,scannedSymbol));
+        StartCoroutine(PlayAnims());
+        CreatSymbol();
+        StartCoroutine(audioManager.LoadAudioLocaly(MainController.Instance.getCurrentTempleData().name,scannedSymbol));
         ScanImageController scaniImgC = ScanImageController.GetComponent<ScanImageController>();
         scaniImgC.InstantiateAll();
     }
-    public IEnumerator PlaySymbolPanelSliedUpAnimation()
+
+    public IEnumerator PlayAnims()
     {
-        yield return new WaitForSeconds(2f);
+        //fadeAudioBG.SetTrigger("FadeAudioBG");
+        audioBG.SetActive(true);
+        yield return new WaitForSeconds(1);
+        audioPanelAnim.SetBool("playZoomIn", true);
         successAnimator.SetBool("success", true);
     }
-
     public IEnumerator LoadAudioLocaly(string templeName, string fileName)
     {
         Debug.LogWarning(templeName + " " + fileName + " belepik");
@@ -57,7 +68,7 @@ public class SuccessfulScan : MonoBehaviour
         yield return www;
         audioClip = www.GetAudioClip(false, false);
         audioSource.clip = audioClip;
-        audioSource.Play();
+        //audioSource.Play();
     }
     private void CreatSymbol()
     {
@@ -70,11 +81,11 @@ public class SuccessfulScan : MonoBehaviour
         var screenWidth = Screen.width * 70 / 100;
         if (imageTexture.width > screenWidth)
         {
-            symbolImage.transform.localScale = new Vector3(.45f, .45f, .45f);
+            symbolImage.transform.localScale = new Vector3(1.75f, 1.75f, .45f);
         }
         else
         {
-            symbolImage.transform.localScale = new Vector3(.65f, .65f, .65f);
+            symbolImage.transform.localScale = new Vector3(1.95f, 1.95f, .65f);
         }
     }
 
