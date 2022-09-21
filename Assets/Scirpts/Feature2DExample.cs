@@ -271,7 +271,7 @@ namespace OpenCVForUnityExample
   print(img1Name+" best distance: " +bestDistanceAvarage);
             }
               
-               if (bestDistanceAvarage < 29 && !isComparingFinished)
+               if (bestDistanceAvarage < 69 && !isComparingFinished)
                {
                     isComparingFinished = true;
                     compareFinhisString = img1Name + "image name" + " bestdistance" + bestDistanceAvarage;

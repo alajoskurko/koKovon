@@ -51,10 +51,10 @@ public class TempleSceneController : MonoBehaviour
     [SerializeField]
     TMPro.TMP_Text chooseShapeText;
 
-    Dictionary<string, string> downloadWarning = new Dictionary<string, string>() { { "hu", "Kérem töltse le a file-okat" }, { "ro", "Vă rog descărcați fișierele" }, { "en", "Please download the files first" } };
-    Dictionary<string, string> downloadError = new Dictionary<string, string>() { { "hu", "A letöltés közben hiba lépett fel!" }, { "ro", "Eroare de descărcare!" }, { "en", "Error while downloading file!" } };
-    Dictionary<string, string> playWarning = new Dictionary<string, string>() { { "hu", "Majd olvasd be az ikonokat!" }, { "ro", "Apoi scanează pictogramele!" }, { "en", "Then scan the icons!" } };
-    Dictionary<string, string> shapeTexts = new Dictionary<string, string>() { { "hu", "Válassz egy formát!" }, { "ro", "Alege o formă!" }, { "en", "Choose a shape!" } };
+    Dictionary<string, string> downloadWarning = new Dictionary<string, string>() { { "hu", "Fájlok letöltése " }, { "ro", "Descarcă fișierele" }, { "en", "Download the files" } };
+    Dictionary<string, string> downloadError = new Dictionary<string, string>() { { "hu", "Download error!" }, { "ro", "Eroare de descărcare!" }, { "en", "Download error!" } };
+    Dictionary<string, string> playWarning = new Dictionary<string, string>() { { "hu", "Szkennelés" }, { "ro", "Scanare" }, { "en", "Scan" } };
+    Dictionary<string, string> shapeTexts = new Dictionary<string, string>() { { "hu", "Forma kiválasztása" }, { "ro", "Alege o formă!" }, { "en", "Choose a shape!" } };
 
     public static TempleSceneController Instance;
     //SymbolGroups symbolGroupss;
@@ -195,7 +195,11 @@ public class TempleSceneController : MonoBehaviour
         }
         else
         {
-            downloadButtonAnimator.SetBool("isDownloading", false);
+            if (downloadButtonAnimator)
+            {
+                downloadButtonAnimator.SetBool("isDownloading", false);
+            }
+            
             downloadWarningPanel.gameObject.SetActive(false);
             downloadButton.gameObject.SetActive(true);
         }
