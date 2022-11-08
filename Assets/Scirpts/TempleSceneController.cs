@@ -141,6 +141,7 @@ public class TempleSceneController : MonoBehaviour
     }
     int GetSymbolsLength()
     {
+        var akarmi = currentTemple.symbol_groups;
         int symbolsLength = 0;
         foreach (KeyValuePair<string, SymbolGroup> symbolGroup in currentTemple.symbol_groups)
         {
@@ -207,7 +208,7 @@ public class TempleSceneController : MonoBehaviour
                 downloadWarningPanel.gameObject.SetActive(false);
             }
             
-            downloadButton.gameObject.SetActive(true);
+            //downloadButton.gameObject.SetActive(true);
         }
 
     }
@@ -246,7 +247,7 @@ public class TempleSceneController : MonoBehaviour
         MainController.Instance.StartDownload();
         MainController.Instance.downloadCompleted = 0;
         MainController.Instance.downloadTarget = GetSymbolsLength();
-        Debug.LogWarning("download targer :   " + MainController.Instance.downloadTarget);
+        Debug.Log("download target :   " + MainController.Instance.downloadTarget);
 
         //Should download and save the data also it should store that the temple data was downloaded
         foreach (KeyValuePair<string, SymbolGroup> symbolGroup in currentTemple.symbol_groups)
@@ -322,6 +323,8 @@ public class TempleSceneController : MonoBehaviour
             return;
         }
         MainController.Instance.dataController.SaveImageLocally(resultBytes, templeName, fileName);
+        MainController.Instance.downloadCompleted++;
+        Debug.Log(MainController.Instance.downloadCompleted + " downloaded files numbe"); 
     }
 
     private void SaveSymbolAudio(TempleData.AudioData audiodata, byte[] resultBytes, string fileName)
@@ -334,9 +337,9 @@ public class TempleSceneController : MonoBehaviour
             MainController.Instance.isDownloading = false;
             return;
         }
-        MainController.Instance.dataController.SaveAudioLocally(audiodata.lang,resultBytes, templeName, fileName);
         MainController.Instance.downloadCompleted++;
-        Debug.LogWarning(MainController.Instance.downloadCompleted + " downloaded files numbe"); ;
+        MainController.Instance.dataController.SaveAudioLocally(audiodata.lang,resultBytes, templeName, fileName);
+        
     }
 
     public void LoadHomeScreen()

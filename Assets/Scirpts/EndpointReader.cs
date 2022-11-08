@@ -66,7 +66,7 @@ public class EndpointReader : MonoBehaviour
             
          //   var pngFormatedImage = imageTexture.EncodeToPNG();
            
-            print("image loaded with success");
+            //print("image loaded with success");
 
             callback(resultBytes,name);
 

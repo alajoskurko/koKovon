@@ -28,15 +28,20 @@ public class TempleSelectionController : MonoBehaviour
 
     void Start()
     {
-        //Canvas.ForceUpdateCanvases();
-        //RectTransform templecontainer = GameObject.Find("TempleContainer").GetComponent<RectTransform>();
-        //templecontainer.anchoredPosition =
-        //   (Vector2)scrollRect.transform.InverseTransformPoint(templecontainer.position)
-        //   - (Vector2)scrollRect.transform.InverseTransformPoint(MainController.Instance.templeSelectorScrollrectPosition);
-        Debug.Log(MainController.Instance.templeSelectorScrollrectPositionY + "MainController.Instance.templeSelectorScrollrectPositionY");
         InstantiateTempleItems(templePrefab,mainTempleContainer);
         currentLanguage.text = MainController.Instance.selectedLanguage;
         scrollRect.verticalNormalizedPosition = MainController.Instance.templeSelectorScrollrectPositionY;
+        foreach (var item in languagesList)
+        {
+            if (item.gameObject.name.ToLower() == MainController.Instance.selectedLanguage)
+            {
+                item.gameObject.SetActive(false);
+            }
+            else
+            {
+                item.gameObject.SetActive(true);
+            }
+        }
     }
 
     void InitTemples()

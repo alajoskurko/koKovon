@@ -372,7 +372,7 @@ public class MainController : MonoBehaviour
     public int GetNumberOfSymbolsVisited(TempleData templeData)
     {
         int counter = 0;
-        Debug.Log(templeData + " symbol");
+        //Debug.Log(templeData + " symbol");
         foreach (KeyValuePair<string, SymbolGroup> symbolGroup in templeData.symbol_groups)
         {
             foreach (Symbol symbol in symbolGroup.Value.symbols)
