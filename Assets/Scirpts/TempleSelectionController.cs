@@ -64,6 +64,10 @@ public class TempleSelectionController : MonoBehaviour
             {
                 newTempleItem.transform.parent = parent.transform;
                 newTempleItem.transform.localScale = new Vector3(1,1,1);
+                //if (templeData.id == "3"){
+                //    Debug.Log(templeData + " temple data");
+                //}
+              
             }
             TempleObjectController templeObjectController = newTempleItem.GetComponent<TempleObjectController>();
             templeObjectController.SetTempleData(templeData, allLocalTempleData[templeData.name].downloaded[MainController.Instance.selectedLanguage]);

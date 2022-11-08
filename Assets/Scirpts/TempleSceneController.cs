@@ -59,6 +59,9 @@ public class TempleSceneController : MonoBehaviour
     public static TempleSceneController Instance;
     //SymbolGroups symbolGroupss;
 
+    [SerializeField]
+    Animator animator;
+
     private void Awake()
     {
         Instance = this;
@@ -74,7 +77,7 @@ public class TempleSceneController : MonoBehaviour
         warningText.text = downloadWarning[MainController.Instance.selectedLanguage];
         netErrorText.text = downloadError[MainController.Instance.selectedLanguage];
         playWarningText.text = playWarning[MainController.Instance.selectedLanguage];
-       
+        //GetComponent<Animation>().Play("scanButtonFlashing");
         if (MainController.Instance.selectedLanguage == "hu")
         {
             templeNameText.text = templeName;
@@ -199,8 +202,11 @@ public class TempleSceneController : MonoBehaviour
             {
                 downloadButtonAnimator.SetBool("isDownloading", false);
             }
+            if (downloadWarningPanel)
+            {
+                downloadWarningPanel.gameObject.SetActive(false);
+            }
             
-            downloadWarningPanel.gameObject.SetActive(false);
             downloadButton.gameObject.SetActive(true);
         }
 
@@ -361,8 +367,15 @@ public class TempleSceneController : MonoBehaviour
 
     public void showPlayAnim()
     {
+        StartCoroutine(ScanWarning());
+        animator.SetTrigger("scanFlash");
+    }
+
+    IEnumerator ScanWarning()
+    {
         playWarningPanel.SetActive(true);
-        Debug.Log("playwarning active true");
+        yield return new WaitForSeconds(2.7f);
+        playWarningPanel.SetActive(false);
     }
 
     public void ShowSymbolGroupsForScan()
