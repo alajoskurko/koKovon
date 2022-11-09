@@ -30,7 +30,7 @@ namespace OpenCVForUnityExample
         RawImage panelBg;
         Texture2D test1;
         public Quaternion baseRotation;
-        Dictionary<string, Texture2D> scannableImagesDic = new Dictionary<string, Texture2D>(); 
+        Dictionary<string, Mat> scannableImagesDic = new Dictionary<string, Mat>(); 
         double bestDistanceAvarage;
         string compareFinhisString;
 
@@ -87,7 +87,9 @@ namespace OpenCVForUnityExample
                 //Debug.Log(imageTexture.height + " heigjht" + imageTexture.width + " width");
                 //Debug.Log(backCam.width + " " + backCam.height);
                 var akarmi = imageTexture;
-                scannableImagesDic.Add(symbol.symbol_name, imageTexture);
+                OpenCVForUnity.CoreModule.Mat mat = new Mat(imageTexture.height, imageTexture.width, CvType.CV_8UC3);
+                Utils.texture2DToMat(imageTexture,mat);
+                scannableImagesDic.Add(symbol.symbol_name, mat);
                 //symbolImage.texture = imageTexture;
                 //Color currColor = symbolImage.color;
                 //currColor.a = 1;
@@ -158,7 +160,7 @@ namespace OpenCVForUnityExample
                 //converts webcam texture to Texture2D, that can later be converted into 
 
                 CompareAllImages(cameraTexture);
-                }
+            }
             if (!scanIsOver)
             {
                 if (isComparingFinished)
@@ -202,21 +204,23 @@ namespace OpenCVForUnityExample
         }
 
 
-        void CompareImages(BackgroundWorker bgWoker,Texture2D img1, string img1Name, Texture2D img2)
+        void CompareImages(BackgroundWorker bgWoker,Mat img1Mat, string img1Name, Texture2D img2)
         {
 
-            OpenCVForUnity.CoreModule.Mat img1Mat = new Mat(img1.height, img1.width, CvType.CV_8UC3);
-            OpenCVForUnity.CoreModule.Mat img2Mat = new Mat(img2.height, img2.width, CvType.CV_8UC3);
+            Mat img2Mat = new Mat(img2.height, img2.width, CvType.CV_8UC3);
 
-            Utils.texture2DToMat(img1, img1Mat);
+           
             Utils.texture2DToMat(img2, img2Mat);
+
+            //OpenCVForUnity.CoreModule.Mat  img1Mat = new Mat();
+            //OpenCVForUnity.CoreModule.Mat img2Mat = new Mat();
             // if (bgWoker != null)
             // {
             //     bgWoker.Dispose();
 
             // }
 
-                if( !bgWoker.IsBusy ){
+            if ( !bgWoker.IsBusy ){
                 bgWoker.DoWork += (o, a) => DetectAndCalculate(img1Mat,img2Mat,img1Name);
                 //DetectAndCalculate(detector,img2Mat,keypoints2,extractor,descriptors1,descriptors2,img1Name);
                 bgWoker.RunWorkerAsync();
