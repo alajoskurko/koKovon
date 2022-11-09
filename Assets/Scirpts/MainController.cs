@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using static TempleData;
 using System.Linq;
 using System;
+using UnityEngine.UI;
 
 public class MainController : MonoBehaviour
 {
@@ -89,6 +90,13 @@ public class MainController : MonoBehaviour
         if (downloadCompleted > downloadTarget-1 && isDownloading)
         {
             DownloadEnded();
+            TempleSceneController.Instance.progressObj.SetActive(false);
+        }
+        else if (isDownloading)
+        {
+            float num = (downloadCompleted * 100) / (downloadTarget - 1);
+            TempleSceneController.Instance.progressObj.SetActive(true);
+            TempleSceneController.Instance.progressObj.gameObject.transform.GetChild(0).GetComponent<Slider>().value= num / 100;
         }
     }
 

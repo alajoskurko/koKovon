@@ -50,6 +50,8 @@ public class TempleSceneController : MonoBehaviour
     GameObject LoadingImage;
     [SerializeField]
     TMPro.TMP_Text chooseShapeText;
+    [SerializeField]
+    public GameObject progressObj;
 
     Dictionary<string, string> downloadWarning = new Dictionary<string, string>() { { "hu", "Fájlok letöltése " }, { "ro", "Descarcă fișierele" }, { "en", "Download the files" } };
     Dictionary<string, string> downloadError = new Dictionary<string, string>() { { "hu", "Download error!" }, { "ro", "Eroare de descărcare!" }, { "en", "Download error!" } };
