@@ -48,7 +48,11 @@ namespace OpenCVForUnityExample
         RawImage referencePanel;
 
         int counter = 0;
+        [SerializeField]
+        Text fpsText, maxFpsText;
 
+        public float deltaTime;
+        public float maxFps = 0;
         void Start ()
         {
             successfulScanController = this.gameObject.GetComponent<SuccessfulScan>();
@@ -120,7 +124,10 @@ namespace OpenCVForUnityExample
                     // {
                     //    backCam = new WebCamTexture(devices[i].name, 500, 885);
                     // }
-                    backCam = new WebCamTexture(devices[0].name, 500, 885);
+
+                    //decrease webcamtexture size for a better fps performance
+                    //if there is something wrong with the symbol scan, put back the 500, 885
+                    backCam = new WebCamTexture(devices[0].name, 400, 708);
 
                 }
 
@@ -152,7 +159,30 @@ namespace OpenCVForUnityExample
         {
             //if (counter > 15)
             //{
+            //if(counter< 5)
+            //{
+            //    counter++;
+            //    return;
+            //}
+            //else
+            //{
+            //    counter = 0;
+            //}
+
+            deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
+            float fps = 1.0f / deltaTime;
+            fpsText.text = Mathf.Ceil(fps).ToString();
+
+            counter++;
+            if (counter > 100){
+                if (fps > maxFps)
+                {
+                    maxFps = fps;
+                    maxFpsText.text = maxFps.ToString();
+                }
+            }
            
+
             if (!scanIsOver)
                 {
                 Destroy(cameraTexture);
