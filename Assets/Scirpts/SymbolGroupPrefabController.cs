@@ -18,7 +18,7 @@ public class SymbolGroupPrefabController : MonoBehaviour
             { "kor",new Dictionary<string,string>(){ { "hu","Ég" }, { "en", "circle" }, { "ro", "cerc" } } },
             { "negyzet",new Dictionary<string,string>(){ { "hu", "Föld" }, { "en", "circle" }, { "ro", "cerc" } } },
             { "csillag",new Dictionary<string,string>(){ { "hu", "Legenda" }, { "en", "circle" }, { "ro", "cerc" } } },
-            { "lohere",new Dictionary<string,string>(){ { "hu", "Fal" }, { "en", "circle" }, { "ro", "cerc" } } },
+            { "boltiv",new Dictionary<string,string>(){ { "hu", "Fal" }, { "en", "circle" }, { "ro", "cerc" } } },
         };
 
 

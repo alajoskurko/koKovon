@@ -209,7 +209,7 @@ namespace OpenCVForUnityExample
 
             Mat img2Mat = new Mat(img2.height, img2.width, CvType.CV_8UC3);
 
-           
+            //Mat img2Mat = null;
             Utils.texture2DToMat(img2, img2Mat);
 
             //OpenCVForUnity.CoreModule.Mat  img1Mat = new Mat();
