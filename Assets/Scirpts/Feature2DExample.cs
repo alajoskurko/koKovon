@@ -127,7 +127,7 @@ namespace OpenCVForUnityExample
 
                     //decrease webcamtexture size for a better fps performance
                     //if there is something wrong with the symbol scan, put back the 500, 885
-                    backCam = new WebCamTexture(devices[0].name, 400, 708);
+                    backCam = new WebCamTexture(devices[0].name,400, 608);
 
                 }
 
