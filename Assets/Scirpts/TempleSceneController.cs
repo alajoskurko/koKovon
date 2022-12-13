@@ -379,6 +379,7 @@ public class TempleSceneController : MonoBehaviour
     IEnumerator ScanWarning()
     {
         playWarningPanel.SetActive(true);
+        netErrorPanel.SetActive(false);
         yield return new WaitForSeconds(2.7f);
         playWarningPanel.SetActive(false);
     }

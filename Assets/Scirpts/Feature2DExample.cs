@@ -18,9 +18,6 @@ namespace OpenCVForUnityExample
     public class Feature2DExample : MonoBehaviour
     {
 
-
-        [SerializeField]
-        Text myMessageBox;
         Dictionary<string,Texture2D> symbolTextures;
         static WebCamTexture backCam;
         BackgroundWorker bgWoker1,bgWoker2,bgWoker3,bgWoker4,bgWoker5;
@@ -48,8 +45,6 @@ namespace OpenCVForUnityExample
         RawImage referencePanel;
 
         int counter = 0;
-        [SerializeField]
-        Text fpsText, maxFpsText;
 
         public float deltaTime;
         public float maxFps = 0;
@@ -108,7 +103,6 @@ namespace OpenCVForUnityExample
             WebCamDevice[] devices = WebCamTexture.devices;
             if (devices.Length == 0)
             {
-                myMessageBox.text += "No camera detected";
                 return;
             }
             else
@@ -133,7 +127,6 @@ namespace OpenCVForUnityExample
 
                 if (backCam == null)
                 {
-                    myMessageBox.text += "Unable to find back camera";
                     return;
                 }
 
@@ -157,46 +150,11 @@ namespace OpenCVForUnityExample
         
         void Update()
         {
-            //if (counter > 15)
-            //{
-            //if(counter< 5)
-            //{
-            //    counter++;
-            //    return;
-            //}
-            //else
-            //{
-            //    counter = 0;
-            //}
-
-            deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
-            float fps = 1.0f / deltaTime;
-            fpsText.text = Mathf.Ceil(fps).ToString();
-
-            counter++;
-            if (counter > 100){
-                if (fps > maxFps)
-                {
-                    maxFps = fps;
-                    maxFpsText.text = maxFps.ToString();
-                }
-            }
-           
-
-            if (!scanIsOver)
-                {
-                Destroy(cameraTexture);
-                cameraTexture = GetTexture2DFromWebcamTexture(backCam);
-                //converts webcam texture to Texture2D, that can later be converted into 
-
-                CompareAllImages(cameraTexture);
-            }
+            Destroy(cameraTexture);
             if (!scanIsOver)
             {
                 if (isComparingFinished)
                 {
-                    myMessageBox.text = compareFinhisString;
-
                     scanIsOver = true;
                     Debug.LogWarning("compare finish + " + scannedSymbolName);
                     GetAudioForSymbol();
@@ -207,10 +165,13 @@ namespace OpenCVForUnityExample
                 }
                 else
                 {
-                    myMessageBox.text = bestDistanceAvarage.ToString();
-                }
-            }
+                    //converts webcam texture to Texture2D, that can later be converted into 
+                    cameraTexture = GetTexture2DFromWebcamTexture(backCam);
 
+                    CompareAllImages(cameraTexture);
+                }
+
+            }
         }
 
         void GetAudioForSymbol()
@@ -238,21 +199,10 @@ namespace OpenCVForUnityExample
         {
 
             Mat img2Mat = new Mat(img2.height, img2.width, CvType.CV_8UC3);
-
-            //Mat img2Mat = null;
             Utils.texture2DToMat(img2, img2Mat);
-
-            //OpenCVForUnity.CoreModule.Mat  img1Mat = new Mat();
-            //OpenCVForUnity.CoreModule.Mat img2Mat = new Mat();
-            // if (bgWoker != null)
-            // {
-            //     bgWoker.Dispose();
-
-            // }
 
             if ( !bgWoker.IsBusy ){
                 bgWoker.DoWork += (o, a) => DetectAndCalculate(img1Mat,img2Mat,img1Name);
-                //DetectAndCalculate(detector,img2Mat,keypoints2,extractor,descriptors1,descriptors2,img1Name);
                 bgWoker.RunWorkerAsync();
                 }
 
@@ -300,15 +250,13 @@ namespace OpenCVForUnityExample
                distances.Sort();
                var bestDistances = distances.Take(20);
                bestDistanceAvarage = bestDistances.Average();
-            //    myMessageBox.text = img1Name+ ": "+ bestDistancesAverage.ToString();
-            if(!isComparingFinished){
-  print(img1Name+" best distance: " +bestDistanceAvarage);
-            }
               
                if (bestDistanceAvarage < 29 && !isComparingFinished)
                {
+                    print(bestDistanceAvarage + " bestdistance, megvan: " + img1Name);
                     isComparingFinished = true;
                     compareFinhisString = img1Name + "image name" + " bestdistance" + bestDistanceAvarage;
+                    Debug.Log("compare finish string + " + compareFinhisString + " score : " + bestDistanceAvarage);
                     Debug.LogWarning("compare finish string + " + compareFinhisString + " score : " + bestDistanceAvarage);
                     if(scannedSymbolName == null)
                     {
@@ -326,7 +274,6 @@ namespace OpenCVForUnityExample
         {
             yield return new WaitForSeconds(0.5f);
             
-            myMessageBox.text = "MATCH with image:" + result;
             MainController.Instance.SetDetectedSymbolName(result);
            //?? backCam.Stop();
             SceneManager.LoadScene("AudiPlayerScene");
