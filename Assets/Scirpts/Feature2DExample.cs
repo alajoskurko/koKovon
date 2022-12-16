@@ -10,6 +10,7 @@ using System.Threading;
 using OpenCVForUnity.CoreModule;
 using OpenCVForUnity.UnityUtils;
 using OpenCVForUnity.Features2dModule;
+using UnityEngine.Scripting;
 using static SwipeDetector;
 
 namespace OpenCVForUnityExample
@@ -20,12 +21,11 @@ namespace OpenCVForUnityExample
 
         Dictionary<string,Texture2D> symbolTextures;
         static WebCamTexture backCam;
-        BackgroundWorker bgWoker1,bgWoker2,bgWoker3,bgWoker4,bgWoker5;
+        //BackgroundWorker bgWoker1,bgWoker2,bgWoker3,bgWoker4,bgWoker5;
         List<BackgroundWorker> backgroundWorkers = new List<BackgroundWorker>();
-        bool checkImages = true;
+
         [SerializeField]
         RawImage panelBg;
-        Texture2D test1;
         public Quaternion baseRotation;
         Dictionary<string, Mat> scannableImagesDic = new Dictionary<string, Mat>(); 
         double bestDistanceAvarage;
@@ -51,17 +51,10 @@ namespace OpenCVForUnityExample
         void Start ()
         {
             successfulScanController = this.gameObject.GetComponent<SuccessfulScan>();
-            //cameraTexture = new Texture2D(512, 512, TextureFormat.PVRTC_RGBA4, false);
-            //byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, "scanTest", ".jpg");
-            //cameraTexture.LoadImage(resultBytes);
-
-            //cameraTexture = Resources.Load("Test/scanTest") as Texture2D;
-            //cameraTexture.SetPixels(cameraTexture.GetPixels());
             StartWebcamDevice();
             ProcessSymbolImages();
             
             backCam.Play();
-            bgWoker1 = new BackgroundWorker();
             /// set the workers for the separated threads
             SetBackgroundWorkers();
             panelBg.GetComponent<RawImage>().texture = backCam;
@@ -82,17 +75,10 @@ namespace OpenCVForUnityExample
                 Texture2D imageTexture = new Texture2D(512, 512, TextureFormat.PVRTC_RGB4, false);
                 byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, symbol.symbol_name, ".jpg");
                 imageTexture.LoadImage(resultBytes);
-                //imageTexture.Reinitialize(backCam.width, imageTexture.height * backCam.width / imageTexture.width);
-                //Debug.Log(imageTexture.height + " heigjht" + imageTexture.width + " width");
-                //Debug.Log(backCam.width + " " + backCam.height);
-                var akarmi = imageTexture;
+                
                 OpenCVForUnity.CoreModule.Mat mat = new Mat(imageTexture.height, imageTexture.width, CvType.CV_8UC3);
                 Utils.texture2DToMat(imageTexture,mat);
                 scannableImagesDic.Add(symbol.symbol_name, mat);
-                //symbolImage.texture = imageTexture;
-                //Color currColor = symbolImage.color;
-                //currColor.a = 1;
-                //symbolImage.color = currColor;
             }
         }
 
@@ -122,6 +108,8 @@ namespace OpenCVForUnityExample
                     //decrease webcamtexture size for a better fps performance
                     //if there is something wrong with the symbol scan, put back the 500, 885
                     backCam = new WebCamTexture(devices[0].name,400, 808);
+                    //System.GC.Collect();
+                    //Debug.Log(GarbageCollector.GCMode + " gb gcmode");
 
                 }
 
@@ -144,34 +132,35 @@ namespace OpenCVForUnityExample
                 backgroundWorkers.Add(bgWorker);
             }
         }
+
         #endregion
 
 
         
         void Update()
         {
-            Destroy(cameraTexture);
-            if (!scanIsOver)
-            {
-                if (isComparingFinished)
+                counter = 0;
+                Destroy(cameraTexture);
+                if (!scanIsOver)
                 {
-                    scanIsOver = true;
-                    Debug.LogWarning("compare finish + " + scannedSymbolName);
-                    GetAudioForSymbol();
-                    progressController.UpdateProgressInJson(scannedSymbolName, MainController.Instance.getCurrentTempleData().name);
-                    successfulScanController.SuccessfulScanHappened(scannedSymbolName);
+                    if (isComparingFinished)
+                    {
 
-                    backCam.Stop();
+                        scanIsOver = true;
+                        Debug.LogWarning("compare finish feherhiba " + scannedSymbolName);
+                        GetAudioForSymbol();
+                        progressController.UpdateProgressInJson(scannedSymbolName, MainController.Instance.getCurrentTempleData().name);
+                        successfulScanController.SuccessfulScanHappened(scannedSymbolName);
+                        backCam.Stop();
+                    }
+                    else
+                    {
+                        //converts webcam texture to Texture2D, that can later be converted into 
+                        cameraTexture = GetTexture2DFromWebcamTexture(backCam);
+                        CompareAllImages(cameraTexture);
+                    }
+
                 }
-                else
-                {
-                    //converts webcam texture to Texture2D, that can later be converted into 
-                    cameraTexture = GetTexture2DFromWebcamTexture(backCam);
-
-                    CompareAllImages(cameraTexture);
-                }
-
-            }
         }
 
         void GetAudioForSymbol()
@@ -201,10 +190,16 @@ namespace OpenCVForUnityExample
             Mat img2Mat = new Mat(img2.height, img2.width, CvType.CV_8UC3);
             Utils.texture2DToMat(img2, img2Mat);
 
-            if ( !bgWoker.IsBusy ){
-                bgWoker.DoWork += (o, a) => DetectAndCalculate(img1Mat,img2Mat,img1Name);
+            if (!bgWoker.IsBusy)
+            {
+                bgWoker.DoWork += (o, a) => DetectAndCalculate(img1Mat, img2Mat, img1Name);
                 bgWoker.RunWorkerAsync();
-                }
+                bgWoker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(backgroundWorker1_RunWorkerCompleted);
+            }
+        }
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Debug.Log("bg worker completed event"+  sender + "e " + e);
 
         }
         private void SwipeDetector_OnSwipe(SwipeData data)
@@ -215,11 +210,10 @@ namespace OpenCVForUnityExample
             }
         }
         void DetectAndCalculate(Mat img1Mat, Mat img2Mat,string img1Name){
-            
             ORB detector = ORB.create();
             ORB extractor = ORB.create();
 
-             MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
+            MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
             Mat descriptors1 = new Mat();
 
             detector.detect(img1Mat, keypoints1);
@@ -227,7 +221,7 @@ namespace OpenCVForUnityExample
 
             MatOfKeyPoint keypoints2 = new MatOfKeyPoint();
             Mat descriptors2 = new Mat();
-            
+
             detector.detect(img2Mat, keypoints2);
             extractor.compute(img2Mat, keypoints2, descriptors2);
 
@@ -236,36 +230,31 @@ namespace OpenCVForUnityExample
             MatOfDMatch matches = new MatOfDMatch();
 
             matcher.match(descriptors1, descriptors2, matches);
-           
+
             DMatch[] arrayDmatch = matches.toArray();
             List<double> distances = new List<double>();
-            
+
             if (arrayDmatch.Length > 0)
             {
-               for (int i = arrayDmatch.Length - 1; i >= 0; i--)
-               {
-                   distances.Add(arrayDmatch[i].distance);
-               }
-             
-               distances.Sort();
-               var bestDistances = distances.Take(20);
-               bestDistanceAvarage = bestDistances.Average();
-              
-               if (bestDistanceAvarage < 29 && !isComparingFinished)
-               {
-                    print(bestDistanceAvarage + " bestdistance, megvan: " + img1Name);
-                    isComparingFinished = true;
+                for (int i = arrayDmatch.Length - 1; i >= 0; i--)
+                {
+                    distances.Add(arrayDmatch[i].distance);
+                }
+
+                distances.Sort();
+                var bestDistances = distances.Take(20);
+                bestDistanceAvarage = bestDistances.Average();
+
+                if (bestDistanceAvarage < 29 && !isComparingFinished)
+                {
                     compareFinhisString = img1Name + "image name" + " bestdistance" + bestDistanceAvarage;
-                    Debug.Log("compare finish string + " + compareFinhisString + " score : " + bestDistanceAvarage);
-                    Debug.LogWarning("compare finish string + " + compareFinhisString + " score : " + bestDistanceAvarage);
-                    if(scannedSymbolName == null)
+                    if (scannedSymbolName == null)
                     {
                         scannedSymbolName = img1Name;
                     }
-                    
-                   checkImages = false;
-               }
-          
+                    isComparingFinished = true;
+                }
+
             }
         }
 
@@ -280,7 +269,10 @@ namespace OpenCVForUnityExample
         }
         public void GobackToTempleSelection()
         {
+            Resources.UnloadUnusedAssets();
             backCam.Stop();
+            Destroy(backCam);
+            backgroundWorkers = null;
             SceneManager.LoadScene("SpecificTempleScene");
         }
 

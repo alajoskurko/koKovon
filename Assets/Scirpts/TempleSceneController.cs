@@ -125,7 +125,7 @@ public class TempleSceneController : MonoBehaviour
             byte[] resultBytes = MainController.Instance.GetImageLocaly(templeName, templeName);
             imageTexture.LoadImage(resultBytes);
             templeImage.texture = imageTexture;
-            templeImage.color = new Color32(111, 189, 195, 255);
+            templeImage.color = new Color32(255, 255, 255, 255);
             templeImage.SetNativeSize();
         }
         InstantiateSymbolGroups(groupContainer);
