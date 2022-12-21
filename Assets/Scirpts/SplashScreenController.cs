@@ -131,7 +131,19 @@ public class SplashScreenController : MonoBehaviour
     public IEnumerator LoadTempleSelectionScreen()
     {
         yield return new WaitForSeconds(5f);
-        SceneManager.LoadScene("TempleSelectionScene");
+        AsyncOperation asyncOperation =  SceneManager.LoadSceneAsync("TempleSelectionScene");
+        asyncOperation.allowSceneActivation = false;
+        while (!asyncOperation.isDone)
+        {
+            // Check if the load has finished
+            if (asyncOperation.progress >= 0.9f)
+            {
 
+                //Wait to you press the space key to activate the Scene
+                asyncOperation.allowSceneActivation = true;
+            }
+
+            yield return null;
+        }
     }
 }

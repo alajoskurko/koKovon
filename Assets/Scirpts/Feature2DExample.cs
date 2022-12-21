@@ -22,7 +22,7 @@ namespace OpenCVForUnityExample
         Dictionary<string,Texture2D> symbolTextures;
         static WebCamTexture backCam;
         //BackgroundWorker bgWoker1,bgWoker2,bgWoker3,bgWoker4,bgWoker5;
-        List<BackgroundWorker> backgroundWorkers = new List<BackgroundWorker>();
+        List<MyBacgkroundWorked> backgroundWorkers = new List<MyBacgkroundWorked>();
 
         [SerializeField]
         RawImage panelBg;
@@ -107,7 +107,7 @@ namespace OpenCVForUnityExample
 
                     //decrease webcamtexture size for a better fps performance
                     //if there is something wrong with the symbol scan, put back the 500, 885
-                    backCam = new WebCamTexture(devices[0].name,400, 808);
+                    backCam = new WebCamTexture(devices[0].name,400, 885);
                     //System.GC.Collect();
                     //Debug.Log(GarbageCollector.GCMode + " gb gcmode");
 
@@ -128,7 +128,7 @@ namespace OpenCVForUnityExample
         {
             for (int i = 0; i < scannableImagesDic.Count; i++)
             {
-                var bgWorker = new BackgroundWorker();
+                var bgWorker = new MyBacgkroundWorked();
                 backgroundWorkers.Add(bgWorker);
             }
         }
@@ -184,7 +184,7 @@ namespace OpenCVForUnityExample
         }
 
 
-        void CompareImages(BackgroundWorker bgWoker,Mat img1Mat, string img1Name, Texture2D img2)
+        void CompareImages(MyBacgkroundWorked bgWoker,Mat img1Mat, string img1Name, Texture2D img2)
         {
 
             Mat img2Mat = new Mat(img2.height, img2.width, CvType.CV_8UC3);
@@ -194,12 +194,12 @@ namespace OpenCVForUnityExample
             {
                 bgWoker.DoWork += (o, a) => DetectAndCalculate(img1Mat, img2Mat, img1Name);
                 bgWoker.RunWorkerAsync();
-                bgWoker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(backgroundWorker1_RunWorkerCompleted);
+                //bgWoker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(backgroundWorker1_RunWorkerCompleted);
             }
         }
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            Debug.Log("bg worker completed event"+  sender + "e " + e);
+            backgroundWorkers[1].Dispose();
 
         }
         private void SwipeDetector_OnSwipe(SwipeData data)
@@ -348,4 +348,9 @@ namespace OpenCVForUnityExample
         }
     }
     #endregion
+}
+
+public class MyBacgkroundWorked : BackgroundWorker {
+    public event RunWorkerCompletedEventHandler MyRunWorkerCompleted;
+    public delegate void RunWorkerCompletedEventHandler(object sender, RunWorkerCompletedEventArgs e);
 }
