@@ -43,7 +43,7 @@ public class MainController : MonoBehaviour
 
     public bool isInitializing = true;
 
-    bool hasInternetConnection = false;
+    public bool hasInternetConnection = false;
 
     public bool isDownloading=false;
     public int downloadTarget;
@@ -59,30 +59,54 @@ public class MainController : MonoBehaviour
 
     public float templeSelectorScrollrectPositionY = 1;
 
+    [SerializeField]
+    private GameObject netErrorText;
+
     private void Awake()
     {
-
+        
         CreateSingleton();
         CheckConnection();
         endpointReader = gameObject.GetComponent<EndpointReader>();
         dataController = gameObject.GetComponent<DataController>();
         progressController = gameObject.GetComponent<ProgressController>();
         symbolTextures = new Dictionary<string, Texture2D>();
+        Debug.LogWarning(hasInternetConnection + " hasInternetConnection ");
         if (hasInternetConnection)
         {
             StartCoroutine(endpointReader.GetAllTempleData(ProcessAllTempleData));
         }
-        //This part will not be needed maybe??
+                //This part will not be needed maybe??
         else
         {
+            netErrorText.SetActive(true);
+            StartCoroutine(CheckIfUserTurnedOnTheNet());
             if (PlayerPrefs.HasKey("initialSetup"))
             {
 
-                isInitializing = false;
+                //isInitializing = false;
             }
         }
         
 
+    }
+
+    private IEnumerator CheckIfUserTurnedOnTheNet ()
+    {
+        Debug.Log("CheckIfUserTurnedOnTheNet");
+        yield return new WaitForSecondsRealtime(2);
+        CheckConnection();
+        if (hasInternetConnection)
+        {
+            netErrorText.SetActive(false);
+            StopCoroutine(CheckIfUserTurnedOnTheNet());
+            StartCoroutine(endpointReader.GetAllTempleData(ProcessAllTempleData));
+        }
+        else
+        {
+            StartCoroutine(CheckIfUserTurnedOnTheNet());
+        }
+        
     }
 
     private void Update()
@@ -129,12 +153,15 @@ public class MainController : MonoBehaviour
         // For first time if there is no LocalTempleData.json and hast ro be created from scratch
         if (!File.Exists(Application.persistentDataPath + "/" + "LocalTempleData.json"))
         {
+            Debug.LogWarning(" toltesi hiba file doesnt exist");
             LocalTempleData[] allLocalTempleData = new LocalTempleData[allTempleData.Length];
             int counter = 0;
             foreach (TempleData templeData in allTempleData)
             {
                 if (templeData!= null)
                 {
+                    Debug.LogWarning(" toltesi hiba file doesnt exist templadata nem null");
+
                     StartCoroutine(endpointReader.GetImage(templeData.cover_image, templeData.name, SaveImageLocally));
                     currentTempleDataForGroups = templeData;
                     SaveSymbolGroups(templeData);
@@ -154,12 +181,15 @@ public class MainController : MonoBehaviour
         }
         else
         {
+            Debug.LogWarning(" toltesi hiba file exist");
+
             string jsonString = dataController.LoadJsonFile("LocalTempleData.json");
             LocalTempleData[] allLocalTempleData = JsonConvert.DeserializeObject<LocalTempleData[]>(jsonString);
             foreach (TempleData templeData in allTempleData)
             {
                 if (templeData != null)
                 {
+                    Debug.LogWarning(" toltesi hiba file exist templedata nem null");
                     string name = templeData.name;
                     bool exists = false;
                     int index = 999999;
@@ -174,6 +204,7 @@ public class MainController : MonoBehaviour
                     }
                     if (exists)
                     {
+                        Debug.LogWarning(" toltesi hiba file exist templedata nem null exists");
                         string updated_at = templeData.updated_at;
                         if (updated_at != allLocalTempleData[index].updated_at)
                         {
@@ -199,6 +230,7 @@ public class MainController : MonoBehaviour
                     }
                     else
                     {
+                        Debug.LogWarning(" toltesi hiba file exist templedata nem nem exists");
                         StartCoroutine(endpointReader.GetImage(templeData.cover_image, templeData.name, SaveImageLocally));
                         currentTempleDataForGroups = templeData;
                         SaveSymbolGroups(templeData);

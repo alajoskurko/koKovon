@@ -116,6 +116,9 @@ public class TempleSelectionController : MonoBehaviour
         }
     }
   
-
+    public void Exit()
+    {
+        Application.Quit();
+    }
 
 }
