@@ -15,10 +15,10 @@ public class SymbolGroupPrefabController : MonoBehaviour
     Dictionary<string, string> symbolNameByLang = new Dictionary<string, string>();
     Dictionary<string, Dictionary<string, string>> symbolName = new Dictionary<string, Dictionary<string, string>>()
         {
-            { "kor",new Dictionary<string,string>(){ { "hu","Ég" }, { "en", "circle" }, { "ro", "cerc" } } },
-            { "negyzet",new Dictionary<string,string>(){ { "hu", "Föld" }, { "en", "circle" }, { "ro", "cerc" } } },
-            { "csillag",new Dictionary<string,string>(){ { "hu", "Legenda" }, { "en", "circle" }, { "ro", "cerc" } } },
-            { "boltiv",new Dictionary<string,string>(){ { "hu", "Fal" }, { "en", "circle" }, { "ro", "cerc" } } },
+            { "kor",new Dictionary<string,string>(){ { "hu","Ég" }, { "en", "Sky" }, { "ro", "Cer" } } },
+            { "negyzet",new Dictionary<string,string>(){ { "hu", "Föld" }, { "en", "Earth" }, { "ro", "Pământ" } } },
+            { "csillag",new Dictionary<string,string>(){ { "hu", "Legenda" }, { "en", "Legend" }, { "ro", "Legenda" } } },
+            { "boltiv",new Dictionary<string,string>(){ { "hu", "Fal" }, { "en", "Wall" }, { "ro", "Zid" } } },
         };
 
 

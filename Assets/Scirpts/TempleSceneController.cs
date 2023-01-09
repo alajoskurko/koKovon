@@ -53,10 +53,10 @@ public class TempleSceneController : MonoBehaviour
     [SerializeField]
     public GameObject progressObj;
 
-    Dictionary<string, string> downloadWarning = new Dictionary<string, string>() { { "hu", "Fájlok letöltése " }, { "ro", "Descarcă fișierele" }, { "en", "Download the files" } };
-    Dictionary<string, string> downloadError = new Dictionary<string, string>() { { "hu", "Download error!" }, { "ro", "Eroare de descărcare!" }, { "en", "Download error!" } };
-    Dictionary<string, string> playWarning = new Dictionary<string, string>() { { "hu", "Szkennelés" }, { "ro", "Scanare" }, { "en", "Scan" } };
-    Dictionary<string, string> shapeTexts = new Dictionary<string, string>() { { "hu", "Forma kiválasztása" }, { "ro", "Alege o formă!" }, { "en", "Choose a shape!" } };
+    Dictionary<string, string> downloadWarning = new Dictionary<string, string>() { { "hu", "Fájlok letöltése " }, { "ro", "Descărcare fișiere" }, { "en", "Download the files" } };
+    Dictionary<string, string> downloadError = new Dictionary<string, string>() { { "hu", "Letöltési hiba!" }, { "ro", "Eroare de descărcare!" }, { "en", "Download error!" } };
+    Dictionary<string, string> playWarning = new Dictionary<string, string>() { { "hu", "Szkennelés" }, { "ro", "Scanare" }, { "en", "Scanning" } };
+    Dictionary<string, string> shapeTexts = new Dictionary<string, string>() { { "hu", "Forma kiválasztása" }, { "ro", "Selectarea formei!" }, { "en", "Choose the form!" } };
 
     public static TempleSceneController Instance;
     //SymbolGroups symbolGroupss;
