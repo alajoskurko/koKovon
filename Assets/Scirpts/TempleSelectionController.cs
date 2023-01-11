@@ -21,8 +21,15 @@ public class TempleSelectionController : MonoBehaviour
     ScrollRect scrollRect;
     [SerializeField]
     List<GameObject> languagesList = new List<GameObject>();
+    [SerializeField]
+    private GameObject adminMode;
+    public static TempleSelectionController Instance;
     private void Awake()
     {
+        if(Instance == null)
+        {
+            Instance = this;
+        }
         InitTemples();
     }
 
@@ -50,6 +57,13 @@ public class TempleSelectionController : MonoBehaviour
         allLocalTempleData = MainController.Instance.LoadAllLocalTempledata();
         MainController.Instance.SetAllTempleData(allTempleData);
     }
+
+    public void Reinit()
+    {
+        // Show admin mode on reinit
+        adminMode.gameObject.SetActive(true);
+        InstantiateTempleItems(templePrefab, mainTempleContainer);
+    }
     
     void InstantiateTempleItems( GameObject prefab, GameObject parent = default(GameObject))
     {
@@ -64,22 +78,28 @@ public class TempleSelectionController : MonoBehaviour
 
         foreach(TempleData templeData in allTempleData)
         {
-            var newTempleItem = Instantiate(prefab, new Vector3(0, 0, 0), Quaternion.identity);
-            if(parent != null)
-            {
-                newTempleItem.transform.parent = parent.transform;
-                newTempleItem.transform.localScale = new Vector3(1,1,1);
-                //if (templeData.id == "3"){
-                //    Debug.Log(templeData + " temple data");
-                //}
-              
-            }
-            TempleObjectController templeObjectController = newTempleItem.GetComponent<TempleObjectController>();
-            templeObjectController.SetTempleData(templeData, allLocalTempleData[templeData.name].downloaded[MainController.Instance.selectedLanguage]);
-        
-        }
+            if (templeData.published || MainController.Instance.isAdminMode) {
+                var newTempleItem = Instantiate(prefab, new Vector3(0, 0, 0), Quaternion.identity);
+                if (parent != null)
+                {
+                    newTempleItem.transform.parent = parent.transform;
+                    newTempleItem.transform.localScale = new Vector3(1, 1, 1);
+                    //if (templeData.id == "3"){
+                    //    Debug.Log(templeData + " temple data");
+                    //}
 
-        
+                }
+                TempleObjectController templeObjectController = newTempleItem.GetComponent<TempleObjectController>();
+                templeObjectController.SetTempleData(templeData, allLocalTempleData[templeData.name].downloaded[MainController.Instance.selectedLanguage]);
+
+            }
+        }
+       
+    }
+
+    public void ClickOnMainLogo()
+    {
+        MainController.Instance.ClickedOnLogo();
     }
 
     public void ShowLanguageChooser()

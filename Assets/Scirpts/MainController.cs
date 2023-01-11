@@ -13,7 +13,6 @@ public class MainController : MonoBehaviour
 {
     public static MainController Instance;
     private string _selectedLanguage = "hu";
-
     public string selectedLanguage
     {
         get
@@ -62,6 +61,10 @@ public class MainController : MonoBehaviour
     [SerializeField]
     private GameObject netErrorText;
 
+    public bool isAdminMode = false;
+    private int adminClickNumber = 0;
+    private int clickDuration = 0;
+    private bool clockStarted = false;
     private void Awake()
     {
         
@@ -91,9 +94,34 @@ public class MainController : MonoBehaviour
 
     }
 
+    public void ClickedOnLogo()
+    {
+        if(adminClickNumber < 10)
+        {
+            adminClickNumber++;
+            if (!clockStarted)
+            {
+                StartCoroutine(ClockAdminTime());
+                clockStarted = true;
+            }
+        }
+        if(adminClickNumber > 9 && clickDuration <= 10)
+        {
+            isAdminMode = true;
+            StopCoroutine(ClockAdminTime());
+            TempleSelectionController.Instance.Reinit();
+        }
+    }
+
+    private IEnumerator ClockAdminTime()
+    {
+        yield return new WaitForSecondsRealtime(1);
+        clickDuration ++;
+        StartCoroutine(ClockAdminTime());
+    }
+
     private IEnumerator CheckIfUserTurnedOnTheNet ()
     {
-        Debug.Log("CheckIfUserTurnedOnTheNet");
         yield return new WaitForSecondsRealtime(2);
         CheckConnection();
         if (hasInternetConnection)
@@ -118,7 +146,7 @@ public class MainController : MonoBehaviour
         }
         else if (isDownloading)
         {
-            float num = (downloadCompleted * 100) / (downloadTarget - 1);
+            float num = (downloadCompleted * 100) / (downloadTarget - 1 > 0 ? downloadTarget - 1 : 1);
             TempleSceneController.Instance.progressObj.SetActive(true);
             TempleSceneController.Instance.progressObj.gameObject.transform.GetChild(0).GetComponent<Slider>().value= num / 100;
         }

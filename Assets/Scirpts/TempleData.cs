@@ -14,6 +14,7 @@ public class TempleData
     public string created_at;
     public string updated_at;
     public string google_map;
+    public bool published;
     public ForeignTempleDetails[] temple_details;
     public Dictionary<string,SymbolGroup> symbol_groups = new Dictionary<string,SymbolGroup>();
 
