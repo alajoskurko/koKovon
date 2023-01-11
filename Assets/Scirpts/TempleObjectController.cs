@@ -70,19 +70,23 @@ public class TempleObjectController : MonoBehaviour
             templeImage.texture = imageTexture;
             //templeImage.color = new Color32(111, 189, 195, 255);
             templeImage.SetNativeSize();
-            if(templeData.id == "1")
-            {
-                templeImage.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
-                templeImage.uvRect = new Rect(0, 0, 1, 0.990f);
-            }else if (templeData.id == "3")
-            {
-                templeImage.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
-                templeImage.uvRect = new Rect(0, 0, 1, 0.990f);
-            }
-            else
-            {
-                templeImage.transform.localScale = new Vector3(.75f, .75f, .5f);
-            }
+            //if(imageTexture.height > 500)
+            //{
+            //    var akami = 0;
+            //}
+            //if(templeData.id == "1")
+            //{
+            //    templeImage.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
+            //    templeImage.uvRect = new Rect(0, 0, 1, 0.990f);
+            //}else if (templeData.id == "3")
+            //{
+            //    templeImage.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
+            //    templeImage.uvRect = new Rect(0, 0, 1, 0.990f);
+            //}
+            //else
+            //{
+            //    templeImage.transform.localScale = new Vector3(.75f, .75f, .5f);
+            //}
         }
         else
         {
@@ -96,20 +100,20 @@ public class TempleObjectController : MonoBehaviour
 
             //templeImage.color = new Color32(111, 189, 195, 255);
             templeImage.SetNativeSize();
-            if (templeData.id == "1")
-            {
-                templeImage.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
-                templeImage.uvRect = new Rect(0, 0, 1, 0.990f);
-            }
-            else if (templeData.id == "3")
-            {
-                templeImage.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
-                templeImage.uvRect = new Rect(0, 0, 1, 0.990f);
-            }
-            else
-            {
-                templeImage.transform.localScale = new Vector3(.75f, .75f, .5f);
-            }
+            //if (templeData.id == "1")
+            //{
+            //    templeImage.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
+            //    templeImage.uvRect = new Rect(0, 0, 1, 0.990f);
+            //}
+            //else if (templeData.id == "3")
+            //{
+            //    templeImage.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
+            //    templeImage.uvRect = new Rect(0, 0, 1, 0.990f);
+            //}
+            //else
+            //{
+            //    templeImage.transform.localScale = new Vector3(.75f, .75f, .5f);
+            //}
         }
       
 
