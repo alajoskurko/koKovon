@@ -212,7 +212,8 @@ public class MainController : MonoBehaviour
             Debug.LogWarning(" toltesi hiba file exist");
 
             string jsonString = dataController.LoadJsonFile("LocalTempleData.json");
-            LocalTempleData[] allLocalTempleData = JsonConvert.DeserializeObject<LocalTempleData[]>(jsonString);
+            List<LocalTempleData> allLocalTempleData = new List<LocalTempleData>();
+            allLocalTempleData = JsonConvert.DeserializeObject<List<LocalTempleData>>(jsonString);
             foreach (TempleData templeData in allTempleData)
             {
                 if (templeData != null)
@@ -221,7 +222,7 @@ public class MainController : MonoBehaviour
                     string name = templeData.name;
                     bool exists = false;
                     int index = 999999;
-                    for (int i = 0; i < allLocalTempleData.Length; i++)
+                    for (int i = 0; i < allLocalTempleData.Count; i++)
                     {
                         if (allLocalTempleData[i].name == name)
                         {
@@ -268,7 +269,7 @@ public class MainController : MonoBehaviour
                             {"ro",false },
                             {"en",false }
                         };
-                        allLocalTempleData.Append(new LocalTempleData(templeData.updated_at, templeData.name, newDict));
+                        allLocalTempleData.Add(new LocalTempleData(templeData.updated_at, templeData.name, newDict));
 
                     }
                 }
