@@ -3790,6 +3790,7 @@ MonoBehaviour:
   isComparingFinished: 0
   successfulScanController: {fileID: 0}
   referencePanel: {fileID: 1702165125}
+  mainCanvas: {fileID: 584986464}
   deltaTime: 0
   maxFps: 0
 --- !u!4 &1697601629
