@@ -69,9 +69,9 @@ namespace OpenCVForUnityExample
             ////Debug.LogWarning(mainCanvas.GetComponent<RectTransform>().rect.height + " height");
             ////Debug.LogWarning(panelBg.rectTransform.rect.width + " height");
 
-            //float heightDifference = 100 - (panelBg.rectTransform.rect.width * 100 / mainCanvas.GetComponent<RectTransform>().rect.height);
-            //float diffInScale = 1 + (heightDifference / 100);
-            //panelBg.rectTransform.localScale = new Vector3(diffInScale, diffInScale, diffInScale);
+            float heightDifference = 100 - (panelBg.rectTransform.rect.width * 100 / mainCanvas.GetComponent<RectTransform>().rect.height);
+            float diffInScale = 1 + (heightDifference / 100);
+            panelBg.rectTransform.localScale = new Vector3(diffInScale, diffInScale, diffInScale);
             //Debug.LogWarning(panelBg.rectTransform.sizeDelta.x / panelBg.rectTransform.sizeDelta.y + "utana");
             //Debug.LogWarning(diffInScale + " diffInScale");
 
@@ -122,7 +122,7 @@ namespace OpenCVForUnityExample
 
                     //decrease webcamtexture size for a better fps performance
                     //if there is something wrong with the symbol scan, put back the 500, 885
-                    backCam = new WebCamTexture(devices[0].name,1000, 485);
+                    backCam = new WebCamTexture(devices[0].name, 500, 885);
                     //System.GC.Collect();
                     //Debug.Log(GarbageCollector.GCMode + " gb gcmode");
 
@@ -191,23 +191,24 @@ namespace OpenCVForUnityExample
 
         void CompareAllImages(Texture2D cameraTexture)
         {
+            Mat cameraImageMat = new Mat(cameraTexture.height, cameraTexture.width, CvType.CV_8UC3);
+            Utils.texture2DToMat(cameraTexture, cameraImageMat);
             
             for (int i = 0; i < scannableImagesDic.Count; i++)
             {
-                CompareImages(backgroundWorkers[i], scannableImagesDic.ElementAt(i).Value, scannableImagesDic.ElementAt(i).Key, cameraTexture);
+                CompareImages(backgroundWorkers[i], scannableImagesDic.ElementAt(i).Value, scannableImagesDic.ElementAt(i).Key, cameraImageMat);
             }
         }
 
 
-        void CompareImages(MyBacgkroundWorked bgWoker,Mat img1Mat, string img1Name, Texture2D img2)
+        void CompareImages(MyBacgkroundWorked bgWoker,Mat img1Mat, string img1Name, Mat cameraImageMat)
         {
 
-            Mat img2Mat = new Mat(img2.height, img2.width, CvType.CV_8UC3);
-            Utils.texture2DToMat(img2, img2Mat);
+            
 
             if (!bgWoker.IsBusy)
             {
-                bgWoker.DoWork += (o, a) => DetectAndCalculate(img1Mat, img2Mat, img1Name);
+                bgWoker.DoWork += (o, a) => DetectAndCalculate(img1Mat, cameraImageMat, img1Name);
                 bgWoker.RunWorkerAsync();
                 //bgWoker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(backgroundWorker1_RunWorkerCompleted);
             }

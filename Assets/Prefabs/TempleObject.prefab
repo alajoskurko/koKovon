@@ -396,7 +396,7 @@ MonoBehaviour:
   m_UVRect:
     serializedVersion: 2
     x: 0
-    y: -0.0005
+    y: -0.001
     width: 1
     height: 1
 --- !u!1 &8291879778829814682
