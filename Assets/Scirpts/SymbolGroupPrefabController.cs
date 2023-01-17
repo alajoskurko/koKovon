@@ -13,17 +13,33 @@ public class SymbolGroupPrefabController : MonoBehaviour
     TMPro.TMP_Text _symbolName;
     KeyValuePair<string, SymbolGroup> symbol = new KeyValuePair<string, SymbolGroup>();
     Dictionary<string, string> symbolNameByLang = new Dictionary<string, string>();
-    Dictionary<string, Dictionary<string, string>> symbolName = new Dictionary<string, Dictionary<string, string>>()
+    Dictionary<string, Dictionary<string, string>> symbolName = new Dictionary<string, Dictionary<string, string>>();
+
+
+
+    private void Awake()
+    {
+
+        //symbolName = new Dictionary<string, Dictionary<string, string>>()
+        //{
+        //    { "kor",new Dictionary<string,string>(){ { "hu","Ég" }, { "en", "Sky" }, { "ro", "Cer" } } },
+        //    { "negyzet",new Dictionary<string,string>(){ { "hu", "Föld" }, { "en", "Earth" }, { "ro", "Pământ" } } },
+        //    { "csillag",new Dictionary<string,string>(){ { "hu", "Legenda" }, { "en", "Legend" }, { "ro", "Legenda" } } },
+        //    { "boltiv",new Dictionary<string,string>(){ { "hu", "Fal" }, { "en", "Wall" }, { "ro", "Zid" } } },
+        //};
+        foreach (var item in MainController.Instance.symbolGroupForLangs)
         {
-            { "kor",new Dictionary<string,string>(){ { "hu","Ég" }, { "en", "Sky" }, { "ro", "Cer" } } },
-            { "negyzet",new Dictionary<string,string>(){ { "hu", "Föld" }, { "en", "Earth" }, { "ro", "Pământ" } } },
-            { "csillag",new Dictionary<string,string>(){ { "hu", "Legenda" }, { "en", "Legend" }, { "ro", "Legenda" } } },
-            { "boltiv",new Dictionary<string,string>(){ { "hu", "Fal" }, { "en", "Wall" }, { "ro", "Zid" } } },
-        };
-
-
-
-
+            Dictionary<string, string> tempDictionary = new Dictionary<string, string>();
+            foreach (var nameObj in item.name)
+            {
+                tempDictionary[nameObj.lang] = nameObj.name;
+            }
+            symbolName[item.code] = tempDictionary;
+        }
+        //var x = MainController.Instance.symbolGroupForLangs;
+        //var y = 0;
+        //symbolName = MainController.Instance.symbolGroupForLangs;
+    }
 
     // Start is called before the first frame update
     public void SetSymbolData(KeyValuePair<string, SymbolGroup> symbolData)

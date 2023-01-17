@@ -65,6 +65,9 @@ public class MainController : MonoBehaviour
     private int adminClickNumber = 0;
     private int clickDuration = 0;
     private bool clockStarted = false;
+
+    //public SymbolGroupForLang[] symbolGroupForLangs;
+    public SymbolGroupForLang[] symbolGroupForLangs;
     private void Awake()
     {
         
@@ -78,6 +81,7 @@ public class MainController : MonoBehaviour
         if (hasInternetConnection)
         {
             StartCoroutine(endpointReader.GetAllTempleData(ProcessAllTempleData));
+            StartCoroutine(endpointReader.GetSymbolGroupInfos(SymbolGroupCallback));
         }
                 //This part will not be needed maybe??
         else
@@ -91,6 +95,11 @@ public class MainController : MonoBehaviour
             }
         }
         
+
+    }
+
+    void SymbolGroupCallback()
+    {
 
     }
 
@@ -490,4 +499,16 @@ public class MainController : MonoBehaviour
     }
 
 
+}
+
+public class SymbolGroupForLang
+{
+    public string code;
+    public List<SymbolGroupItem> name = new List<SymbolGroupItem>();
+}
+
+public class SymbolGroupItem
+{
+    public string lang;
+    public string name;
 }

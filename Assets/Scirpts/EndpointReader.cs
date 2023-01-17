@@ -50,6 +50,28 @@ public class EndpointReader : MonoBehaviour
         }
     }
 
+    public IEnumerator GetSymbolGroupInfos(System.Action callback)
+    {
+        UnityWebRequest www = UnityWebRequest.Get("https://kokovon.camelcoding.com/symbol-groups");
+        yield return www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("There was an error reading data for temples");
+
+        }
+        else
+        {
+
+            MainController.Instance.symbolGroupForLangs = JsonConvert.DeserializeObject<SymbolGroupForLang[]>(www.downloadHandler.text);
+            //  MainController.Instance.SetAllTempleData(result);
+            //        MainController.Instance.allTempleDataRead = true;
+            var x = 0;
+            //callback(result);
+
+        }
+    }
+
     public IEnumerator GetImage(string path, string name, System.Action<byte[],string> callback)
     {
         UnityWebRequest www = UnityWebRequest.Get(path);
