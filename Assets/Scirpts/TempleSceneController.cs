@@ -386,7 +386,11 @@ public class TempleSceneController : MonoBehaviour
 
     public void ShowSymbolGroupsForScan()
     {
-        Dictionary<string, LocalTempleData> allLocalTempleData = MainController.Instance.LoadAllLocalTempledata();
+        if (audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
+            Dictionary<string, LocalTempleData> allLocalTempleData = MainController.Instance.LoadAllLocalTempledata();
         if (allLocalTempleData[templeName].downloaded[MainController.Instance.selectedLanguage])
         {
             groupChoosePanel.SetActive(true);
