@@ -4138,6 +4138,7 @@ MonoBehaviour:
   LoadingImage: {fileID: 1755532096}
   chooseShapeText: {fileID: 1269684564}
   progressObj: {fileID: 1522804729}
+  mainCanvas: {fileID: 983263840}
   animator: {fileID: 1398569388}
 --- !u!4 &1897394783
 Transform:

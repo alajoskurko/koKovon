@@ -1054,6 +1054,7 @@ MonoBehaviour:
   - {fileID: 116757390}
   - {fileID: 1618129913}
   adminMode: {fileID: 1968067401}
+  mainCanvas: {fileID: 270623910}
 --- !u!4 &467369075
 Transform:
   m_ObjectHideFlags: 0

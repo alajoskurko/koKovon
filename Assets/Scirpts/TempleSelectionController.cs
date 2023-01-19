@@ -23,6 +23,8 @@ public class TempleSelectionController : MonoBehaviour
     List<GameObject> languagesList = new List<GameObject>();
     [SerializeField]
     private GameObject adminMode;
+    [SerializeField]
+    Canvas mainCanvas;
     public static TempleSelectionController Instance;
     private void Awake()
     {
@@ -31,6 +33,11 @@ public class TempleSelectionController : MonoBehaviour
             Instance = this;
         }
         InitTemples();
+        if ((float)Screen.height / (float)Screen.width < 1.55)
+        {
+            mainCanvas.GetComponent<CanvasScaler>().referenceResolution = new Vector2(1080, 800);
+            Debug.Log((float)Screen.height / (float)Screen.width + "tablet szeles");
+        }
     }
 
     void Start()

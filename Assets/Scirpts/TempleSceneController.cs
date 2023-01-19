@@ -52,6 +52,8 @@ public class TempleSceneController : MonoBehaviour
     TMPro.TMP_Text chooseShapeText;
     [SerializeField]
     public GameObject progressObj;
+    [SerializeField]
+    Canvas mainCanvas;
 
     Dictionary<string, string> downloadWarning = new Dictionary<string, string>() { { "hu", "Fájlok letöltése " }, { "ro", "Descărcare fișiere" }, { "en", "Download the files" } };
     Dictionary<string, string> downloadError = new Dictionary<string, string>() { { "hu", "Letöltési hiba!" }, { "ro", "Eroare de descărcare!" }, { "en", "Download error!" } };
@@ -69,6 +71,11 @@ public class TempleSceneController : MonoBehaviour
         Instance = this;
         MainController.OnDownloadStateChanged += SetDownloadButtonState;
         SwipeDetector.OnSwipe += SwipeDetector_OnSwipe;
+        if((float) Screen.height / (float) Screen.width < 1.55)
+        {
+            mainCanvas.GetComponent<CanvasScaler>().referenceResolution = new Vector2(1080, 800);
+            Debug.Log((float) Screen.height / (float) Screen.width + "tablet szeles");
+        }
     }
 
     void Start()
