@@ -101,7 +101,7 @@ public class TempleSceneController : MonoBehaviour
                 }
             }
         }
-        
+
         slider.maxValue = GetSymbolsLength();
         slider.value = MainController.Instance.GetNumberOfSymbolsVisited(currentTemple);
         SetDownloadButtonState(MainController.Instance.isDownloading);
@@ -141,11 +141,11 @@ public class TempleSceneController : MonoBehaviour
     {
         if (audioSource.isPlaying)
         {
-            
+            //Debug.Log(audioSource.clip.length);
         }
         else
         {
-           
+            //audioPlayButton.GetComponent<Image>().enabled = true;
         }
     }
     int GetSymbolsLength()
@@ -158,18 +158,37 @@ public class TempleSceneController : MonoBehaviour
         }
         return symbolsLength;
     }
-        //}
-        //void int GetSymbolsLength()
-        //{
-        //    int symbolsLength = 0;
-        //    foreach (KeyValuePair<string,SymbolGroup> symbolGroup in currentTemple.symbol_groups)
-        //    {
-        //        symbolsLength += symbolGroup.Value.symbols.Length;
-        //    }
-        //    return symbolsLength;
-        //}
 
-        public void LoadSymbolsForDiscoverScene()
+    int GetSymbolAudiosLength()
+    {
+        int audioLength = 0;
+        foreach (KeyValuePair<string, SymbolGroup> symbolGroup in currentTemple.symbol_groups)
+        {
+            foreach (var symbol in symbolGroup.Value.symbols)
+            {
+                foreach (var audio in symbol.audios)
+                {
+                    if(audio.lang == MainController.Instance.selectedLanguage)
+                    {
+                        audioLength++;
+                    }
+                } 
+            } 
+        }
+        return audioLength;
+    }
+    //}
+    //void int GetSymbolsLength()
+    //{
+    //    int symbolsLength = 0;
+    //    foreach (KeyValuePair<string,SymbolGroup> symbolGroup in currentTemple.symbol_groups)
+    //    {
+    //        symbolsLength += symbolGroup.Value.symbols.Length;
+    //    }
+    //    return symbolsLength;
+    //}
+
+    public void LoadSymbolsForDiscoverScene()
     {
         foreach (KeyValuePair<string, SymbolGroup> symbolGroup in symbolsGroups)
         {
@@ -255,7 +274,9 @@ public class TempleSceneController : MonoBehaviour
         }
         MainController.Instance.StartDownload();
         MainController.Instance.downloadCompleted = 0;
-        MainController.Instance.downloadTarget = GetSymbolsLength();
+
+        /// download target must be the length of the symbols array + the lang of the audios by the selected language + 1(temple intro audio)
+        MainController.Instance.downloadTarget = GetSymbolsLength() + GetSymbolAudiosLength() + 1;
         Debug.Log("download target :   " + MainController.Instance.downloadTarget);
 
         //Should download and save the data also it should store that the temple data was downloaded
@@ -451,12 +472,14 @@ public class TempleSceneController : MonoBehaviour
     }
     public IEnumerator LoadAudioLocaly()
     {
-        string path = Application.persistentDataPath + "/" + templeName + "/" + MainController.Instance.selectedLanguage + "/" + currentTemple.name + ".mp3";
+        string path = Application.persistentDataPath + "/" + currentTemple.name + "/" + MainController.Instance.selectedLanguage + "/" + currentTemple.name + ".mp3";
         string url = string.Format("file://{0}", path);
         WWW www = new WWW(url);
         yield return www;
         audioClip = www.GetAudioClip(false, false);
         audioSource.clip = audioClip;
+        Debug.Log(audioClip.length + " audio length");
+        Debug.Log(audioSource.clip.length + " audio length");
         audioSource.Play();
     }
 

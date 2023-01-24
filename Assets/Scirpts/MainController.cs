@@ -148,14 +148,15 @@ public class MainController : MonoBehaviour
 
     private void Update()
     {
-        if (downloadCompleted > downloadTarget-1 && isDownloading)
+        if (downloadCompleted > downloadTarget && isDownloading)
         {
             DownloadEnded();
             TempleSceneController.Instance.progressObj.SetActive(false);
+            Debug.Log("download completed!!!!!!!!!!!!!!!!");
         }
         else if (isDownloading)
         {
-            float num = (downloadCompleted * 100) / (downloadTarget - 1 > 0 ? downloadTarget - 1 : 1);
+            float num = (downloadCompleted * 100) / (downloadTarget > 0 ? downloadTarget : 1);
             TempleSceneController.Instance.progressObj.SetActive(true);
             TempleSceneController.Instance.progressObj.gameObject.transform.GetChild(0).GetComponent<Slider>().value= num / 100;
         }
