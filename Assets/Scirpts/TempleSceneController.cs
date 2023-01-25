@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static SwipeDetector;
@@ -43,7 +44,6 @@ public class TempleSceneController : MonoBehaviour
     Animator downloadButtonAnimator;
     [SerializeField]
     AudioSource audioSource;
-    AudioClip audioClip;
     [SerializeField]
     GameObject audioPlayButton;
     [SerializeField]
@@ -54,11 +54,12 @@ public class TempleSceneController : MonoBehaviour
     public GameObject progressObj;
     [SerializeField]
     Canvas mainCanvas;
+    AudioClip myClip;
 
-    Dictionary<string, string> downloadWarning = new Dictionary<string, string>() { { "hu", "Fájlok letöltése " }, { "ro", "Descărcare fișiere" }, { "en", "Download the files" } };
+    Dictionary<string, string> downloadWarning = new Dictionary<string, string>() { { "hu", "Töltsd le a fájlokat!" }, { "ro", "Descărcare fișiere" }, { "en", "Download the files" } };
     Dictionary<string, string> downloadError = new Dictionary<string, string>() { { "hu", "Letöltési hiba!" }, { "ro", "Eroare de descărcare!" }, { "en", "Download error!" } };
-    Dictionary<string, string> playWarning = new Dictionary<string, string>() { { "hu", "Szkennelés" }, { "ro", "Scanare" }, { "en", "Scanning" } };
-    Dictionary<string, string> shapeTexts = new Dictionary<string, string>() { { "hu", "Forma kiválasztása" }, { "ro", "Selectarea formei!" }, { "en", "Choose the form!" } };
+    Dictionary<string, string> playWarning = new Dictionary<string, string>() { { "hu", "Olvasd be az illusztrációkat!" }, { "ro", "Scanare" }, { "en", "Scanning" } };
+    Dictionary<string, string> shapeTexts = new Dictionary<string, string>() { { "hu", "Válassz egy formát!" }, { "ro", "Selectarea formei!" }, { "en", "Choose the form!" } };
 
     public static TempleSceneController Instance;
     //SymbolGroups symbolGroupss;
@@ -76,6 +77,7 @@ public class TempleSceneController : MonoBehaviour
             mainCanvas.GetComponent<CanvasScaler>().referenceResolution = new Vector2(1080, 800);
             Debug.Log((float) Screen.height / (float) Screen.width + "tablet szeles");
         }
+        
     }
 
     void Start()
@@ -125,6 +127,7 @@ public class TempleSceneController : MonoBehaviour
             templeImage.texture = imageTexture;
             templeImage.SetNativeSize();
             LoadSymbolsForDiscoverScene();
+            StartCoroutine(LoadAudioLocaly());
         }
         else
         {
@@ -136,16 +139,21 @@ public class TempleSceneController : MonoBehaviour
             templeImage.SetNativeSize();
         }
         InstantiateSymbolGroups(groupContainer);
+        
     }
     private void Update()
     {
         if (audioSource.isPlaying)
         {
+            audioPlayButton.GetComponent<Image>().enabled = false;
+            audioPlayButton.transform.GetChild(0).gameObject.SetActive(true);
             //Debug.Log(audioSource.clip.length);
         }
         else
         {
-            //audioPlayButton.GetComponent<Image>().enabled = true;
+            audioPlayButton.GetComponent<Image>().enabled = true;
+            audioPlayButton.transform.GetChild(0).gameObject.SetActive(false);
+            
         }
     }
     int GetSymbolsLength()
@@ -453,7 +461,8 @@ public class TempleSceneController : MonoBehaviour
             {
                 audioPlayButton.GetComponent<Image>().enabled = false;
                 audioPlayButton.transform.GetChild(0).gameObject.SetActive(true);
-                StartCoroutine(LoadAudioLocaly());
+                audioSource.Play();
+                //StartCoroutine(LoadAudioLocaly());
             }
             
         }
@@ -474,13 +483,30 @@ public class TempleSceneController : MonoBehaviour
     {
         string path = Application.persistentDataPath + "/" + currentTemple.name + "/" + MainController.Instance.selectedLanguage + "/" + currentTemple.name + ".mp3";
         string url = string.Format("file://{0}", path);
-        WWW www = new WWW(url);
-        yield return www;
-        audioClip = www.GetAudioClip(false, false);
-        audioSource.clip = audioClip;
-        Debug.Log(audioClip.length + " audio length");
-        Debug.Log(audioSource.clip.length + " audio length");
-        audioSource.Play();
+        using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.MPEG))
+        {
+            yield return www.SendWebRequest();
+
+            if (www.result == UnityWebRequest.Result.ConnectionError)
+            {
+                Debug.Log(www.error);
+            }
+            else
+            {
+                myClip = DownloadHandlerAudioClip.GetContent(www);
+                audioSource.clip = myClip;
+            }
+        }
+        //WWW www = new WWW(url);
+
+        //    yield return www;
+
+        //AudioClip audioClip = www.GetAudioClip(false, false, AudioType.mp);
+       
+        //Debug.Log(audioClip.loadState + " audioClip.isReadyToPlay");
+        //Debug.Log(audioClip.length + " audio length");
+        //Debug.Log(audioSource.clip.length + " audio length");
+        //audioSource.Play();
     }
 
     public void LoadImageDetectionScene()

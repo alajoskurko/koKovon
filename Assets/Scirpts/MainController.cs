@@ -309,6 +309,7 @@ public class MainController : MonoBehaviour
     {
         TempleSceneController templeSceneController = GameObject.Find("TempleSceneController").GetComponent<TempleSceneController>();
         templeSceneController.showPlayAnim();
+        StartCoroutine(TempleSceneController.Instance.LoadAudioLocaly());
         OnDownloadStateChanged(false);
         downloadCompleted = 0;
         downloadTarget = 0;
