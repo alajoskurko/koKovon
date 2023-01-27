@@ -61,18 +61,19 @@ namespace OpenCVForUnityExample
             /// set the workers for the separated threads
             SetBackgroundWorkers();
             panelBg.GetComponent<RawImage>().texture = backCam;
-            panelBg.rectTransform.sizeDelta = new Vector2(referencePanel.rectTransform.rect.height, referencePanel.rectTransform.rect.width);
+            //panelBg.rectTransform.sizeDelta = new Vector2(referencePanel.rectTransform.rect.height, referencePanel.rectTransform.rect.width);
+            panelBg.rectTransform.sizeDelta = new Vector2(backCam.width, backCam.height);
             //panelBg.rectTransform.sizeDelta = new Vector2(backCam.width, backCam.height);
             //Debug.LogWarning(panelBg.rectTransform.sizeDelta.x / panelBg.rectTransform.sizeDelta.y  + "elotte");
             ////Debug.LogWarning(referencePanel.GetComponent<RawImage>().rectTransform.rect.height + " height");
             ////Debug.LogWarning(panelBg.rectTransform.GetComponent<RawImage>().rectTransform.rect.height + " height");
-            ////Debug.LogWarning(mainCanvas.GetComponent<RectTransform>().rect.height + " height");
-            ////Debug.LogWarning(panelBg.rectTransform.rect.width + " height");
-
-            float heightDifference = 100 - (panelBg.rectTransform.rect.width * 100 / mainCanvas.GetComponent<RectTransform>().rect.height);
-            float diffInScale = 1 + (heightDifference / 100);
-            panelBg.rectTransform.localScale = new Vector3(diffInScale, diffInScale, diffInScale);
-            //Debug.LogWarning(panelBg.rectTransform.sizeDelta.x / panelBg.rectTransform.sizeDelta.y + "utana");
+            Debug.LogWarning(mainCanvas.GetComponent<RectTransform>().rect.height + " height");
+            Debug.LogWarning(panelBg.rectTransform.rect.width + " height");
+            float heightDifference = mainCanvas.GetComponent<RectTransform>().rect.height / panelBg.rectTransform.rect.width;
+            //float diffInScale = 1 + (heightDifference / 100);
+            panelBg.rectTransform.localScale = new Vector3(heightDifference, heightDifference, heightDifference);
+            Debug.LogWarning(heightDifference + " diffInScale");
+            
             //Debug.LogWarning(diffInScale + " diffInScale");
 
 
