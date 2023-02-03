@@ -22,6 +22,10 @@ public class TempleSceneController : MonoBehaviour
     [SerializeField]
     GameObject downloadWarningPanel;
     [SerializeField]
+    GameObject donwloadInProgressPanel;
+    [SerializeField]
+    Text donwloadInProgressText;
+    [SerializeField]
     GameObject netErrorPanel;
     [SerializeField]
     GameObject playWarningPanel;
@@ -57,6 +61,7 @@ public class TempleSceneController : MonoBehaviour
     AudioClip myClip;
 
     Dictionary<string, string> downloadWarning = new Dictionary<string, string>() { { "hu", "Töltsd le a fájlokat!" }, { "ro", "Descărcare fișiere" }, { "en", "Download the files" } };
+    Dictionary<string, string> downloadInProgressWarning = new Dictionary<string, string>() { { "hu", "Letöltés folyamatban..." }, { "ro", "Descărcare..." }, { "en", "Download in progress.." } };
     Dictionary<string, string> downloadError = new Dictionary<string, string>() { { "hu", "Letöltési hiba!" }, { "ro", "Eroare de descărcare!" }, { "en", "Download error!" } };
     Dictionary<string, string> playWarning = new Dictionary<string, string>() { { "hu", "Olvasd be az illusztrációkat!" }, { "ro", "Scanare" }, { "en", "Scanning" } };
     Dictionary<string, string> shapeTexts = new Dictionary<string, string>() { { "hu", "Válassz egy formát!" }, { "ro", "Selectarea formei!" }, { "en", "Choose the form!" } };
@@ -88,6 +93,7 @@ public class TempleSceneController : MonoBehaviour
         warningText.text = downloadWarning[MainController.Instance.selectedLanguage];
         netErrorText.text = downloadError[MainController.Instance.selectedLanguage];
         playWarningText.text = playWarning[MainController.Instance.selectedLanguage];
+        donwloadInProgressText.text = downloadInProgressWarning[MainController.Instance.selectedLanguage];
         //GetComponent<Animation>().Play("scanButtonFlashing");
         if (MainController.Instance.selectedLanguage == "hu")
         {
@@ -282,7 +288,7 @@ public class TempleSceneController : MonoBehaviour
         }
         MainController.Instance.StartDownload();
         MainController.Instance.downloadCompleted = 0;
-
+        donwloadInProgressPanel.SetActive(true);
         /// download target must be the length of the symbols array + the lang of the audios by the selected language + 1(temple intro audio)
         MainController.Instance.downloadTarget = GetSymbolsLength() + GetSymbolAudiosLength() + 1;
         Debug.Log("download target :   " + MainController.Instance.downloadTarget);
@@ -408,6 +414,7 @@ public class TempleSceneController : MonoBehaviour
 
     public void showPlayAnim()
     {
+        donwloadInProgressPanel.SetActive(false);
         StartCoroutine(ScanWarning());
         animator.SetTrigger("scanFlash");
     }
@@ -422,11 +429,16 @@ public class TempleSceneController : MonoBehaviour
 
     public void ShowSymbolGroupsForScan()
     {
+        Dictionary<string, LocalTempleData> allLocalTempleData = MainController.Instance.LoadAllLocalTempledata();
+        if (!allLocalTempleData[templeName].downloaded[MainController.Instance.selectedLanguage]){
+            OnDownloadButtonHit();
+            return;
+        }
         if (audioSource.isPlaying)
         {
             audioSource.Stop();
         }
-            Dictionary<string, LocalTempleData> allLocalTempleData = MainController.Instance.LoadAllLocalTempledata();
+            
         if (allLocalTempleData[templeName].downloaded[MainController.Instance.selectedLanguage])
         {
             groupChoosePanel.SetActive(true);
