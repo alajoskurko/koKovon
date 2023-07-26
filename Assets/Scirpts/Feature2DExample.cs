@@ -51,6 +51,8 @@ namespace OpenCVForUnityExample
 
         public float deltaTime;
         public float maxFps = 0;
+
+        
         void Start ()
         {
             successfulScanController = this.gameObject.GetComponent<SuccessfulScan>();
@@ -58,28 +60,28 @@ namespace OpenCVForUnityExample
             ProcessSymbolImages();
             
             backCam.Play();
-            /// set the workers for the separated threads
-            /// set the workers for the separated threads
             SetBackgroundWorkers();
+
             panelBg.GetComponent<RawImage>().texture = backCam;
+            //resize
+
             panelBg.rectTransform.sizeDelta = new Vector2(referencePanel.rectTransform.rect.height, referencePanel.rectTransform.rect.width);
-            //panelBg.rectTransform.sizeDelta = new Vector2(backCam.width, backCam.height);
-            //Debug.LogWarning(panelBg.rectTransform.sizeDelta.x / panelBg.rectTransform.sizeDelta.y  + "elotte");
-            ////Debug.LogWarning(referencePanel.GetComponent<RawImage>().rectTransform.rect.height + " height");
-            ////Debug.LogWarning(panelBg.rectTransform.GetComponent<RawImage>().rectTransform.rect.height + " height");
-            ////Debug.LogWarning(mainCanvas.GetComponent<RectTransform>().rect.height + " height");
-            ////Debug.LogWarning(panelBg.rectTransform.rect.width + " height");
 
             float heightDifference = 100 - (panelBg.rectTransform.rect.width * 100 / mainCanvas.GetComponent<RectTransform>().rect.height);
             float diffInScale = 1 + (heightDifference / 100);
             panelBg.rectTransform.localScale = new Vector3(diffInScale, diffInScale, diffInScale);
-            //Debug.LogWarning(panelBg.rectTransform.sizeDelta.x / panelBg.rectTransform.sizeDelta.y + "utana");
-            //Debug.LogWarning(diffInScale + " diffInScale");
 
-            //Debug.LogWarning(diffInScale + " diffInScale");
-
+            //resize
+            Debug.Log(backCam.width + " backCam.width");
+#if UNITY_ANDROID
+            panelBg.rectTransform.sizeDelta = new Vector2(backCam.width, backCam.height);
+            float heightDifferenceAnd = mainCanvas.GetComponent<RectTransform>().rect.height / panelBg.rectTransform.rect.width;
+            panelBg.rectTransform.localScale = new Vector3(heightDifferenceAnd, heightDifferenceAnd, heightDifferenceAnd);
+#endif
 
 #if UNITY_IPHONE
+            StartCoroutine(SimpleCoroutine());
+            
             panelBg.transform.localScale = new Vector3(1, -1, 1);
 #endif
             progressController = MainController.Instance.progressController;
@@ -153,8 +155,25 @@ namespace OpenCVForUnityExample
 
         #endregion
 
+        private IEnumerator SimpleCoroutine()
+        {
 
-        
+            // Wait for 2 seconds
+            yield return new WaitForSeconds(1f);
+            if (backCam.width <= 16)
+            {
+                //while (!backCam.didUpdateThisFrame)
+                //{
+                //    yield return new WaitForEndOfFrame();
+                //}
+                panelBg.rectTransform.sizeDelta = new Vector2(backCam.width, backCam.height);
+                float heightDifferenceAnd = mainCanvas.GetComponent<RectTransform>().rect.height / panelBg.rectTransform.rect.width;
+                panelBg.rectTransform.localScale = new Vector3(heightDifferenceAnd, heightDifferenceAnd, heightDifferenceAnd);
+            }
+
+
+        }
+
         void Update()
         {
                 counter = 0;
