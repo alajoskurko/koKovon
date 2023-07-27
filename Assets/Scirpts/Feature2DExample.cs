@@ -161,7 +161,7 @@ namespace OpenCVForUnityExample
         {
 
             // Wait for 2 seconds
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(.05f);
 
             //while (!backCam.didUpdateThisFrame)
             //{
@@ -175,7 +175,11 @@ namespace OpenCVForUnityExample
             Debug.Log(panelBg.rectTransform.rect.width + "mpanelBg.rectTransform.rect.width");
             Debug.Log(heightDifferenceAnd + "heightDifferenceAnd");
 
-            panelBg.rectTransform.localScale = new Vector3(heightDifferenceAnd, heightDifferenceAnd, heightDifferenceAnd);
+            panelBg.rectTransform.localScale = new Vector3(heightDifferenceAnd,  heightDifferenceAnd, heightDifferenceAnd);
+
+#if UNITY_IOS
+            panelBg.rectTransform.localScale = new Vector3(1,  -1, 1);
+#endif
 
 
 
@@ -368,7 +372,7 @@ namespace OpenCVForUnityExample
     }
 
 
-    #region AbortableBackground
+#region AbortableBackground
 
     public class AbortableBackgroundWorker : BackgroundWorker
     {
@@ -399,7 +403,7 @@ namespace OpenCVForUnityExample
             }
         }
     }
-    #endregion
+#endregion
 }
 
 public class MyBacgkroundWorked : BackgroundWorker {
