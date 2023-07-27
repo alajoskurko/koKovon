@@ -52,6 +52,8 @@ namespace OpenCVForUnityExample
         public float deltaTime;
         public float maxFps = 0;
 
+        private float previousWidth;
+
         
         void Start ()
         {
@@ -63,27 +65,27 @@ namespace OpenCVForUnityExample
             SetBackgroundWorkers();
 
             panelBg.GetComponent<RawImage>().texture = backCam;
+            previousWidth = Screen.width;
             //resize
 
-            panelBg.rectTransform.sizeDelta = new Vector2(referencePanel.rectTransform.rect.height, referencePanel.rectTransform.rect.width);
+            // panelBg.rectTransform.sizeDelta = new Vector2(referencePanel.rectTransform.rect.height, referencePanel.rectTransform.rect.width);
 
-            float heightDifference = 100 - (panelBg.rectTransform.rect.width * 100 / mainCanvas.GetComponent<RectTransform>().rect.height);
-            float diffInScale = 1 + (heightDifference / 100);
-            panelBg.rectTransform.localScale = new Vector3(diffInScale, diffInScale, diffInScale);
+            // float heightDifference = 100 - (panelBg.rectTransform.rect.width * 100 / mainCanvas.GetComponent<RectTransform>().rect.height);
+            // float diffInScale = 1 + (heightDifference / 100);
+            // panelBg.rectTransform.localScale = new Vector3(diffInScale, diffInScale, diffInScale);
 
             //resize
-            Debug.Log(backCam.width + " backCam.width");
-#if UNITY_ANDROID
-            panelBg.rectTransform.sizeDelta = new Vector2(backCam.width, backCam.height);
-            float heightDifferenceAnd = mainCanvas.GetComponent<RectTransform>().rect.height / panelBg.rectTransform.rect.width;
-            panelBg.rectTransform.localScale = new Vector3(heightDifferenceAnd, heightDifferenceAnd, heightDifferenceAnd);
-#endif
+            //             Debug.Log(backCam.width + " backCam.width");
+            // #if UNITY_ANDROID
+            //             panelBg.rectTransform.sizeDelta = new Vector2(backCam.width, backCam.height);
+            //             float heightDifferenceAnd = referencePanel.GetComponent<RectTransform>().rect.height / panelBg.rectTransform.rect.width;
+            //             panelBg.rectTransform.localScale = new Vector3(heightDifferenceAnd, heightDifferenceAnd, heightDifferenceAnd);
+            // #endif
 
-#if UNITY_IPHONE
+
             StartCoroutine(SimpleCoroutine());
             
             panelBg.transform.localScale = new Vector3(1, -1, 1);
-#endif
             progressController = MainController.Instance.progressController;
             SwipeDetector.OnSwipe += SwipeDetector_OnSwipe;
             
@@ -160,23 +162,35 @@ namespace OpenCVForUnityExample
 
             // Wait for 2 seconds
             yield return new WaitForSeconds(1f);
-            if (backCam.width <= 16)
-            {
-                //while (!backCam.didUpdateThisFrame)
-                //{
-                //    yield return new WaitForEndOfFrame();
-                //}
-                panelBg.rectTransform.sizeDelta = new Vector2(backCam.width, backCam.height);
-                float heightDifferenceAnd = mainCanvas.GetComponent<RectTransform>().rect.height / panelBg.rectTransform.rect.width;
-                panelBg.rectTransform.localScale = new Vector3(heightDifferenceAnd, heightDifferenceAnd, heightDifferenceAnd);
-            }
+
+            //while (!backCam.didUpdateThisFrame)
+            //{
+            //    yield return new WaitForEndOfFrame();
+            //}
+            panelBg.rectTransform.sizeDelta = new Vector2(backCam.width, backCam.height);
+
+            Debug.Log(backCam.width + " backCam.width " + backCam.height + " backCam.H");
+            float heightDifferenceAnd = mainCanvas.GetComponent<RectTransform>().rect.height / panelBg.rectTransform.rect.width;
+            Debug.Log(mainCanvas.GetComponent<RectTransform>().rect.height + "mainCanvas.GetComponent<RectTransform>().rect.height ");
+            Debug.Log(panelBg.rectTransform.rect.width + "mpanelBg.rectTransform.rect.width");
+            Debug.Log(heightDifferenceAnd + "heightDifferenceAnd");
+
+            panelBg.rectTransform.localScale = new Vector3(heightDifferenceAnd, heightDifferenceAnd, heightDifferenceAnd);
+
+
 
 
         }
 
         void Update()
         {
-                counter = 0;
+            //if (previousWidth != Screen.width)
+            //{
+            //    Debug.LogWarning(Screen.orientation + "Device orientation changed!");
+            //    previousOrientation = Screen.orientation;
+            //}
+            //Debug.LogWarning(Screen.orientation + "Device orientation changed!");
+            counter = 0;
                 Destroy(cameraTexture);
                 if (!scanIsOver)
                 {
