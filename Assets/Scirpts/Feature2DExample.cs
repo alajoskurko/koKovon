@@ -161,7 +161,7 @@ namespace OpenCVForUnityExample
         {
 
             // Wait for 2 seconds
-            yield return new WaitForSeconds(.05f);
+            yield return new WaitForSeconds(.1f);
 
             //while (!backCam.didUpdateThisFrame)
             //{
@@ -174,15 +174,10 @@ namespace OpenCVForUnityExample
             Debug.Log(mainCanvas.GetComponent<RectTransform>().rect.height + "mainCanvas.GetComponent<RectTransform>().rect.height ");
             Debug.Log(panelBg.rectTransform.rect.width + "mpanelBg.rectTransform.rect.width");
             Debug.Log(heightDifferenceAnd + "heightDifferenceAnd");
-
             panelBg.rectTransform.localScale = new Vector3(heightDifferenceAnd,  heightDifferenceAnd, heightDifferenceAnd);
-
 #if UNITY_IOS
-            panelBg.rectTransform.localScale = new Vector3(1,  -1, 1);
+            panelBg.rectTransform.localScale = new Vector3(heightDifferenceAnd,  -heightDifferenceAnd, heightDifferenceAnd);
 #endif
-
-
-
 
         }
 
