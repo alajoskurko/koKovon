@@ -31,6 +31,7 @@ public class EndpointReader : MonoBehaviour
     public IEnumerator GetAllTempleData(System.Action<TempleData[]> callback)
     {
         UnityWebRequest www = UnityWebRequest.Get("https://kokovon.camelcoding.com/temples");
+         www.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
         yield return www.SendWebRequest();
 
         if (www.result != UnityWebRequest.Result.Success)
@@ -53,6 +54,7 @@ public class EndpointReader : MonoBehaviour
     public IEnumerator GetSymbolGroupInfos(System.Action callback)
     {
         UnityWebRequest www = UnityWebRequest.Get("https://kokovon.camelcoding.com/symbol-groups");
+         www.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
         yield return www.SendWebRequest();
 
         if (www.result != UnityWebRequest.Result.Success)

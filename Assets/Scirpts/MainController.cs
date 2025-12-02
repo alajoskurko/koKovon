@@ -221,9 +221,18 @@ public class MainController : MonoBehaviour
         {
             Debug.LogWarning(" toltesi hiba file exist");
 
+            // string jsonString = dataController.LoadJsonFile("LocalTempleData.json");
+            // List<LocalTempleData> allLocalTempleData = new List<LocalTempleData>();
+            // allLocalTempleData = JsonConvert.DeserializeObject<List<LocalTempleData>>(jsonString);
+
             string jsonString = dataController.LoadJsonFile("LocalTempleData.json");
-            List<LocalTempleData> allLocalTempleData = new List<LocalTempleData>();
-            allLocalTempleData = JsonConvert.DeserializeObject<List<LocalTempleData>>(jsonString);
+
+// Deserialize JSON object into a dictionary
+Dictionary<string, LocalTempleData> localTempleDict = 
+    JsonConvert.DeserializeObject<Dictionary<string, LocalTempleData>>(jsonString);
+
+// Convert dictionary values to a list
+List<LocalTempleData> allLocalTempleData = localTempleDict.Values.ToList();
             foreach (TempleData templeData in allTempleData)
             {
                 if (templeData != null)
