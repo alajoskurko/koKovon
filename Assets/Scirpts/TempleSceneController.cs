@@ -499,15 +499,29 @@ public class TempleSceneController : MonoBehaviour
         {
             yield return www.SendWebRequest();
 
-            if (www.result == UnityWebRequest.Result.ConnectionError)
-            {
-                Debug.Log(www.error);
-            }
-            else
-            {
-                myClip = DownloadHandlerAudioClip.GetContent(www);
-                audioSource.clip = myClip;
-            }
+          #if UNITY_2020_2_OR_NEWER
+        // újabb Unity-verziók
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError(www.error);
+        }
+        else
+        {
+            AudioClip myClip = DownloadHandlerAudioClip.GetContent(www);
+            audioSource.clip = myClip;
+        }
+#else
+        // régebbi Unity-verziók (2019.x – 2020.1)
+        if (www.isNetworkError || www.isHttpError)
+        {
+            Debug.LogError(www.error);
+        }
+        else
+        {
+            AudioClip myClip = DownloadHandlerAudioClip.GetContent(www);
+            audioSource.clip = myClip;
+        }
+#endif
         }
         //WWW www = new WWW(url);
 

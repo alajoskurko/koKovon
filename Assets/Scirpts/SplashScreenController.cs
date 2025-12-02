@@ -76,6 +76,7 @@ public class SplashScreenController : MonoBehaviour
             //TODO informative popup
         }
     }
+   
     IEnumerator GetPermissionForCameraOnIOS()
     {
 
@@ -90,6 +91,7 @@ public class SplashScreenController : MonoBehaviour
         }
 
     }
+    #if UNITY_ANDROID
     internal void PermissionCallbacks_PermissionDeniedAndDontAskAgain(string permissionName)
     {
         Application.Quit();
@@ -104,25 +106,27 @@ public class SplashScreenController : MonoBehaviour
     {
         Application.Quit();
     }
-    void GetPermissionForCameraOnAndroid()
+    #endif
+  #if UNITY_ANDROID
+  void GetPermissionForCameraOnAndroid()
+{
+    if (!Permission.HasUserAuthorizedPermission(Permission.Camera))
     {
-
+        Permission.RequestUserPermission(Permission.Camera);
+        // Itt nincs callback, csak ellenőrizheted később:
         if (Permission.HasUserAuthorizedPermission(Permission.Camera))
         {
-            
+            Debug.Log("Camera permission granted");
         }
         else
         {
-            var callbacks = new PermissionCallbacks();
-            callbacks.PermissionDenied += PermissionCallbacks_PermissionDenied;
-            callbacks.PermissionGranted += PermissionCallbacks_PermissionGranted;
-            callbacks.PermissionDeniedAndDontAskAgain += PermissionCallbacks_PermissionDeniedAndDontAskAgain;
-            Permission.RequestUserPermission(Permission.Camera, callbacks);
-            // We do not have permission to use the microphone.
-            // Ask for permission or proceed without the functionality enabled
+            Debug.Log("Camera permission denied");
+            Application.Quit();
         }
-
     }
+}
+#endif
+
     internal void QuitApp()
     {
 

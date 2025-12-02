@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-using Newtonsoft.Json;
+// using Newtonsoft.Json;
 using System.IO;
 using System;
 
@@ -12,7 +12,7 @@ public class DataController : MonoBehaviour
     public void SaveIntoJson(object data, string fileName)
     {
         Debug.Log("Saving to: " + Application.persistentDataPath + "/" + fileName);
-        string jsonData = JsonConvert.SerializeObject(data);
+         string jsonData = JsonUtility.ToJson(data);
         System.IO.File.WriteAllText(Application.persistentDataPath + "/"+fileName, jsonData);
     }
 

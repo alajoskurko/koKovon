@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Newtonsoft.Json;
+// using Newtonsoft.Json;
 
 public class ProgressController : MonoBehaviour
 {
@@ -17,13 +17,13 @@ public class ProgressController : MonoBehaviour
         if (System.IO.File.Exists(Application.persistentDataPath + "/" + progressFileName))
         {
             string jsonString = dataController.LoadJsonFile(progressFileName);
-            progress = JsonConvert.DeserializeObject<ProgressObject>(jsonString);
+            progress =JsonUtility.FromJson<ProgressObject>(jsonString);
         }
         else
         {
             dataController.SaveIntoJson(new ProgressObject(), progressFileName);
             string jsonString = dataController.LoadJsonFile(progressFileName);
-            progress = JsonConvert.DeserializeObject<ProgressObject>(jsonString);
+            progress = JsonUtility.FromJson<ProgressObject>(jsonString);
         }
         
     }
