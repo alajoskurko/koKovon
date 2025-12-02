@@ -10,6 +10,7 @@ using System.Threading;
 using OpenCVForUnity.CoreModule;
 using OpenCVForUnity.UnityUtils;
 using OpenCVForUnity.Features2dModule;
+using UnityEngine.Scripting;
 using static SwipeDetector;
 
 namespace OpenCVForUnityExample
@@ -18,19 +19,15 @@ namespace OpenCVForUnityExample
     public class Feature2DExample : MonoBehaviour
     {
 
-
-        [SerializeField]
-        Text myMessageBox;
         Dictionary<string,Texture2D> symbolTextures;
         static WebCamTexture backCam;
-        BackgroundWorker bgWoker1,bgWoker2,bgWoker3,bgWoker4,bgWoker5;
-        List<BackgroundWorker> backgroundWorkers = new List<BackgroundWorker>();
-        bool checkImages = true;
+        //BackgroundWorker bgWoker1,bgWoker2,bgWoker3,bgWoker4,bgWoker5;
+        List<MyBacgkroundWorked> backgroundWorkers = new List<MyBacgkroundWorked>();
+
         [SerializeField]
         RawImage panelBg;
-        Texture2D test1;
         public Quaternion baseRotation;
-        Dictionary<string, Texture2D> scannableImagesDic = new Dictionary<string, Texture2D>(); 
+        Dictionary<string, Mat> scannableImagesDic = new Dictionary<string, Mat>(); 
         double bestDistanceAvarage;
         string compareFinhisString;
 
@@ -47,31 +44,48 @@ namespace OpenCVForUnityExample
         [SerializeField]
         RawImage referencePanel;
 
+        [SerializeField]
+        Canvas mainCanvas;
+
         int counter = 0;
 
+        public float deltaTime;
+        public float maxFps = 0;
+
+        private float previousWidth;
+
+        
         void Start ()
         {
             successfulScanController = this.gameObject.GetComponent<SuccessfulScan>();
-            //cameraTexture = new Texture2D(512, 512, TextureFormat.PVRTC_RGBA4, false);
-            //byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, "scanTest", ".jpg");
-            //cameraTexture.LoadImage(resultBytes);
-
-            //cameraTexture = Resources.Load("Test/scanTest") as Texture2D;
-            //cameraTexture.SetPixels(cameraTexture.GetPixels());
             StartWebcamDevice();
             ProcessSymbolImages();
             
             backCam.Play();
-            bgWoker1 = new BackgroundWorker();
-            /// set the workers for the separated threads
             SetBackgroundWorkers();
-            panelBg.GetComponent<RawImage>().texture = backCam;
-            panelBg.rectTransform.sizeDelta = new Vector2(referencePanel.rectTransform.rect.height, referencePanel.rectTransform.rect.width);
-            Debug.Log(referencePanel.rectTransform.rect + "rect x");
 
-            #if UNITY_IPHONE
+            panelBg.GetComponent<RawImage>().texture = backCam;
+            previousWidth = Screen.width;
+            //resize
+
+            // panelBg.rectTransform.sizeDelta = new Vector2(referencePanel.rectTransform.rect.height, referencePanel.rectTransform.rect.width);
+
+            // float heightDifference = 100 - (panelBg.rectTransform.rect.width * 100 / mainCanvas.GetComponent<RectTransform>().rect.height);
+            // float diffInScale = 1 + (heightDifference / 100);
+            // panelBg.rectTransform.localScale = new Vector3(diffInScale, diffInScale, diffInScale);
+
+            //resize
+            //             Debug.Log(backCam.width + " backCam.width");
+            // #if UNITY_ANDROID
+            //             panelBg.rectTransform.sizeDelta = new Vector2(backCam.width, backCam.height);
+            //             float heightDifferenceAnd = referencePanel.GetComponent<RectTransform>().rect.height / panelBg.rectTransform.rect.width;
+            //             panelBg.rectTransform.localScale = new Vector3(heightDifferenceAnd, heightDifferenceAnd, heightDifferenceAnd);
+            // #endif
+
+
+            StartCoroutine(SimpleCoroutine());
+            
             panelBg.transform.localScale = new Vector3(1, -1, 1);
-            #endif
             progressController = MainController.Instance.progressController;
             SwipeDetector.OnSwipe += SwipeDetector_OnSwipe;
             
@@ -83,15 +97,10 @@ namespace OpenCVForUnityExample
                 Texture2D imageTexture = new Texture2D(512, 512, TextureFormat.PVRTC_RGB4, false);
                 byte[] resultBytes = MainController.Instance.GetImageLocaly(MainController.Instance.getCurrentTempleData().name, symbol.symbol_name, ".jpg");
                 imageTexture.LoadImage(resultBytes);
-                //imageTexture.Reinitialize(backCam.width, imageTexture.height * backCam.width / imageTexture.width);
-                //Debug.Log(imageTexture.height + " heigjht" + imageTexture.width + " width");
-                //Debug.Log(backCam.width + " " + backCam.height);
-                var akarmi = imageTexture;
-                scannableImagesDic.Add(symbol.symbol_name, imageTexture);
-                //symbolImage.texture = imageTexture;
-                //Color currColor = symbolImage.color;
-                //currColor.a = 1;
-                //symbolImage.color = currColor;
+                
+                OpenCVForUnity.CoreModule.Mat mat = new Mat(imageTexture.height, imageTexture.width, CvType.CV_8UC3);
+                Utils.texture2DToMat(imageTexture,mat);
+                scannableImagesDic.Add(symbol.symbol_name, mat);
             }
         }
 
@@ -102,7 +111,6 @@ namespace OpenCVForUnityExample
             WebCamDevice[] devices = WebCamTexture.devices;
             if (devices.Length == 0)
             {
-                myMessageBox.text += "No camera detected";
                 return;
             }
             else
@@ -118,13 +126,17 @@ namespace OpenCVForUnityExample
                     // {
                     //    backCam = new WebCamTexture(devices[i].name, 500, 885);
                     // }
+
+                    //decrease webcamtexture size for a better fps performance
+                    //if there is something wrong with the symbol scan, put back the 500, 885
                     backCam = new WebCamTexture(devices[0].name, 500, 885);
+                    //System.GC.Collect();
+                    //Debug.Log(GarbageCollector.GCMode + " gb gcmode");
 
                 }
 
                 if (backCam == null)
                 {
-                    myMessageBox.text += "Unable to find back camera";
                     return;
                 }
 
@@ -138,47 +150,67 @@ namespace OpenCVForUnityExample
         {
             for (int i = 0; i < scannableImagesDic.Count; i++)
             {
-                var bgWorker = new BackgroundWorker();
+                var bgWorker = new MyBacgkroundWorked();
                 backgroundWorkers.Add(bgWorker);
             }
         }
+
         #endregion
 
+        private IEnumerator SimpleCoroutine()
+        {
 
-        
+            // Wait for 2 seconds
+            yield return new WaitForSeconds(.1f);
+
+            //while (!backCam.didUpdateThisFrame)
+            //{
+            //    yield return new WaitForEndOfFrame();
+            //}
+            panelBg.rectTransform.sizeDelta = new Vector2(backCam.width, backCam.height);
+
+            Debug.Log(backCam.width + " backCam.width " + backCam.height + " backCam.H");
+            float heightDifferenceAnd = mainCanvas.GetComponent<RectTransform>().rect.height / panelBg.rectTransform.rect.width;
+            Debug.Log(mainCanvas.GetComponent<RectTransform>().rect.height + "mainCanvas.GetComponent<RectTransform>().rect.height ");
+            Debug.Log(panelBg.rectTransform.rect.width + "mpanelBg.rectTransform.rect.width");
+            Debug.Log(heightDifferenceAnd + "heightDifferenceAnd");
+            panelBg.rectTransform.localScale = new Vector3(heightDifferenceAnd,  heightDifferenceAnd, heightDifferenceAnd);
+#if UNITY_IOS
+            panelBg.rectTransform.localScale = new Vector3(heightDifferenceAnd,  -heightDifferenceAnd, heightDifferenceAnd);
+#endif
+
+        }
+
         void Update()
         {
-            //if (counter > 15)
+            //if (previousWidth != Screen.width)
             //{
-           
-            if (!scanIsOver)
-                {
+            //    Debug.LogWarning(Screen.orientation + "Device orientation changed!");
+            //    previousOrientation = Screen.orientation;
+            //}
+            //Debug.LogWarning(Screen.orientation + "Device orientation changed!");
+            counter = 0;
                 Destroy(cameraTexture);
-                cameraTexture = GetTexture2DFromWebcamTexture(backCam);
-                //converts webcam texture to Texture2D, that can later be converted into 
-
-                CompareAllImages(cameraTexture);
-                }
-            if (!scanIsOver)
-            {
-                if (isComparingFinished)
+                if (!scanIsOver)
                 {
-                    myMessageBox.text = compareFinhisString;
+                    if (isComparingFinished)
+                    {
 
-                    scanIsOver = true;
-                    Debug.LogWarning("compare finish + " + scannedSymbolName);
-                    GetAudioForSymbol();
-                    progressController.UpdateProgressInJson(scannedSymbolName, MainController.Instance.getCurrentTempleData().name);
-                    successfulScanController.SuccessfulScanHappened(scannedSymbolName);
+                        scanIsOver = true;
+                        Debug.LogWarning("compare finish feherhiba " + scannedSymbolName);
+                        GetAudioForSymbol();
+                        progressController.UpdateProgressInJson(scannedSymbolName, MainController.Instance.getCurrentTempleData().name);
+                        successfulScanController.SuccessfulScanHappened(scannedSymbolName);
+                        backCam.Stop();
+                    }
+                    else
+                    {
+                        //converts webcam texture to Texture2D, that can later be converted into 
+                        cameraTexture = GetTexture2DFromWebcamTexture(backCam);
+                        CompareAllImages(cameraTexture);
+                    }
 
-                    backCam.Stop();
                 }
-                else
-                {
-                    myMessageBox.text = bestDistanceAvarage.ToString();
-                }
-            }
-
         }
 
         void GetAudioForSymbol()
@@ -194,33 +226,31 @@ namespace OpenCVForUnityExample
 
         void CompareAllImages(Texture2D cameraTexture)
         {
+            Mat cameraImageMat = new Mat(cameraTexture.height, cameraTexture.width, CvType.CV_8UC3);
+            Utils.texture2DToMat(cameraTexture, cameraImageMat);
             
             for (int i = 0; i < scannableImagesDic.Count; i++)
             {
-                CompareImages(backgroundWorkers[i], scannableImagesDic.ElementAt(i).Value, scannableImagesDic.ElementAt(i).Key, cameraTexture);
+                CompareImages(backgroundWorkers[i], scannableImagesDic.ElementAt(i).Value, scannableImagesDic.ElementAt(i).Key, cameraImageMat);
             }
         }
 
 
-        void CompareImages(BackgroundWorker bgWoker,Texture2D img1, string img1Name, Texture2D img2)
+        void CompareImages(MyBacgkroundWorked bgWoker,Mat img1Mat, string img1Name, Mat cameraImageMat)
         {
 
-            OpenCVForUnity.CoreModule.Mat img1Mat = new Mat(img1.height, img1.width, CvType.CV_8UC3);
-            OpenCVForUnity.CoreModule.Mat img2Mat = new Mat(img2.height, img2.width, CvType.CV_8UC3);
+            
 
-            Utils.texture2DToMat(img1, img1Mat);
-            Utils.texture2DToMat(img2, img2Mat);
-            // if (bgWoker != null)
-            // {
-            //     bgWoker.Dispose();
-
-            // }
-
-                if( !bgWoker.IsBusy ){
-                bgWoker.DoWork += (o, a) => DetectAndCalculate(img1Mat,img2Mat,img1Name);
-                //DetectAndCalculate(detector,img2Mat,keypoints2,extractor,descriptors1,descriptors2,img1Name);
+            if (!bgWoker.IsBusy)
+            {
+                bgWoker.DoWork += (o, a) => DetectAndCalculate(img1Mat, cameraImageMat, img1Name);
                 bgWoker.RunWorkerAsync();
-                }
+                //bgWoker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(backgroundWorker1_RunWorkerCompleted);
+            }
+        }
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            backgroundWorkers[1].Dispose();
 
         }
         private void SwipeDetector_OnSwipe(SwipeData data)
@@ -231,11 +261,10 @@ namespace OpenCVForUnityExample
             }
         }
         void DetectAndCalculate(Mat img1Mat, Mat img2Mat,string img1Name){
-            
             ORB detector = ORB.create();
             ORB extractor = ORB.create();
 
-             MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
+            MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
             Mat descriptors1 = new Mat();
 
             detector.detect(img1Mat, keypoints1);
@@ -243,7 +272,7 @@ namespace OpenCVForUnityExample
 
             MatOfKeyPoint keypoints2 = new MatOfKeyPoint();
             Mat descriptors2 = new Mat();
-            
+
             detector.detect(img2Mat, keypoints2);
             extractor.compute(img2Mat, keypoints2, descriptors2);
 
@@ -252,38 +281,31 @@ namespace OpenCVForUnityExample
             MatOfDMatch matches = new MatOfDMatch();
 
             matcher.match(descriptors1, descriptors2, matches);
-           
+
             DMatch[] arrayDmatch = matches.toArray();
             List<double> distances = new List<double>();
-            
+
             if (arrayDmatch.Length > 0)
             {
-               for (int i = arrayDmatch.Length - 1; i >= 0; i--)
-               {
-                   distances.Add(arrayDmatch[i].distance);
-               }
-             
-               distances.Sort();
-               var bestDistances = distances.Take(20);
-               bestDistanceAvarage = bestDistances.Average();
-            //    myMessageBox.text = img1Name+ ": "+ bestDistancesAverage.ToString();
-            if(!isComparingFinished){
-  print(img1Name+" best distance: " +bestDistanceAvarage);
-            }
-              
-               if (bestDistanceAvarage < 29 && !isComparingFinished)
-               {
-                    isComparingFinished = true;
+                for (int i = arrayDmatch.Length - 1; i >= 0; i--)
+                {
+                    distances.Add(arrayDmatch[i].distance);
+                }
+
+                distances.Sort();
+                var bestDistances = distances.Take(20);
+                bestDistanceAvarage = bestDistances.Average();
+
+                if (bestDistanceAvarage < 29 && !isComparingFinished)
+                {
                     compareFinhisString = img1Name + "image name" + " bestdistance" + bestDistanceAvarage;
-                    Debug.LogWarning("compare finish string + " + compareFinhisString);
-                    if(scannedSymbolName == null)
+                    if (scannedSymbolName == null)
                     {
                         scannedSymbolName = img1Name;
                     }
-                    
-                   checkImages = false;
-               }
-          
+                    isComparingFinished = true;
+                }
+
             }
         }
 
@@ -292,14 +314,16 @@ namespace OpenCVForUnityExample
         {
             yield return new WaitForSeconds(0.5f);
             
-            myMessageBox.text = "MATCH with image:" + result;
             MainController.Instance.SetDetectedSymbolName(result);
            //?? backCam.Stop();
             SceneManager.LoadScene("AudiPlayerScene");
         }
         public void GobackToTempleSelection()
         {
+            Resources.UnloadUnusedAssets();
             backCam.Stop();
+            Destroy(backCam);
+            backgroundWorkers = null;
             SceneManager.LoadScene("SpecificTempleScene");
         }
 
@@ -343,7 +367,7 @@ namespace OpenCVForUnityExample
     }
 
 
-    #region AbortableBackground
+#region AbortableBackground
 
     public class AbortableBackgroundWorker : BackgroundWorker
     {
@@ -374,5 +398,10 @@ namespace OpenCVForUnityExample
             }
         }
     }
-    #endregion
+#endregion
+}
+
+public class MyBacgkroundWorked : BackgroundWorker {
+    public event RunWorkerCompletedEventHandler MyRunWorkerCompleted;
+    public delegate void RunWorkerCompletedEventHandler(object sender, RunWorkerCompletedEventArgs e);
 }

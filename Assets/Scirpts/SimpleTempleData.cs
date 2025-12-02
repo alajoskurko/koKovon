@@ -13,7 +13,6 @@ public class SimpleTempleData
  //   public AudioData[] audios;
     public ForeignTempleData[] languages;
 //    public string created_at;
-  //  public string updated_at;
 
 
     [Serializable]

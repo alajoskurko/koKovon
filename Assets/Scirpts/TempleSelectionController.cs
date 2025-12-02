@@ -21,22 +21,41 @@ public class TempleSelectionController : MonoBehaviour
     ScrollRect scrollRect;
     [SerializeField]
     List<GameObject> languagesList = new List<GameObject>();
+    [SerializeField]
+    private GameObject adminMode;
+    [SerializeField]
+    Canvas mainCanvas;
+    public static TempleSelectionController Instance;
     private void Awake()
     {
+        if(Instance == null)
+        {
+            Instance = this;
+        }
         InitTemples();
+        if ((float)Screen.height / (float)Screen.width < 1.55)
+        {
+            mainCanvas.GetComponent<CanvasScaler>().referenceResolution = new Vector2(1080, 800);
+            Debug.Log((float)Screen.height / (float)Screen.width + "tablet szeles");
+        }
     }
 
     void Start()
     {
-        //Canvas.ForceUpdateCanvases();
-        //RectTransform templecontainer = GameObject.Find("TempleContainer").GetComponent<RectTransform>();
-        //templecontainer.anchoredPosition =
-        //   (Vector2)scrollRect.transform.InverseTransformPoint(templecontainer.position)
-        //   - (Vector2)scrollRect.transform.InverseTransformPoint(MainController.Instance.templeSelectorScrollrectPosition);
-        Debug.Log(MainController.Instance.templeSelectorScrollrectPositionY + "MainController.Instance.templeSelectorScrollrectPositionY");
         InstantiateTempleItems(templePrefab,mainTempleContainer);
         currentLanguage.text = MainController.Instance.selectedLanguage;
         scrollRect.verticalNormalizedPosition = MainController.Instance.templeSelectorScrollrectPositionY;
+        foreach (var item in languagesList)
+        {
+            if (item.gameObject.name.ToLower() == MainController.Instance.selectedLanguage)
+            {
+                item.gameObject.SetActive(false);
+            }
+            else
+            {
+                item.gameObject.SetActive(true);
+            }
+        }
     }
 
     void InitTemples()
@@ -44,6 +63,13 @@ public class TempleSelectionController : MonoBehaviour
         allTempleData = MainController.Instance.LoadAllTempleData();
         allLocalTempleData = MainController.Instance.LoadAllLocalTempledata();
         MainController.Instance.SetAllTempleData(allTempleData);
+    }
+
+    public void Reinit()
+    {
+        // Show admin mode on reinit
+        adminMode.gameObject.SetActive(true);
+        InstantiateTempleItems(templePrefab, mainTempleContainer);
     }
     
     void InstantiateTempleItems( GameObject prefab, GameObject parent = default(GameObject))
@@ -59,18 +85,28 @@ public class TempleSelectionController : MonoBehaviour
 
         foreach(TempleData templeData in allTempleData)
         {
-            var newTempleItem = Instantiate(prefab, new Vector3(0, 0, 0), Quaternion.identity);
-            if(parent != null)
-            {
-                newTempleItem.transform.parent = parent.transform;
-                newTempleItem.transform.localScale = new Vector3(1,1,1);
-            }
-            TempleObjectController templeObjectController = newTempleItem.GetComponent<TempleObjectController>();
-            templeObjectController.SetTempleData(templeData, allLocalTempleData[templeData.name].downloaded[MainController.Instance.selectedLanguage]);
-        
-        }
+            if (templeData.published || MainController.Instance.isAdminMode) {
+                var newTempleItem = Instantiate(prefab, new Vector3(0, 0, 0), Quaternion.identity);
+                if (parent != null)
+                {
+                    newTempleItem.transform.parent = parent.transform;
+                    newTempleItem.transform.localScale = new Vector3(1, 1, 1);
+                    //if (templeData.id == "3"){
+                    //    Debug.Log(templeData + " temple data");
+                    //}
 
-        
+                }
+                TempleObjectController templeObjectController = newTempleItem.GetComponent<TempleObjectController>();
+                templeObjectController.SetTempleData(templeData, allLocalTempleData[templeData.name].downloaded[MainController.Instance.selectedLanguage]);
+
+            }
+        }
+       
+    }
+
+    public void ClickOnMainLogo()
+    {
+        MainController.Instance.ClickedOnLogo();
     }
 
     public void ShowLanguageChooser()
@@ -107,6 +143,9 @@ public class TempleSelectionController : MonoBehaviour
         }
     }
   
-
+    public void Exit()
+    {
+        Application.Quit();
+    }
 
 }

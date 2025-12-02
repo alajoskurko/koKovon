@@ -30,6 +30,7 @@ public class SuccessfulScan : MonoBehaviour
     Animator audioPanelAnim,fadeAudioBG;
     [SerializeField]
     GameObject audioBG;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -40,8 +41,9 @@ public class SuccessfulScan : MonoBehaviour
 
     public void SuccessfulScanHappened(string scannedSymbol)
     {
-        //successfullScanPanel.gameObject.SetActive(true);
-        //BGPanel.gameObject.SetActive(false);
+        
+        print("scannedSymbol: " + scannedSymbol);
+        Debug.LogWarning("scannedSymbol succ happ feherhiba: " + scannedSymbol);
         border.gameObject.SetActive(false);
         scannedSymbolName = scannedSymbol;
         StartCoroutine(PlayAnims());

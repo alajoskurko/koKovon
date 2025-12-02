@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static SwipeDetector;
@@ -20,6 +21,10 @@ public class TempleSceneController : MonoBehaviour
     Text playWarningText;
     [SerializeField]
     GameObject downloadWarningPanel;
+    [SerializeField]
+    GameObject donwloadInProgressPanel;
+    [SerializeField]
+    Text donwloadInProgressText;
     [SerializeField]
     GameObject netErrorPanel;
     [SerializeField]
@@ -43,27 +48,41 @@ public class TempleSceneController : MonoBehaviour
     Animator downloadButtonAnimator;
     [SerializeField]
     AudioSource audioSource;
-    AudioClip audioClip;
     [SerializeField]
     GameObject audioPlayButton;
     [SerializeField]
     GameObject LoadingImage;
     [SerializeField]
     TMPro.TMP_Text chooseShapeText;
+    [SerializeField]
+    public GameObject progressObj;
+    [SerializeField]
+    Canvas mainCanvas;
+    AudioClip myClip;
 
-    Dictionary<string, string> downloadWarning = new Dictionary<string, string>() { { "hu", "Kérem töltse le a file-okat" }, { "ro", "Vă rog descărcați fișierele" }, { "en", "Please download the files first" } };
-    Dictionary<string, string> downloadError = new Dictionary<string, string>() { { "hu", "A letöltés közben hiba lépett fel!" }, { "ro", "Eroare de descărcare!" }, { "en", "Error while downloading file!" } };
-    Dictionary<string, string> playWarning = new Dictionary<string, string>() { { "hu", "Majd olvasd be az ikonokat!" }, { "ro", "Apoi scanează pictogramele!" }, { "en", "Then scan the icons!" } };
-    Dictionary<string, string> shapeTexts = new Dictionary<string, string>() { { "hu", "Válassz egy formát!" }, { "ro", "Alege o formă!" }, { "en", "Choose a shape!" } };
+    Dictionary<string, string> downloadWarning = new Dictionary<string, string>() { { "hu", "Töltsd le a fájlokat!" }, { "ro", "Descărcare fișiere" }, { "en", "Download the files" } };
+    Dictionary<string, string> downloadInProgressWarning = new Dictionary<string, string>() { { "hu", "Letöltés folyamatban..." }, { "ro", "Descărcare..." }, { "en", "Download in progress.." } };
+    Dictionary<string, string> downloadError = new Dictionary<string, string>() { { "hu", "Letöltési hiba!" }, { "ro", "Eroare de descărcare!" }, { "en", "Download error!" } };
+    Dictionary<string, string> playWarning = new Dictionary<string, string>() { { "hu", "Olvasd be az illusztrációkat!" }, { "ro", "Scanare" }, { "en", "Scanning" } };
+    Dictionary<string, string> shapeTexts = new Dictionary<string, string>() { { "hu", "Válassz egy formát!" }, { "ro", "Selectarea formei!" }, { "en", "Choose the form!" } };
 
     public static TempleSceneController Instance;
     //SymbolGroups symbolGroupss;
+
+    [SerializeField]
+    Animator animator;
 
     private void Awake()
     {
         Instance = this;
         MainController.OnDownloadStateChanged += SetDownloadButtonState;
         SwipeDetector.OnSwipe += SwipeDetector_OnSwipe;
+        if((float) Screen.height / (float) Screen.width < 1.55)
+        {
+            mainCanvas.GetComponent<CanvasScaler>().referenceResolution = new Vector2(1080, 800);
+            Debug.Log((float) Screen.height / (float) Screen.width + "tablet szeles");
+        }
+        
     }
 
     void Start()
@@ -74,7 +93,8 @@ public class TempleSceneController : MonoBehaviour
         warningText.text = downloadWarning[MainController.Instance.selectedLanguage];
         netErrorText.text = downloadError[MainController.Instance.selectedLanguage];
         playWarningText.text = playWarning[MainController.Instance.selectedLanguage];
-       
+        donwloadInProgressText.text = downloadInProgressWarning[MainController.Instance.selectedLanguage];
+        //GetComponent<Animation>().Play("scanButtonFlashing");
         if (MainController.Instance.selectedLanguage == "hu")
         {
             templeNameText.text = templeName;
@@ -89,7 +109,7 @@ public class TempleSceneController : MonoBehaviour
                 }
             }
         }
-        
+
         slider.maxValue = GetSymbolsLength();
         slider.value = MainController.Instance.GetNumberOfSymbolsVisited(currentTemple);
         SetDownloadButtonState(MainController.Instance.isDownloading);
@@ -113,6 +133,7 @@ public class TempleSceneController : MonoBehaviour
             templeImage.texture = imageTexture;
             templeImage.SetNativeSize();
             LoadSymbolsForDiscoverScene();
+            StartCoroutine(LoadAudioLocaly());
         }
         else
         {
@@ -120,24 +141,30 @@ public class TempleSceneController : MonoBehaviour
             byte[] resultBytes = MainController.Instance.GetImageLocaly(templeName, templeName);
             imageTexture.LoadImage(resultBytes);
             templeImage.texture = imageTexture;
-            templeImage.color = new Color32(111, 189, 195, 255);
+            templeImage.color = new Color32(255, 255, 255, 255);
             templeImage.SetNativeSize();
         }
         InstantiateSymbolGroups(groupContainer);
+        
     }
     private void Update()
     {
         if (audioSource.isPlaying)
         {
-            
+            audioPlayButton.GetComponent<Image>().enabled = false;
+            audioPlayButton.transform.GetChild(0).gameObject.SetActive(true);
+            //Debug.Log(audioSource.clip.length);
         }
         else
         {
-           
+            audioPlayButton.GetComponent<Image>().enabled = true;
+            audioPlayButton.transform.GetChild(0).gameObject.SetActive(false);
+            
         }
     }
     int GetSymbolsLength()
     {
+        var akarmi = currentTemple.symbol_groups;
         int symbolsLength = 0;
         foreach (KeyValuePair<string, SymbolGroup> symbolGroup in currentTemple.symbol_groups)
         {
@@ -145,18 +172,37 @@ public class TempleSceneController : MonoBehaviour
         }
         return symbolsLength;
     }
-        //}
-        //void int GetSymbolsLength()
-        //{
-        //    int symbolsLength = 0;
-        //    foreach (KeyValuePair<string,SymbolGroup> symbolGroup in currentTemple.symbol_groups)
-        //    {
-        //        symbolsLength += symbolGroup.Value.symbols.Length;
-        //    }
-        //    return symbolsLength;
-        //}
 
-        public void LoadSymbolsForDiscoverScene()
+    int GetSymbolAudiosLength()
+    {
+        int audioLength = 0;
+        foreach (KeyValuePair<string, SymbolGroup> symbolGroup in currentTemple.symbol_groups)
+        {
+            foreach (var symbol in symbolGroup.Value.symbols)
+            {
+                foreach (var audio in symbol.audios)
+                {
+                    if(audio.lang == MainController.Instance.selectedLanguage)
+                    {
+                        audioLength++;
+                    }
+                } 
+            } 
+        }
+        return audioLength;
+    }
+    //}
+    //void int GetSymbolsLength()
+    //{
+    //    int symbolsLength = 0;
+    //    foreach (KeyValuePair<string,SymbolGroup> symbolGroup in currentTemple.symbol_groups)
+    //    {
+    //        symbolsLength += symbolGroup.Value.symbols.Length;
+    //    }
+    //    return symbolsLength;
+    //}
+
+    public void LoadSymbolsForDiscoverScene()
     {
         foreach (KeyValuePair<string, SymbolGroup> symbolGroup in symbolsGroups)
         {
@@ -195,9 +241,16 @@ public class TempleSceneController : MonoBehaviour
         }
         else
         {
-            downloadButtonAnimator.SetBool("isDownloading", false);
-            downloadWarningPanel.gameObject.SetActive(false);
-            downloadButton.gameObject.SetActive(true);
+            if (downloadButtonAnimator)
+            {
+                downloadButtonAnimator.SetBool("isDownloading", false);
+            }
+            if (downloadWarningPanel)
+            {
+                downloadWarningPanel.gameObject.SetActive(false);
+            }
+            
+            //downloadButton.gameObject.SetActive(true);
         }
 
     }
@@ -235,8 +288,10 @@ public class TempleSceneController : MonoBehaviour
         }
         MainController.Instance.StartDownload();
         MainController.Instance.downloadCompleted = 0;
-        MainController.Instance.downloadTarget = GetSymbolsLength();
-        Debug.LogWarning("download targer :   " + MainController.Instance.downloadTarget);
+        donwloadInProgressPanel.SetActive(true);
+        /// download target must be the length of the symbols array + the lang of the audios by the selected language + 1(temple intro audio)
+        MainController.Instance.downloadTarget = GetSymbolsLength() + GetSymbolAudiosLength() + 1;
+        Debug.Log("download target :   " + MainController.Instance.downloadTarget);
 
         //Should download and save the data also it should store that the temple data was downloaded
         foreach (KeyValuePair<string, SymbolGroup> symbolGroup in currentTemple.symbol_groups)
@@ -312,6 +367,8 @@ public class TempleSceneController : MonoBehaviour
             return;
         }
         MainController.Instance.dataController.SaveImageLocally(resultBytes, templeName, fileName);
+        MainController.Instance.downloadCompleted++;
+        Debug.Log(MainController.Instance.downloadCompleted + " downloaded files numbe"); 
     }
 
     private void SaveSymbolAudio(TempleData.AudioData audiodata, byte[] resultBytes, string fileName)
@@ -324,9 +381,9 @@ public class TempleSceneController : MonoBehaviour
             MainController.Instance.isDownloading = false;
             return;
         }
-        MainController.Instance.dataController.SaveAudioLocally(audiodata.lang,resultBytes, templeName, fileName);
         MainController.Instance.downloadCompleted++;
-        Debug.LogWarning(MainController.Instance.downloadCompleted + " downloaded files numbe"); ;
+        MainController.Instance.dataController.SaveAudioLocally(audiodata.lang,resultBytes, templeName, fileName);
+        
     }
 
     public void LoadHomeScreen()
@@ -357,13 +414,31 @@ public class TempleSceneController : MonoBehaviour
 
     public void showPlayAnim()
     {
+        donwloadInProgressPanel.SetActive(false);
+        StartCoroutine(ScanWarning());
+        animator.SetTrigger("scanFlash");
+    }
+
+    IEnumerator ScanWarning()
+    {
         playWarningPanel.SetActive(true);
-        Debug.Log("playwarning active true");
+        netErrorPanel.SetActive(false);
+        yield return new WaitForSeconds(2.7f);
+        playWarningPanel.SetActive(false);
     }
 
     public void ShowSymbolGroupsForScan()
     {
         Dictionary<string, LocalTempleData> allLocalTempleData = MainController.Instance.LoadAllLocalTempledata();
+        if (!allLocalTempleData[templeName].downloaded[MainController.Instance.selectedLanguage]){
+            OnDownloadButtonHit();
+            return;
+        }
+        if (audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
+            
         if (allLocalTempleData[templeName].downloaded[MainController.Instance.selectedLanguage])
         {
             groupChoosePanel.SetActive(true);
@@ -398,7 +473,8 @@ public class TempleSceneController : MonoBehaviour
             {
                 audioPlayButton.GetComponent<Image>().enabled = false;
                 audioPlayButton.transform.GetChild(0).gameObject.SetActive(true);
-                StartCoroutine(LoadAudioLocaly());
+                audioSource.Play();
+                //StartCoroutine(LoadAudioLocaly());
             }
             
         }
@@ -417,13 +493,32 @@ public class TempleSceneController : MonoBehaviour
     }
     public IEnumerator LoadAudioLocaly()
     {
-        string path = Application.persistentDataPath + "/" + templeName + "/" + MainController.Instance.selectedLanguage + "/" + currentTemple.name + ".mp3";
+        string path = Application.persistentDataPath + "/" + currentTemple.name + "/" + MainController.Instance.selectedLanguage + "/" + currentTemple.name + ".mp3";
         string url = string.Format("file://{0}", path);
-        WWW www = new WWW(url);
-        yield return www;
-        audioClip = www.GetAudioClip(false, false);
-        audioSource.clip = audioClip;
-        audioSource.Play();
+        using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.MPEG))
+        {
+            yield return www.SendWebRequest();
+
+            if (www.result == UnityWebRequest.Result.ConnectionError)
+            {
+                Debug.Log(www.error);
+            }
+            else
+            {
+                myClip = DownloadHandlerAudioClip.GetContent(www);
+                audioSource.clip = myClip;
+            }
+        }
+        //WWW www = new WWW(url);
+
+        //    yield return www;
+
+        //AudioClip audioClip = www.GetAudioClip(false, false, AudioType.mp);
+       
+        //Debug.Log(audioClip.loadState + " audioClip.isReadyToPlay");
+        //Debug.Log(audioClip.length + " audio length");
+        //Debug.Log(audioSource.clip.length + " audio length");
+        //audioSource.Play();
     }
 
     public void LoadImageDetectionScene()

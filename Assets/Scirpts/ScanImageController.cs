@@ -14,6 +14,8 @@ public class ScanImageController : MonoBehaviour
     TempleData currentTempleData;
     ProgressObject progressObject;
     ProgressController progressController;
+    [SerializeField]
+    Material scannedSymbolMaterial;
 
     Symbol[] symbols;
     public static DiscverSceneController Instance;
@@ -49,7 +51,8 @@ public class ScanImageController : MonoBehaviour
             newSymbolItem.GetComponent<SymbolPrefabController>().SetSymbolData(symbol);
             if (ChecIfSymbolIsScanned(symbol.symbol_name))
             {
-                newSymbolItem.transform.GetChild(0).GetComponent<RawImage>().color = new Color32(8, 149, 160, 250);
+                //newSymbolItem.transform.GetChild(0).GetComponent<RawImage>().color = new Color32(8, 149, 160, 250);
+                newSymbolItem.transform.GetChild(0).GetComponent<RawImage>().material = scannedSymbolMaterial;
             }
             xPos = xPos + 125;
             if (counter == 3)

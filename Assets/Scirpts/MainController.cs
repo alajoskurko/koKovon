@@ -7,12 +7,12 @@ using Newtonsoft.Json;
 using static TempleData;
 using System.Linq;
 using System;
+using UnityEngine.UI;
 
 public class MainController : MonoBehaviour
 {
     public static MainController Instance;
     private string _selectedLanguage = "hu";
-
     public string selectedLanguage
     {
         get
@@ -42,7 +42,7 @@ public class MainController : MonoBehaviour
 
     public bool isInitializing = true;
 
-    bool hasInternetConnection = false;
+    public bool hasInternetConnection = false;
 
     public bool isDownloading=false;
     public int downloadTarget;
@@ -58,37 +58,107 @@ public class MainController : MonoBehaviour
 
     public float templeSelectorScrollrectPositionY = 1;
 
+    [SerializeField]
+    private GameObject netErrorText;
+
+    public bool isAdminMode = false;
+    private int adminClickNumber = 0;
+    private int clickDuration = 0;
+    private bool clockStarted = false;
+
+    //public SymbolGroupForLang[] symbolGroupForLangs;
+    public SymbolGroupForLang[] symbolGroupForLangs;
     private void Awake()
     {
-
+        
         CreateSingleton();
         CheckConnection();
         endpointReader = gameObject.GetComponent<EndpointReader>();
         dataController = gameObject.GetComponent<DataController>();
         progressController = gameObject.GetComponent<ProgressController>();
         symbolTextures = new Dictionary<string, Texture2D>();
+        Debug.LogWarning(hasInternetConnection + " hasInternetConnection ");
         if (hasInternetConnection)
         {
             StartCoroutine(endpointReader.GetAllTempleData(ProcessAllTempleData));
+            StartCoroutine(endpointReader.GetSymbolGroupInfos(SymbolGroupCallback));
         }
-        //This part will not be needed maybe??
+                //This part will not be needed maybe??
         else
         {
+            netErrorText.SetActive(true);
+            StartCoroutine(CheckIfUserTurnedOnTheNet());
             if (PlayerPrefs.HasKey("initialSetup"))
             {
 
-                isInitializing = false;
+                //isInitializing = false;
             }
         }
         
 
     }
 
+    void SymbolGroupCallback()
+    {
+
+    }
+
+    public void ClickedOnLogo()
+    {
+        if(adminClickNumber < 10)
+        {
+            adminClickNumber++;
+            if (!clockStarted)
+            {
+                StartCoroutine(ClockAdminTime());
+                clockStarted = true;
+            }
+        }
+        if(adminClickNumber > 9 && clickDuration <= 10)
+        {
+            isAdminMode = true;
+            StopCoroutine(ClockAdminTime());
+            TempleSelectionController.Instance.Reinit();
+        }
+    }
+
+    private IEnumerator ClockAdminTime()
+    {
+        yield return new WaitForSecondsRealtime(1);
+        clickDuration ++;
+        StartCoroutine(ClockAdminTime());
+    }
+
+    private IEnumerator CheckIfUserTurnedOnTheNet ()
+    {
+        yield return new WaitForSecondsRealtime(2);
+        CheckConnection();
+        if (hasInternetConnection)
+        {
+            netErrorText.SetActive(false);
+            StopCoroutine(CheckIfUserTurnedOnTheNet());
+            StartCoroutine(endpointReader.GetAllTempleData(ProcessAllTempleData));
+        }
+        else
+        {
+            StartCoroutine(CheckIfUserTurnedOnTheNet());
+        }
+        
+    }
+
     private void Update()
     {
-        if (downloadCompleted > downloadTarget-1 && isDownloading)
+        if (downloadCompleted > downloadTarget && isDownloading)
         {
             DownloadEnded();
+            TempleSceneController.Instance.progressObj.SetActive(false);
+            Debug.Log("download completed!!!!!!!!!!!!!!!!");
+        }
+        else if (isDownloading)
+        {
+            float num = (downloadCompleted * 100) / (downloadTarget > 0 ? downloadTarget : 1);
+            TempleSceneController.Instance.progressObj.SetActive(true);
+            TempleSceneController.Instance.progressObj.gameObject.transform.GetChild(0).GetComponent<Slider>().value= num / 100;
         }
     }
 
@@ -121,12 +191,15 @@ public class MainController : MonoBehaviour
         // For first time if there is no LocalTempleData.json and hast ro be created from scratch
         if (!File.Exists(Application.persistentDataPath + "/" + "LocalTempleData.json"))
         {
+            Debug.LogWarning(" toltesi hiba file doesnt exist");
             LocalTempleData[] allLocalTempleData = new LocalTempleData[allTempleData.Length];
             int counter = 0;
             foreach (TempleData templeData in allTempleData)
             {
                 if (templeData!= null)
                 {
+                    Debug.LogWarning(" toltesi hiba file doesnt exist templadata nem null");
+
                     StartCoroutine(endpointReader.GetImage(templeData.cover_image, templeData.name, SaveImageLocally));
                     currentTempleDataForGroups = templeData;
                     SaveSymbolGroups(templeData);
@@ -146,16 +219,20 @@ public class MainController : MonoBehaviour
         }
         else
         {
+            Debug.LogWarning(" toltesi hiba file exist");
+
             string jsonString = dataController.LoadJsonFile("LocalTempleData.json");
-            LocalTempleData[] allLocalTempleData = JsonConvert.DeserializeObject<LocalTempleData[]>(jsonString);
+            List<LocalTempleData> allLocalTempleData = new List<LocalTempleData>();
+            allLocalTempleData = JsonConvert.DeserializeObject<List<LocalTempleData>>(jsonString);
             foreach (TempleData templeData in allTempleData)
             {
                 if (templeData != null)
                 {
+                    Debug.LogWarning(" toltesi hiba file exist templedata nem null");
                     string name = templeData.name;
                     bool exists = false;
                     int index = 999999;
-                    for (int i = 0; i < allLocalTempleData.Length; i++)
+                    for (int i = 0; i < allLocalTempleData.Count; i++)
                     {
                         if (allLocalTempleData[i].name == name)
                         {
@@ -166,6 +243,7 @@ public class MainController : MonoBehaviour
                     }
                     if (exists)
                     {
+                        Debug.LogWarning(" toltesi hiba file exist templedata nem null exists");
                         string updated_at = templeData.updated_at;
                         if (updated_at != allLocalTempleData[index].updated_at)
                         {
@@ -191,6 +269,7 @@ public class MainController : MonoBehaviour
                     }
                     else
                     {
+                        Debug.LogWarning(" toltesi hiba file exist templedata nem nem exists");
                         StartCoroutine(endpointReader.GetImage(templeData.cover_image, templeData.name, SaveImageLocally));
                         currentTempleDataForGroups = templeData;
                         SaveSymbolGroups(templeData);
@@ -200,7 +279,7 @@ public class MainController : MonoBehaviour
                             {"ro",false },
                             {"en",false }
                         };
-                        allLocalTempleData.Append(new LocalTempleData(templeData.updated_at, templeData.name, newDict));
+                        allLocalTempleData.Add(new LocalTempleData(templeData.updated_at, templeData.name, newDict));
 
                     }
                 }
@@ -230,6 +309,7 @@ public class MainController : MonoBehaviour
     {
         TempleSceneController templeSceneController = GameObject.Find("TempleSceneController").GetComponent<TempleSceneController>();
         templeSceneController.showPlayAnim();
+        StartCoroutine(TempleSceneController.Instance.LoadAudioLocaly());
         OnDownloadStateChanged(false);
         downloadCompleted = 0;
         downloadTarget = 0;
@@ -372,7 +452,7 @@ public class MainController : MonoBehaviour
     public int GetNumberOfSymbolsVisited(TempleData templeData)
     {
         int counter = 0;
-        Debug.Log(templeData + " symbol");
+        //Debug.Log(templeData + " symbol");
         foreach (KeyValuePair<string, SymbolGroup> symbolGroup in templeData.symbol_groups)
         {
             foreach (Symbol symbol in symbolGroup.Value.symbols)
@@ -421,4 +501,16 @@ public class MainController : MonoBehaviour
     }
 
 
+}
+
+public class SymbolGroupForLang
+{
+    public string code;
+    public List<SymbolGroupItem> name = new List<SymbolGroupItem>();
+}
+
+public class SymbolGroupItem
+{
+    public string lang;
+    public string name;
 }

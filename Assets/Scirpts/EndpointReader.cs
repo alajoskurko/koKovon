@@ -31,6 +31,7 @@ public class EndpointReader : MonoBehaviour
     public IEnumerator GetAllTempleData(System.Action<TempleData[]> callback)
     {
         UnityWebRequest www = UnityWebRequest.Get("https://kokovon.camelcoding.com/temples");
+           www.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
         yield return www.SendWebRequest();
 
         if (www.result != UnityWebRequest.Result.Success)
@@ -50,6 +51,29 @@ public class EndpointReader : MonoBehaviour
         }
     }
 
+    public IEnumerator GetSymbolGroupInfos(System.Action callback)
+    {
+        UnityWebRequest www = UnityWebRequest.Get("https://kokovon.camelcoding.com/symbol-groups");
+           www.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
+        yield return www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log("There was an error reading data for temples");
+
+        }
+        else
+        {
+
+            MainController.Instance.symbolGroupForLangs = JsonConvert.DeserializeObject<SymbolGroupForLang[]>(www.downloadHandler.text);
+            //  MainController.Instance.SetAllTempleData(result);
+            //        MainController.Instance.allTempleDataRead = true;
+            var x = 0;
+            //callback(result);
+
+        }
+    }
+
     public IEnumerator GetImage(string path, string name, System.Action<byte[],string> callback)
     {
         UnityWebRequest www = UnityWebRequest.Get(path);
@@ -66,7 +90,7 @@ public class EndpointReader : MonoBehaviour
             
          //   var pngFormatedImage = imageTexture.EncodeToPNG();
            
-            print("image loaded with success");
+            //print("image loaded with success");
 
             callback(resultBytes,name);
 
