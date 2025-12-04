@@ -12,6 +12,7 @@ public class EndpointReader : MonoBehaviour
     public IEnumerator GetTempleData(string id, System.Action<TempleData> callback)
     {
         UnityWebRequest www = UnityWebRequest.Get("https://kokovon.camelcoding.com/temple/"+id);
+        www.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
         yield return www.SendWebRequest();
 
         if (www.result != UnityWebRequest.Result.Success)
@@ -77,6 +78,7 @@ public class EndpointReader : MonoBehaviour
     public IEnumerator GetImage(string path, string name, System.Action<byte[],string> callback)
     {
         UnityWebRequest www = UnityWebRequest.Get(path);
+        www.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
         yield return www.SendWebRequest();
         if (www.result != UnityWebRequest.Result.Success)
         {
@@ -99,6 +101,7 @@ public class EndpointReader : MonoBehaviour
     public IEnumerator GetImage(string path, string name, string fileName, System.Action<byte[], string, string> callback)
     {
         UnityWebRequest www = UnityWebRequest.Get(path);
+        www.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
         yield return www.SendWebRequest();
         if (www.result != UnityWebRequest.Result.Success)
         {
@@ -122,6 +125,7 @@ public class EndpointReader : MonoBehaviour
     public IEnumerator GetAudio(TempleData.AudioData audiodata, string path, string name, System.Action<TempleData.AudioData, byte[], string> callback)
     {
         UnityWebRequest www = UnityWebRequest.Get(path);
+        www.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
         yield return www.SendWebRequest();
         if (www.result != UnityWebRequest.Result.Success)
         {
